@@ -86,8 +86,9 @@ public class DocpoolBaseService {
 	 * @throws IOException 
 	 */
 	public static void main(String[] args) throws IOException {
-	    Log log = LogFactory.getLog(DocpoolBaseService.class);
-		DocpoolBaseService baseService;
+	    System.out.println("starting connection test");
+            Log log = LogFactory.getLog(DocpoolBaseService.class);
+            DocpoolBaseService baseService;
 
 		if (args.length >2){
 			baseService = new DocpoolBaseService(args[0], args[1], args[2]);
