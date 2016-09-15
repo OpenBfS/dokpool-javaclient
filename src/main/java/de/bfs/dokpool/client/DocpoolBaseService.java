@@ -87,8 +87,13 @@ public class DocpoolBaseService {
 	 */
 	public static void main(String[] args) throws IOException {
 	    Log log = LogFactory.getLog(DocpoolBaseService.class);
-		
-		DocpoolBaseService baseService = new DocpoolBaseService("http://localhost:8081/Plone", "condat_user1", "user1");
+		DocpoolBaseService baseService;
+
+		if (args.length >2){
+			baseService = new DocpoolBaseService(args[0], args[1], args[2]);
+		} else {
+			baseService = new DocpoolBaseService("http://localhost:8081/Plone", "condat_user1", "user1");
+		}
 		List<DocumentPool> documentpools = baseService.getDocumentPools();
 		DocumentPool myDocumentPool = baseService.getPrimaryDocumentPool();
 		log.info(myDocumentPool.getTitle());
