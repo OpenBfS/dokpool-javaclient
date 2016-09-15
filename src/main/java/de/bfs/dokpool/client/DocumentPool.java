@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.apache.xmlrpc.client.XmlRpcClient;
-//import redstone.xmlrpc.XmlRpcClient;
 
 /**
  * Wraps the ELANESD type

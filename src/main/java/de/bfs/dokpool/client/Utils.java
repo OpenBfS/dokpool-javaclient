@@ -8,8 +8,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
-//import redstone.xmlrpc.XmlRpcClient;
-//import redstone.xmlrpc.XmlRpcFault;
 
 public class Utils {
     private static Log log = LogFactory.getLog(Utils.class);
