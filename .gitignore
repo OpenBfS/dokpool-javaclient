@@ -1,8 +1,10 @@
 .settings
 .project
 .idea
+*.iml
 .DS_Store
 Java/elan-client-1\.0\.jar
 /bin/
 Java/build
 Java/dist
+target
