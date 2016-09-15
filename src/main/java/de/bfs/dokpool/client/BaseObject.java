@@ -1,7 +1,6 @@
-package de.bfs.elan.client;
+package de.bfs.dokpool.client;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 

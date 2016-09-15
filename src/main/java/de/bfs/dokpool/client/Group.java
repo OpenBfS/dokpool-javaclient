@@ -1,4 +1,4 @@
-package de.bfs.elan.client;
+package de.bfs.dokpool.client;
 
 import java.util.Arrays;
 import java.util.HashSet;

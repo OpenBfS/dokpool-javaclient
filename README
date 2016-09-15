@@ -1,11 +1,11 @@
-To create irix-broker simply build it with:
+To create dokpool-client simply build it with:
 
     mvn package
 
 and find from:
 
-    target/bfs-irixbroker.jar
+    target/dokpool-client.jar
 
-To go on with building irix-webservice install it into your local maven repo ~/.m2:
+To go on with building irix-xxx install it into your local maven repo ~/.m2:
 
     mvn install

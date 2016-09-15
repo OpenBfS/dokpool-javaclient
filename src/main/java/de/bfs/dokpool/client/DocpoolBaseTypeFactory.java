@@ -1,4 +1,4 @@
-package de.bfs.elan.client;
+package de.bfs.dokpool.client;
 
 import org.apache.ws.commons.util.NamespaceContextImpl;
 import org.apache.xmlrpc.common.TypeFactoryImpl;
@@ -11,9 +11,9 @@ import org.apache.xmlrpc.serializer.NullSerializer;
 /**
  * Overrides the normal parser to allow for None values returned from Zope.
  */
-public class DocPoolBaseTypeFactory extends TypeFactoryImpl {
+public class DocpoolBaseTypeFactory extends TypeFactoryImpl {
 
-    public DocPoolBaseTypeFactory(XmlRpcController pController) {
+    public DocpoolBaseTypeFactory(XmlRpcController pController) {
         super(pController);
     }
 

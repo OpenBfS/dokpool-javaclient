@@ -1,13 +1,11 @@
-package de.bfs.elan.client;
+package de.bfs.dokpool.client;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.ws.commons.util.NamespaceContextImpl;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 //import redstone.xmlrpc.XmlRpcClient;

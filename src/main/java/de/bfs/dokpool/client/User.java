@@ -1,6 +1,4 @@
-package de.bfs.elan.client;
-
-import java.util.Vector;
+package de.bfs.dokpool.client;
 
 import org.apache.xmlrpc.client.XmlRpcClient;
 

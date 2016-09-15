@@ -1,4 +1,4 @@
-package de.bfs.elan.client;
+package de.bfs.dokpool.client;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -8,22 +8,17 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Vector;
 
 import org.apache.xmlrpc.client.XmlRpcClient;
-//import redstone.xmlrpc.XmlRpcClient;
 
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import de.bfs.elan.client.Utils;
-
-
 /**
- * The root class to access XMLRPC services for ELAN-E.
+ * The root class to access XMLRPC services for DOKPOOL.
  *
  */
 public class DocpoolBaseService {
@@ -51,7 +46,7 @@ public class DocpoolBaseService {
 			//set the HTTP Header for Basic Authentication
 			//client.setRequestProperty("Authorization", "Basic " + auth);
 			client.setConfig(config);
-			client.setTypeFactory(new DocPoolBaseTypeFactory(client));
+			client.setTypeFactory(new DocpoolBaseTypeFactory(client));
 		} catch (MalformedURLException e) {
 			log.fatal("Incorrect URL provided!", e);
 		}
