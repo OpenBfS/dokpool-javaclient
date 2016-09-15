@@ -97,7 +97,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>./lib/</classpathPrefix>
-                            <mainClass>de.bfs.dokpool.client.DocpoolBaseService</mainClass>
+                            <mainClass>de.bfs.dokpool.client.BaseObject</mainClass>
                         </manifest>
                         <manifestEntries>
                             <Class-Path>lib/</Class-Path>
