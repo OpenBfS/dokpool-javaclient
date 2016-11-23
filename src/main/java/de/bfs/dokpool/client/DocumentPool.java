@@ -35,6 +35,22 @@ public class DocumentPool extends Folder {
 	}
 	
 	/**
+	 * @return all Scenarios within this ESD
+	 */
+	public List<Scenario> getScenarios() {
+		Map<String, Object> scen = Utils.queryObjects(client, path, "ELANScenario");
+		if (scen != null) {
+			ArrayList<Scenario> res = new ArrayList<Scenario>();
+			for (String path: scen.keySet()) {
+				res.add(new Scenario(client, path, null));
+			}
+			return res;
+		} else {
+			return null;
+		}
+	}
+	
+	/**
 	 * @return the user folder of the current user
 	 */
 	public Folder getUserFolder() {
