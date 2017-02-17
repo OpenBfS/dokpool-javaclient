@@ -1,5 +1,6 @@
 package de.bfs.dokpool.client;
 
+import java.util.Map;
 import java.util.Vector;
 
 import org.apache.xmlrpc.client.XmlRpcClient;
@@ -43,7 +44,7 @@ public class Document extends Folder {
 	 * @param data: binary data of the image
 	 * @param filename
 	 * @return
-	 */	public Image uploadImage(String id, String title, String description, byte[] data, String filename) {
+	 */	public Image uploadImage(final String id, final String title, final String description, final byte[] data, final String filename) {
 		Vector<Object> params = new Vector<Object>();
 		System.out.println("Dokument: "+id+title+description+filename);
 		params.add(path);
@@ -68,5 +69,39 @@ public class Document extends Folder {
 		String msg = (String)execute("read_properties_from_file", params);
 		return msg;
 	 }
+
+	public String setProperty(final String name, final String value, final String type) {
+		Vector<Object> params = new Vector<Object>();
+		params.add(path);
+		params.add(name);
+		params.add(value);
+		params.add(type);
+		String msg = (String)execute("set_property", params);
+		return msg;
+	}
+
+	public String deleteProperty(final String name) {
+		Vector<Object> params = new Vector<Object>();
+		params.add(path);
+		params.add(name);
+		String msg = (String)execute("delete_property", params);
+		return msg;
+	}
+
+	public String getProperty(final String name) {
+		Vector<Object> params = new Vector<Object>();
+		params.add(path);
+		params.add(name);
+		String msg = (String)execute("get_property", params);
+		return msg;
+	}
+
+	public Map<String,String> getProperties() {
+        Vector<Object> params = new Vector<Object>();
+        params.add(path);
+        Map<String,String> msg = (Map<String,String>)execute("get_properties", params);
+        return msg;
+
+    }
 
 }
