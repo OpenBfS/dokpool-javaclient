@@ -82,7 +82,14 @@ public class Folder extends BaseObject {
 	public List<Object> getSubFolders() {
 		return getContents("SimpleFolder");
 	}
-	
+
+	/**
+	 * @return path of Folder
+	 */
+	public String getFolderPath() {
+		return this.path;
+	}
+
 	/**
 	 * @return only documents within this folder
 	 */
