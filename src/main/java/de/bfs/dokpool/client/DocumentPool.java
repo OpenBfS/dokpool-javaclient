@@ -53,13 +53,14 @@ public class DocumentPool extends Folder {
 	/**
 	 * @return filtered Scenarios within this ESD
 	 */
-	public List<Scenario> getFilteredScenarios(List<String> filter) {
+	public List<Scenario> getScenarios(List<String> filter) {
 		Map<String, Object> scen = Utils.queryObjects(client, path, "ELANScenario");
 		if (scen != null) {
 			ArrayList<Scenario> res = new ArrayList<Scenario>();
-			for (Scenario scenario: scen) {
-				if (scenario) {
-					res.add(new Scenario(client, scenario.key(), null));
+			for (String path: scen.keySet()) {
+				Scenario myscen = new Scenario(client, path, null);
+				if (filter.size() > 0 || filter.contains("myscen.status")) {
+					res.add(myscen);
 				}
 			}
 			return res;
