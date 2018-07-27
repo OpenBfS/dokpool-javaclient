@@ -2,6 +2,7 @@ package de.bfs.dokpool.client;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
@@ -143,5 +144,33 @@ public class DocumentPool extends Folder {
 		}
 		return group;
 	}
-	
+
+	/**
+	 * Create a new scenario within this esd.
+	 *
+	 * @param id: the id for the scenario (must be unique within the folder)
+	 * @param title
+	 * @param timeOfEvent
+	 * @param description
+	 * @return the newly created document
+	 */
+	public Scenario createScenario(String id, String title, String description, String timeOfEvent) {
+		Map<String, Object> properties = new HashMap<String, Object>();
+		properties.put("title",title);
+		properties.put("timeOfEvent", timeOfEvent);
+		properties.put("description",description);
+		properties.put("docType","ELANScenario");
+		return createScenario(id, properties);
+	}
+
+	public Scenario createScenario(String id, Map<String, Object> properties){
+		Vector<Object> params = new Vector<Object>();
+		params.add(path);
+		params.add(id);
+		params.add(properties);
+		params.add("ELANScenario");
+		String newpath = (String)execute("create_scenario", params);
+		return new Scenario(client, newpath, null);
+	}
+
 }
