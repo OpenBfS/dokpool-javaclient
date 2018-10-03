@@ -105,16 +105,16 @@ public class Folder extends BaseObject {
 	 * @param description
 	 * @param text
 	 * @param docType
-	 * @param scenario
+	 * @param behaviours
 	 * @return the newly created document
 	 */
-	public Document createDocument(String id, String title, String description, String text, String docType, String[] scenarios) {
+	public Document createDocument(String id, String title, String description, String text, String docType, String[] behaviors) {
 		Map<String, Object> properties = new HashMap<String, Object>();
 		properties.put("title",title);
 		properties.put("description",description);
 		properties.put("text",text);
 		properties.put("docType",docType);
-		properties.put("scenarios",scenarios);
+		properties.put("local_behaviors",behaviors);
 		return createDocument(id, properties);
 	}
 	

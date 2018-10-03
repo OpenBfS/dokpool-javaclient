@@ -111,5 +111,17 @@ class BaseObject {
 		execute("set_workflow", params);		
 	}
 	
+	/**
+	 * Update the object with the given properties.
+	 * @param properties
+	 */
+	public void update(Map<String, Object> properties) {
+		Vector<Object> params = new Vector<Object>();
+		params.add(path);
+		params.add(properties);
+		execute("update_dp_object", params);
+
+	}
+	
 	
 }

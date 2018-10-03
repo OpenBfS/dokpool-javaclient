@@ -115,10 +115,12 @@ public class DocpoolBaseService {
 		properties.put("description","Generische Beschreibung");
 		properties.put("text","<b>Text</b>");
 		properties.put("docType","ifinprojection");
-		properties.put("scenarios",new String[]{"scenario1","scenario2"});
 		properties.put("subjects", new String[]{"Tag1","Tag2"});
 		properties.put("local_behaviors", new String[]{"elan"});
 		BaseObject bo = userfolder.createObject("generisch9", properties, "DPDocument");
+		properties.clear();
+		properties.put("scenarios",new String[]{"scenario1","scenario2"});
+		bo.update(properties);
 		log.info(bo.getStringAttribute("created_by"));
 		log.info(bo.getDateAttribute("effective"));		
 		Document d = userfolder.createDocument("ausjava1", "Neu aus Java", "Beschreibung über Java", "<p>Text aus Java!</p>", "ifinprojection", new String[]{"scenario1","scenario2"});
