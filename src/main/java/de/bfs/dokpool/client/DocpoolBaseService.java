@@ -96,6 +96,9 @@ public class DocpoolBaseService {
 			baseService = new DocpoolBaseService("http://localhost:8081/Plone", "condat_user1", "user1");
 		}
 		List<DocumentPool> documentpools = baseService.getDocumentPools();
+		if (documentpools.size() < 1){
+			log.warn("No DocumentPools found!");
+		}
 		DocumentPool myDocumentPool = baseService.getPrimaryDocumentPool();
 		log.info(myDocumentPool.getTitle());
 		log.info(myDocumentPool.getDescription());
