@@ -1,4 +1,4 @@
-package de.bfs.dokpool.client;
+package de.bfs.dokpool.client.content;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -7,6 +7,8 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.apache.xmlrpc.client.XmlRpcClient;
+
+import de.bfs.dokpool.client.base.BaseObject;
 
 public class Group extends BaseObject {
 	

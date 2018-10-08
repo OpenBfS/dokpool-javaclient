@@ -1,4 +1,4 @@
-package de.bfs.dokpool.client;
+package de.bfs.dokpool.client.content;
 
 import java.util.Map;
 import java.util.Vector;

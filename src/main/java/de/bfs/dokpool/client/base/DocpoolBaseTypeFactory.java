@@ -1,4 +1,4 @@
-package de.bfs.dokpool.client;
+package de.bfs.dokpool.client.base;
 
 import org.apache.ws.commons.util.NamespaceContextImpl;
 import org.apache.xmlrpc.common.TypeFactoryImpl;

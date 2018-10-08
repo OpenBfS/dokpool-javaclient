@@ -1,23 +1,27 @@
-package de.bfs.dokpool.client;
+package de.bfs.dokpool.client.base;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
 import org.apache.xmlrpc.client.XmlRpcClient;
+
+import de.bfs.dokpool.client.utils.Utils;
 
 
 /**
  * Base class for all API objects. Contains helper methods for all types.
  *
  */
-class BaseObject {
+public class BaseObject {
 	protected XmlRpcClient client = null;
 	protected String path = null;
 	protected Map<String,Object> data = null;
 	protected Map<String,Object> metadata = null;
 	
-	protected BaseObject(XmlRpcClient client, String path, Object[] alldata) {
+	public BaseObject(XmlRpcClient client, String path, Object[] alldata) {
 		this.client = client;
 		this.path = path;
 		if (alldata != null) {
@@ -74,6 +78,20 @@ class BaseObject {
 		}
 		else {
 			return null;
+		}		
+	}
+	
+	public List<String> getStringsAttribute(String name) {
+		if (getData() != null) {
+			List<String> values = new ArrayList<>();
+			Object[] results = (Object[])getData().get(name);
+			for (Object result: results) {
+				values.add((String)result);
+			}
+			return values;		
+		}
+		else {
+			return new ArrayList<>();
 		}		
 	}
 	

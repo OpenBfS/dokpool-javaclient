@@ -1,11 +1,14 @@
-package de.bfs.dokpool.client;
+package de.bfs.dokpool.client.content;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Vector;
 
 import org.apache.xmlrpc.client.XmlRpcClient;
+
+import de.bfs.dokpool.client.utils.Utils;
 
 /**
  * Wraps the ELANESD type
@@ -123,6 +126,12 @@ public class DocumentPool extends Folder {
 			group = new Group(client, path, groupId, title, description, esd);
 		}
 		return group;
+	}
+
+
+	public Optional<Folder> getGroupFolder(String name) {
+		List<Folder> groupFolders = getGroupFolders();
+		return groupFolders.stream().filter(folder -> folder.getId().equals(name)).findFirst();
 	}
 	
 }

@@ -1,4 +1,4 @@
-package de.bfs.dokpool.client;
+package de.bfs.dokpool.client.utils;
 
 import java.util.HashMap;
 import java.util.Map;
