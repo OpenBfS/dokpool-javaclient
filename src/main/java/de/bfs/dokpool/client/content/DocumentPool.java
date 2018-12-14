@@ -1,10 +1,6 @@
 package de.bfs.dokpool.client.content;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Vector;
+import java.util.*;
 
 import org.apache.xmlrpc.client.XmlRpcClient;
 
@@ -42,6 +38,24 @@ public class DocumentPool extends Folder {
 	 */
 	public List<Scenario> getScenarios() {
 		Map<String, Object> scen = Utils.queryObjects(client, path, "ELANScenario");
+		if (scen != null) {
+			ArrayList<Scenario> res = new ArrayList<Scenario>();
+			for (String path: scen.keySet()) {
+				res.add(new Scenario(client, path, null));
+			}
+			return res;
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * @return all active Scenarios within this ESD
+	 */
+	public List<Scenario> getActiveScenarios() {
+		HashMap<String, String> filterparams = new HashMap<String, String>();
+		filterparams.put("dp_type", "active");
+		Map<String, Object> scen = Utils.queryObjects(client, path, "ELANScenario", filterparams);
 		if (scen != null) {
 			ArrayList<Scenario> res = new ArrayList<Scenario>();
 			for (String path: scen.keySet()) {

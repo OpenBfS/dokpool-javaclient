@@ -28,7 +28,28 @@ public class Utils {
 		Map res = (Map)execute(client, "query", params);
 		return res;
 	}
-	
+
+	/**
+	 * Helper method for querying objects.
+	 * @param client: the XMLRPC client
+	 * @param path: path in Plone
+	 * @param type: Plone type to search for
+	 * @param filterparams: Plne params to search for
+	 * @return
+	 */
+	public static Map queryObjects(XmlRpcClient client, String path, String type, HashMap<String, String> filterparams) {
+		Vector<Object> params = new Vector<Object>();
+		HashMap<String, Object> query = new HashMap<String, Object>();
+		query.put("path", path);
+		query.put("portal_type", type);
+		for (Map.Entry<String, String> filterparam : filterparams.entrySet()) {
+			query.put(filterparam.getKey(), filterparam.getValue());
+		}
+		params.add(query);
+		Map res = (Map)execute(client, "query", params);
+		return res;
+	}
+
 	/**
 	 * Helper method to execute XMLRPC calls
 	 * 
