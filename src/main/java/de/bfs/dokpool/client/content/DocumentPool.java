@@ -35,8 +35,9 @@ public class DocumentPool extends Folder {
 	
 	/**
 	 * @return all Scenarios within this ESD
+	 * @deprecated
 	 */
-	public List<Scenario> getScenarios() {
+	@Deprecated public List<Scenario> getScenarios() {
 		Map<String, Object> scen = Utils.queryObjects(client, path, "ELANScenario");
 		if (scen != null) {
 			ArrayList<Scenario> res = new ArrayList<Scenario>();
@@ -51,8 +52,9 @@ public class DocumentPool extends Folder {
 
 	/**
 	 * @return all active Scenarios within this ESD
+	 * @deprecated
 	 */
-	public List<Scenario> getActiveScenarios() {
+	@Deprecated public List<Scenario> getActiveScenarios() {
 		HashMap<String, String> filterparams = new HashMap<String, String>();
 		filterparams.put("dp_type", "active");
 		Map<String, Object> scen = Utils.queryObjects(client, path, "ELANScenario", filterparams);
@@ -66,7 +68,41 @@ public class DocumentPool extends Folder {
 			return null;
 		}
 	}
-	
+
+	/**
+	 * @return all Events within this ESD
+	 */
+	public List<Event> getEvents() {
+		Map<String, Object> events = Utils.queryObjects(client, path, "DPEvent");
+		if (events != null) {
+			ArrayList<Event> res = new ArrayList<Event>();
+			for (String path: events.keySet()) {
+				res.add(new Event(client, path, null));
+			}
+			return res;
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * @return all active Events within this ESD
+	 */
+	public List<Event> getActiveEvents() {
+		HashMap<String, String> filterparams = new HashMap<String, String>();
+		filterparams.put("dp_type", "active");
+		Map<String, Object> events = Utils.queryObjects(client, path, "DPEvent", filterparams);
+		if (events != null) {
+			ArrayList<Event> res = new ArrayList<Event>();
+			for (String path: events.keySet()) {
+				res.add(new Event(client, path, null));
+			}
+			return res;
+		} else {
+			return null;
+		}
+	}
+
 	/**
 	 * @return the user folder of the current user
 	 */
