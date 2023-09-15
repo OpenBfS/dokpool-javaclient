@@ -166,7 +166,7 @@
 		</pluginManagement>
 	</build>
 	<properties>
-		<spring.boot.version>2.5.15</spring.boot.version>
+		<spring.boot.version>2.7.15</spring.boot.version>
 		<project.custom.java.version>11</project.custom.java.version>
 		<maven.compiler.source>${project.custom.java.version}</maven.compiler.source>
 		<maven.compiler.target>${project.custom.java.version}</maven.compiler.target>
