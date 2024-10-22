@@ -6,6 +6,13 @@ and find from:
 
     target/dokpool-client.jar
 
+Test with
+
+    cp .testenv.example .testenv #anpassen
+    source .testenv
+    mvn test
+
 To go on with building irix-xxx install it into your local maven repo ~/.m2:
 
     mvn install
+
