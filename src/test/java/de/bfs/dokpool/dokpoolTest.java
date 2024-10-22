@@ -5,6 +5,7 @@ package de.bfs.dokpool;
 import java.util.*;
 import org.junit.*;
 import de.bfs.dokpool.client.base.*;
+import de.bfs.dokpool.client.content.*;
 
 public class dokpoolTest
 {
@@ -16,16 +17,6 @@ public class dokpoolTest
    private static final String PLONESITE      = System.getenv("DOKPOOL_PLONESITE");
    private static final String USER           = System.getenv("DOKPOOL_USER");
    private static final String PW             = System.getenv("DOKPOOL_PW");
-//       String proto = bfsIrixBrokerProperties.getProperty("irix-dokpool.PROTO");
-//       String host = bfsIrixBrokerProperties.getProperty("irix-dokpool.HOST");
-//       String port = bfsIrixBrokerProperties.getProperty("irix-dokpool.PORT");
-//       String ploneSite = bfsIrixBrokerProperties.getProperty("irix-dokpool.PLONE_SITE");
-//       String documentOwner = bfsIrixBrokerProperties.getProperty("irix-dokpool.PLONE_DOKPOOLDOCUMENTOWNER");
-//       String user = bfsIrixBrokerProperties.getProperty("irix-dokpool.USER");
-//       String pw = bfsIrixBrokerProperties.getProperty("irix-dokpool.PW");
-//       Element dt = extractSingleElement(dokpoolmeta, TAG_DOKPOOLCONTENTTYPE);
-//       //FIXME remove this static String
-//       String desc = "Original date: " + DateTime.toString() + " " + ReportContext + " " + Confidentiality;
 
    /** Die main()-Methode ist nur fuer manuelle Testzwecke */
    public static void main( String[] args ) throws Exception
@@ -38,9 +29,11 @@ public class dokpoolTest
    {
 
 
-      System.out.println(PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE + "user:" + USER + "pw:" + PW);
+      System.out.println("URL: " + PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE + " User:" + USER + " Password:" + PW);
 //       //connect to Dokpool using API (wsapi4plone/wsapi4elan)
       DocpoolBaseService docpoolBaseService = new DocpoolBaseService(PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE, USER, PW);
+      List<DocumentPool> myDocpools = docpoolBaseService.getDocumentPools();
+      System.out.println(myDocpools.size());
       Assert.assertEquals( 5, 5 );
    }
 

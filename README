@@ -8,7 +8,7 @@ and find from:
 
 Test with
 
-    cp .testenv.example .testenv #anpassen
+    cp .testenv.example .testenv #adapt to dokpool instance
     source .testenv
     mvn test
 
