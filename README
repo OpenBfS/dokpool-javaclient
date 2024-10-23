@@ -9,8 +9,7 @@ and find from:
 Test with
 
     cp .testenv.example .testenv #adapt to dokpool instance
-    source .testenv
-    mvn test
+    source .testenv && mvn test
 
 To go on with building irix-xxx install it into your local maven repo ~/.m2:
 
