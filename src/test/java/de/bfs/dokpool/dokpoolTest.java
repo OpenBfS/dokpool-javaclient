@@ -23,6 +23,7 @@ public class dokpoolTest {
 	private static final String PW             = System.getenv("DOKPOOL_PW");
 	private static final String DOKPOOL        = System.getenv("DOKPOOL_DOKPOOL");
 	private static final String GROUPFOLDER    = System.getenv("DOKPOOL_GROUPFOLDER");
+	private static final String DOCID          = "java-docpool-test-doc";
 
 	/** Die main()-Methode ist nur fuer manuelle Testzwecke */
 	public static void main( String[] args ) throws Exception {
@@ -65,6 +66,17 @@ public class dokpoolTest {
 			log.warn("Could not find DOKPOOL_GROUPFOLDER: " + mainDocpool.getFolderPath() + "/content/Groups/" + GROUPFOLDER);
 			log.info("Group folder remains: " +  myGroupFolder.getFolderPath());
 		}
+
+		Map<String, Object> docpoolProperties = new HashMap<String, Object>();
+		docpoolProperties.put("title", "JavaDocpoolTestDocument");
+		docpoolProperties.put("description", "Created by mvn test.");
+		docpoolProperties.put("text", "This is just a Test and can be deleted.");
+// 		docpoolProperties.put("docType", dt.getTextContent());
+// 		docpoolProperties.putAll(setBehaviors(myDocpool));
+// 		docpoolProperties.putAll(setSubjects());
+		log.info("Creating new Dokument at " + myGroupFolder.getFolderPath() + "/" + DOCID);
+		Document d = myGroupFolder.createDPDocument(DOCID, docpoolProperties);
+		d.setWorkflowStatus("publish");
 
 		Assert.assertEquals(5,5);
 	}
