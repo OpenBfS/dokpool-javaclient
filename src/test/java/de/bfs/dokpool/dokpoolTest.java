@@ -1,3 +1,7 @@
+/**
+ * @authors fuf-ber - German Federal Office for Radiation Protection www.bfs.de
+ */
+
 package de.bfs.dokpool;
 
 // import java.io.*;
@@ -16,8 +20,8 @@ import org.apache.xmlrpc.client.XmlRpcClient;
 
 import java.lang.reflect.Field;
 
-import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class dokpoolTest {
 	private Log log = LogFactory.getLog(dokpoolTest.class);
@@ -40,8 +44,12 @@ public class dokpoolTest {
 
 	}
 
+	/**
+	 * Test document creation, file upload and setting properties.
+	 *
+	 */
 	@Test
-	public void someTestFunction() throws Exception {
+	public void documentTest() throws Exception {
 
 
 		log.info("URL: " + PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE + " User:" + USER + " Password:" + PW);
@@ -105,17 +113,16 @@ public class dokpoolTest {
 		log.info("Creating new document at " + myGroupFolder.getFolderPath() + "/" + DOCID);
 		Document d = myGroupFolder.createDPDocument(DOCID, docProperties);
 
-		File file = new File("README");
-		byte[] fileData = Files.readAllBytes(file.toPath());
+		byte[] fileData = Files.readAllBytes(Paths.get("README"));
 		d.uploadFile("readme", "Read me!", "A file you should read.", fileData, "README.txt");
-		File image = new File("src/test/resources/image.png");
-		byte[] imageData = Files.readAllBytes(image.toPath());
+		byte[] imageData = Files.readAllBytes(Paths.get("src/test/resources/image.png"));
 		d.uploadImage("image", "Look at me!", "An image you should look at.", imageData, "image.png");
+
+		//TODO: needed? What does this do?
+		d.autocreateSubdocuments();
 
 		d.setWorkflowStatus("publish");
 
-
-		Assert.assertEquals(5,5);
 	}
 
 
@@ -129,8 +136,12 @@ public class dokpoolTest {
 			Object[] res = (Object[]) Utils.execute(client, "delete_object", delParams);
 	}
 
+	/**
+	 * Test user and group  handling.
+	 *
+	 */
 	@Test
-	public void secondTestFunction() throws Exception {
+	public void userManagementTest() throws Exception {
 		Assert.assertEquals(5,5);
 	}
 
