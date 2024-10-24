@@ -140,6 +140,16 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.6.2</version>
+				<configuration>
+					<reportOutputDirectory>${project.build.directory}/..</reportOutputDirectory>
+					<show>private</show>
+					<nohelp>true</nohelp>
+				</configuration>
+			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
