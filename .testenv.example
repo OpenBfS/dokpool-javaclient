@@ -4,5 +4,6 @@ export DOKPOOL_PORT=port
 export DOKPOOL_PLONESITE=site
 export DOKPOOL_DOKPOOL=bund
 export DOKPOOL_GROUPFOLDER=grouo_folder
+#The following User must have enough rights to also delete documents (e.g. role DocPoolAdmin)
 export DOKPOOL_USER=user
 export DOKPOOL_PW=pw

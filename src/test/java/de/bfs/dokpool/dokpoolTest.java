@@ -6,9 +6,15 @@ import java.util.*;
 import org.junit.*;
 import de.bfs.dokpool.client.base.*;
 import de.bfs.dokpool.client.content.*;
+import de.bfs.dokpool.client.utils.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+// import org.apache.xmlrpc.XmlRpcException;
+import org.apache.xmlrpc.client.XmlRpcClient;
+
+import java.lang.reflect.Field;
 
 public class dokpoolTest {
 	private Log log = LogFactory.getLog(dokpoolTest.class);
@@ -78,6 +84,14 @@ public class dokpoolTest {
 		Document d = myGroupFolder.createDPDocument(DOCID, docpoolProperties);
 		d.setWorkflowStatus("publish");
 
+		log.info("Trying to delete "+myGroupFolder.getFolderPath() + "/" + DOCID);
+		Field clientField = Class.forName("de.bfs.dokpool.client.base.BaseObject").getDeclaredField("client");
+		clientField.setAccessible(true);
+		XmlRpcClient client = (XmlRpcClient) clientField.get(myGroupFolder);
+		Vector<String[]> delParams = new Vector<String[]>();
+		delParams.add(new String[]{myGroupFolder.getFolderPath() + "/" + DOCID});
+		Object[] res = (Object[]) Utils.execute(client, "delete_object", delParams);
+
 		Assert.assertEquals(5,5);
 	}
 
@@ -92,7 +106,6 @@ public class dokpoolTest {
 	 */
 	static class HelperClass {
 		public List<Object> elemente = new ArrayList<Object>();
-
 	}
 }
 
