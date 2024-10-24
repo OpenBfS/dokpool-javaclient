@@ -27,6 +27,7 @@ public class dokpoolTest {
 	private static final String PLONESITE      = System.getenv("DOKPOOL_PLONESITE");
 	private static final String USER           = System.getenv("DOKPOOL_USER");
 	private static final String PW             = System.getenv("DOKPOOL_PW");
+	private static final String DOCUMENTOWNER  = System.getenv("DOKPOOL_DOCUMENTOWNER");
 	private static final String DOKPOOL        = System.getenv("DOKPOOL_DOKPOOL");
 	private static final String GROUPFOLDER    = System.getenv("DOKPOOL_GROUPFOLDER");
 	private static final String DOCID          = "java-docpool-test-doc";
@@ -73,16 +74,24 @@ public class dokpoolTest {
 			log.info("Group folder remains: " +  myGroupFolder.getFolderPath());
 		}
 
-		Map<String, Object> docpoolProperties = new HashMap<String, Object>();
-		docpoolProperties.put("title", "JavaDocpoolTestDocument");
-		docpoolProperties.put("description", "Created by mvn test.");
-		docpoolProperties.put("text", "This is just a Test and can be deleted.");
-// 		docpoolProperties.put("docType", dt.getTextContent());
-// 		docpoolProperties.putAll(setBehaviors(myDocpool));
-// 		docpoolProperties.putAll(setSubjects());
+		Map<String, Object> docProperties = new HashMap<String, Object>();
+		docProperties.put("title", "JavaDocpoolTestDocument");
+		docProperties.put("description", "Created by mvn test.");
+		docProperties.put("text", "This is just a Test and can be deleted.");
+// 		docProperties.put("docType", dt.getTextContent());
+// 		docProperties.putAll(setBehaviors(myDocpool));
+// 		docProperties.putAll(setSubjects());
+
+		List<String> creatorsList = new ArrayList<String>();
+		creatorsList.add(DOCUMENTOWNER);
+		creatorsList.add(USER);
+		docProperties.put("creators", creatorsList);
+
 		log.info("Creating new Dokument at " + myGroupFolder.getFolderPath() + "/" + DOCID);
-		Document d = myGroupFolder.createDPDocument(DOCID, docpoolProperties);
+		Document d = myGroupFolder.createDPDocument(DOCID, docProperties);
 		d.setWorkflowStatus("publish");
+
+
 
 		log.info("Trying to delete "+myGroupFolder.getFolderPath() + "/" + DOCID);
 		Field clientField = Class.forName("de.bfs.dokpool.client.base.BaseObject").getDeclaredField("client");
