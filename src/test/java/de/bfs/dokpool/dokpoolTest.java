@@ -74,6 +74,18 @@ public class dokpoolTest {
 			log.info("Group folder remains: " +  myGroupFolder.getFolderPath());
 		}
 
+		Boolean docExists = false;
+		try {
+			myGroupFolder.getFolder(DOCID);
+			log.info("Object exists: " +   myGroupFolder.getFolderPath() + "/" + DOCID);
+			docExists = true;
+		} catch (NullPointerException e) {
+			log.info("Object does not exist: " +  myGroupFolder.getFolderPath() + "/" + DOCID);
+		}
+		if (docExists) {
+			deleteObject(myGroupFolder, DOCID);
+		}
+
 		Map<String, Object> docProperties = new HashMap<String, Object>();
 		docProperties.put("title", "JavaDocpoolTestDocument");
 		docProperties.put("description", "Created by mvn test.");
@@ -87,23 +99,24 @@ public class dokpoolTest {
 		creatorsList.add(USER);
 		docProperties.put("creators", creatorsList);
 
-		log.info("Creating new Dokument at " + myGroupFolder.getFolderPath() + "/" + DOCID);
+		log.info("Creating new document at " + myGroupFolder.getFolderPath() + "/" + DOCID);
 		Document d = myGroupFolder.createDPDocument(DOCID, docProperties);
 		d.setWorkflowStatus("publish");
 
 
-
-		log.info("Trying to delete "+myGroupFolder.getFolderPath() + "/" + DOCID);
-		Field clientField = Class.forName("de.bfs.dokpool.client.base.BaseObject").getDeclaredField("client");
-		clientField.setAccessible(true);
-		XmlRpcClient client = (XmlRpcClient) clientField.get(myGroupFolder);
-		Vector<String[]> delParams = new Vector<String[]>();
-		delParams.add(new String[]{myGroupFolder.getFolderPath() + "/" + DOCID});
-		Object[] res = (Object[]) Utils.execute(client, "delete_object", delParams);
-
 		Assert.assertEquals(5,5);
 	}
 
+
+	public void deleteObject(Folder folder, String objId) throws Exception {
+			log.info("Trying to delete "+folder.getFolderPath() + "/" + objId);
+			Field clientField = Class.forName("de.bfs.dokpool.client.base.BaseObject").getDeclaredField("client");
+			clientField.setAccessible(true);
+			XmlRpcClient client = (XmlRpcClient) clientField.get(folder);
+			Vector<String[]> delParams = new Vector<String[]>();
+			delParams.add(new String[]{folder.getFolderPath() + "/" + objId});
+			Object[] res = (Object[]) Utils.execute(client, "delete_object", delParams);
+	}
 
 	@Test
 	public void secondTestFunction() throws Exception {
