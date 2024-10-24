@@ -16,6 +16,9 @@ import org.apache.xmlrpc.client.XmlRpcClient;
 
 import java.lang.reflect.Field;
 
+import java.io.File;
+import java.nio.file.Files;
+
 public class dokpoolTest {
 	private Log log = LogFactory.getLog(dokpoolTest.class);
 
@@ -101,6 +104,14 @@ public class dokpoolTest {
 
 		log.info("Creating new document at " + myGroupFolder.getFolderPath() + "/" + DOCID);
 		Document d = myGroupFolder.createDPDocument(DOCID, docProperties);
+
+		File file = new File("README");
+		byte[] fileData = Files.readAllBytes(file.toPath());
+		d.uploadFile("readme", "Read me!", "A file you should read.", fileData, "README.txt");
+		File image = new File("src/test/resources/image.png");
+		byte[] imageData = Files.readAllBytes(image.toPath());
+		d.uploadImage("image", "Look at me!", "An image you should look at.", imageData, "image.png");
+
 		d.setWorkflowStatus("publish");
 
 
