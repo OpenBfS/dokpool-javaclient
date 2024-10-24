@@ -115,7 +115,7 @@ public class Folder extends BaseObject {
 	 * @param description
 	 * @param text
 	 * @param docType
-	 * @param behaviours
+	 * @param behaviors
 	 * @return the newly created document
 	 */
 	public Document createDPDocument(String id, String title, String description, String text, String docType,

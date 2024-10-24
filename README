@@ -6,6 +6,10 @@ and find from:
 
     target/dokpool-client.jar
 
+To create the api docs within folder apidocs run:
+
+    mvn javadoc:javadoc
+
 Test with
 
     cp .testenv.example .testenv #adapt to dokpool instance
