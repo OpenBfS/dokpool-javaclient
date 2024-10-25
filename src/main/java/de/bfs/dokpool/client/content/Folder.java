@@ -66,6 +66,7 @@ public class Folder extends BaseObject {
 			for (String path : getContents().keySet()) {
 				Map<String, Object> metadata = (Map<String, Object>) contents.get(path);
 				String portal_type = (String) metadata.get("Type");
+				portal_type = portal_type == null ? "" : portal_type;
 				if ((type == null) || (type.equals(portal_type))) {
 					if (portal_type.equals("SimpleFolder") || portal_type.equals("ELANTransferFolder")) {
 						res.add(new Folder(client, path, null));
