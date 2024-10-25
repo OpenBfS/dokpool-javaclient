@@ -25,7 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class dokpoolTest {
-	private Log log = LogFactory.getLog(dokpoolTest.class);
+	private static Log log = LogFactory.getLog(dokpoolTest.class);
 
 	private static final String ENCODING       = "UTF-8";
 	private static final String PACKAGE        = "de.bfs.dokpool";
@@ -40,19 +40,8 @@ public class dokpoolTest {
 	private static final String GROUPFOLDER    = System.getenv("DOKPOOL_GROUPFOLDER");
 	private static final String DOCID          = "java-docpool-test-doc";
 
-	/** Die main()-Methode ist nur fuer manuelle Testzwecke */
-	public static void main( String[] args ) throws Exception {
 
-	}
-
-	/**
-	 * Test document creation, file upload and setting properties.
-	 *
-	 */
-	@Test
-	public void documentTest() throws Exception {
-
-
+	public static DocumentPool obtainDocumentPool() throws Exception {
 		log.info("URL: " + PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE + " User:" + USER + " Password:" + PW);
 		DocpoolBaseService docpoolBaseService = new DocpoolBaseService(PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE, USER, PW);
 		List<DocumentPool> myDocpools = docpoolBaseService.getDocumentPools();
@@ -68,6 +57,34 @@ public class dokpoolTest {
 				break;
 			}
 		}
+
+		return mainDocpool;
+	}
+
+	public static void deleteObject(Folder folder, String objId) throws Exception {
+		log.info("Trying to delete "+folder.getFolderPath() + "/" + objId);
+		Field clientField = Class.forName("de.bfs.dokpool.client.base.BaseObject").getDeclaredField("client");
+		clientField.setAccessible(true);
+		XmlRpcClient client = (XmlRpcClient) clientField.get(folder);
+		Vector<String[]> delParams = new Vector<String[]>();
+		delParams.add(new String[]{folder.getFolderPath() + "/" + objId});
+		Object[] res = (Object[]) Utils.execute(client, "delete_object", delParams);
+	}
+
+	public static String extractPath(BaseObject bo) throws Exception {
+		Field pathField = Class.forName("de.bfs.dokpool.client.base.BaseObject").getDeclaredField("path");
+		pathField.setAccessible(true);
+		return (String) pathField.get(bo);
+	}
+
+	/**
+	 * Test document creation, file upload and setting properties.
+	 *
+	 */
+	@Test
+	public void documentTest() throws Exception {
+		log.info("=== TEST: documentTest ======");
+		DocumentPool mainDocpool = obtainDocumentPool();
 
 		Folder myGroupFolder = null;
 		try {
@@ -102,9 +119,6 @@ public class dokpoolTest {
 		docProperties.put("title", "JavaDocpoolTestDocument");
 		docProperties.put("description", "Created by mvn test.");
 		docProperties.put("text", "This is just a Test and can be deleted.");
-// 		docProperties.put("docType", dt.getTextContent());
-// 		docProperties.putAll(setBehaviors(myDocpool));
-// 		docProperties.putAll(setSubjects());
 
 		List<String> creatorsList = new ArrayList<String>();
 		creatorsList.add(DOCUMENTOWNER);
@@ -127,24 +141,14 @@ public class dokpoolTest {
 	}
 
 
-	public void deleteObject(Folder folder, String objId) throws Exception {
-			log.info("Trying to delete "+folder.getFolderPath() + "/" + objId);
-			Field clientField = Class.forName("de.bfs.dokpool.client.base.BaseObject").getDeclaredField("client");
-			clientField.setAccessible(true);
-			XmlRpcClient client = (XmlRpcClient) clientField.get(folder);
-			Vector<String[]> delParams = new Vector<String[]>();
-			delParams.add(new String[]{folder.getFolderPath() + "/" + objId});
-			Object[] res = (Object[]) Utils.execute(client, "delete_object", delParams);
-	}
-
-
 	/**
-	 * old main Test method
+	 * Document handling parts of old main Test method.
 	 *
 	 * @throws Exception
 	 */
 	@Test
-	public void miscTest() throws Exception {
+	public void miscObjectTest() throws Exception {
+		log.info("=== TEST: miscObjectTest ======");
 		log.info("URL: " + PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE + " User:" + USER + " Password:" + PW);
 		DocpoolBaseService docpoolBaseService = new DocpoolBaseService(PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE, USER, PW);
 
@@ -155,84 +159,53 @@ public class dokpoolTest {
 
 		Method gdPField = Class.forName("de.bfs.dokpool.client.base.DocpoolBaseService").getDeclaredMethod("getDocumentPool",Class.forName("java.lang.String"));
 		gdPField.setAccessible(true);
-		Optional<DocumentPool> myDocumentPool = (Optional<DocumentPool>) gdPField.invoke(docpoolBaseService,DOKPOOL);
-		if (!myDocumentPool.isPresent()) {
-			return;
-		}
-		log.info(myDocumentPool.get().getTitle());
-		log.info(myDocumentPool.get().getDescription());
-		List<DocType> types = myDocumentPool.get().getTypes();
+		DocumentPool myDocumentPool = ((Optional<DocumentPool>) gdPField.invoke(docpoolBaseService,DOKPOOL)).get();
+		log.info(myDocumentPool.getTitle());
+		log.info(myDocumentPool.getDescription());
+		List<DocType> types = myDocumentPool.getTypes();
 		for (DocType t : types) {
 			log.info(t.getId());
 			log.info(t.getTitle());
 		}
-		Optional<Folder> groupFolder = myDocumentPool.get().getGroupFolder(GROUPFOLDER);
-		if (!groupFolder.isPresent()) {
-			return;
-		}
+
+		Folder groupFolder = myDocumentPool.getGroupFolder(GROUPFOLDER).get();
 		Random r = new Random();
-		log.info(groupFolder.get());
-// 		List<Object> documents = groupFolder.get().getContents(null);
-		log.info(groupFolder.get().getTitle());
-		List<Folder> tf = myDocumentPool.get().getTransferFolders();
+		log.info(groupFolder);
+		log.info(groupFolder.getTitle());
+		List<Object> documents = groupFolder.getContents(null);
+		List<Folder> tf = myDocumentPool.getTransferFolders();
 		Map<String, Object> properties = new HashMap<String, Object>();
-		properties.put("title", "Generischer Titel");
-		properties.put("description", "Generische Beschreibung");
+		properties.put("title", "Generic Titel");
+		properties.put("description", "Generic Description");
 		properties.put("text", "<b>Text</b>");
 		properties.put("docType", "ifinprojection");
 		properties.put("subjects", new String[] { "Tag1", "Tag2" });
 		properties.put("local_behaviors", new String[] { "elan" });
-		BaseObject bo = groupFolder.get().createObject("generisch" + r.nextInt(), properties, "DPDocument");
+		String randId = "generic" + r.nextInt();
+		BaseObject bo = groupFolder.createObject(randId, properties, "DPDocument");
 		properties.clear();
 		properties.put("scenarios", new String[] { "scenario1", "scenario2" });
 		bo.update(properties);
 		log.info(bo.getStringAttribute("created_by"));
 		log.info(bo.getDateAttribute("effective"));
+		deleteObject(groupFolder,randId);
 
 		Map<String, Object> elanProperties = new HashMap<String, Object>();
-		elanProperties.put("scenarios", new String[] { "demo-am-24-4" });
+		elanProperties.put("scenarios", new String[] { "demo-on-2024-04-01" });
 		Map<String, Object> rodosProperties = new HashMap<String, Object>();
 		rodosProperties.put("reportId", "REPORT");
-		Document d = groupFolder.get().createAppSpecificDocument("ausjava" + r.nextInt(), "Neu aus Java",
-				"Beschreibung über Java", "<p>Text aus Java!</p>", "ifinprojection", new String[] { "elan", "rodos" },
+		randId = "fromjava" + r.nextInt();
+		Document d = groupFolder.createAppSpecificDocument(randId, "New from Java",
+				"Descriotion from Java", "<p>Text from Java!</p>", "ifinprojection", new String[] { "elan", "rodos" },
 				elanProperties,
 				null,
 				rodosProperties,
 				null
 				);
 		log.info(d.getTitle());
-//		java.io.File file = new java.io.File("test.pdf");
-//		d.uploadFile("neue_datei", "Neue Datei", "Datei Beschreibung", FileUtils.readFileToByteArray(file), "test.pdf");
-//		file = new java.io.File("test.jpg");
-//		d.uploadImage("neues_bild", "Neues Bild", "Bild Beschreibung", FileUtils.readFileToByteArray(file), "test.jpg");
 		log.info(d.getWorkflowStatus());
 		log.info(d.getStringsAttribute("local_behaviors"));
-// 		System.out.println(myDocumentPool.get().path);
-// 		User user = myDocumentPool.get().createUser("testuserxml", "testuserxml", "XMLTESTER", myDocumentPool.get().path);
-// 		if (user == null) {
-// 			log.error("Kein Nutzer angelegt!");
-// 		} else {
-// 			log.info("Nutzer " + user.getUserId() + " angelegt.");
-// 		}
-// 		Group group = myDocumentPool.get().createGroup("groupxml", "GroupXML", "Fuer XMLRPC", myDocumentPool.get().path);
-// 		if (group == null) {
-// 			log.error("Keine Gruppe angelegt.");
-// 		} else {
-// 			log.info("Gruppe " + group.getGroupId() + " angelegt.");
-// 		}
-// 		// user.addToGroup(group);
-// 		group.addUser(user, myDocumentPool.get().path);
-// 		String[] docTypes = { "airactivity", "ifinprojection", "protectiveactions" };
-// 		group.setAllowedDocTypes(docTypes);
-// 		List<String> gDoctypes = group.getAllowedDocTypes();
-// 		log.info("docTypes " + docTypes);
-// 		log.info("gDocTypes " + gDoctypes);
-// 		if (gDoctypes != null && gDoctypes.equals(Arrays.asList(docTypes))) {
-// 			log.info("Gruppenproperties erfolgreich angepasst.");
-// 		} else {
-// 			log.error("Fehler bei der Anpassung der Gruppenproperties.");
-// 		}
-
+		deleteObject(groupFolder,randId);
 	}
 
 	/**
@@ -241,7 +214,32 @@ public class dokpoolTest {
 	 */
 	@Test
 	public void userManagementTest() throws Exception {
-		Assert.assertEquals(5,5);
+		log.info("=== TEST: userManagementTest ======");
+		DocumentPool myDocumentPool = obtainDocumentPool();
+		User user = myDocumentPool.createUser("testuserId", "testuserPW", "Test User Full Name", extractPath(myDocumentPool));
+		if (user == null) {
+			log.error("No User created!");
+		} else {
+			log.info("User " + user.getUserId() + " created.");
+		}
+		Group group = myDocumentPool.createGroup("testgroupId", "Test Group Full Name","for java tests", extractPath(myDocumentPool));
+		if (group == null) {
+			log.error("No group created.");
+		} else {
+			log.info("Group " + group.getGroupId() + " created.");
+		}
+		group.addUser(user, extractPath(myDocumentPool));
+		String[] docTypes = {"airactivity", "ifinprojection", "protectiveactions"};
+		group.setAllowedDocTypes(docTypes);
+		List<String> gDoctypes = group.getAllowedDocTypes();
+		log.info("docTypes " + docTypes);
+		log.info("gDocTypes " + gDoctypes);
+		if (gDoctypes != null && gDoctypes.equals(Arrays.asList(docTypes))) {
+			log.info("Group properties were succesfully set.");
+		} else {
+			log.error("Error while seting group properties.");
+		}
+// 		Assert.assertEquals(5,5);
 	}
 
 	/**
