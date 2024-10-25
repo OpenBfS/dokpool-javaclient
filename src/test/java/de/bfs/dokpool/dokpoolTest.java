@@ -19,6 +19,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.xmlrpc.client.XmlRpcClient;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -134,6 +135,104 @@ public class dokpoolTest {
 			Vector<String[]> delParams = new Vector<String[]>();
 			delParams.add(new String[]{folder.getFolderPath() + "/" + objId});
 			Object[] res = (Object[]) Utils.execute(client, "delete_object", delParams);
+	}
+
+
+	/**
+	 * old main Test method
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void miscTest() throws Exception {
+		log.info("URL: " + PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE + " User:" + USER + " Password:" + PW);
+		DocpoolBaseService docpoolBaseService = new DocpoolBaseService(PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE, USER, PW);
+
+		List<DocumentPool> documentpools = docpoolBaseService.getDocumentPools();
+		if (documentpools.size() < 1) {
+			log.warn("No DocumentPools found!");
+		}
+
+		Method gdPField = Class.forName("de.bfs.dokpool.client.base.DocpoolBaseService").getDeclaredMethod("getDocumentPool",Class.forName("java.lang.String"));
+		gdPField.setAccessible(true);
+		Optional<DocumentPool> myDocumentPool = (Optional<DocumentPool>) gdPField.invoke(docpoolBaseService,DOKPOOL);
+		if (!myDocumentPool.isPresent()) {
+			return;
+		}
+		log.info(myDocumentPool.get().getTitle());
+		log.info(myDocumentPool.get().getDescription());
+		List<DocType> types = myDocumentPool.get().getTypes();
+		for (DocType t : types) {
+			log.info(t.getId());
+			log.info(t.getTitle());
+		}
+		Optional<Folder> groupFolder = myDocumentPool.get().getGroupFolder(GROUPFOLDER);
+		if (!groupFolder.isPresent()) {
+			return;
+		}
+		Random r = new Random();
+		log.info(groupFolder.get());
+// 		List<Object> documents = groupFolder.get().getContents(null);
+		log.info(groupFolder.get().getTitle());
+		List<Folder> tf = myDocumentPool.get().getTransferFolders();
+		Map<String, Object> properties = new HashMap<String, Object>();
+		properties.put("title", "Generischer Titel");
+		properties.put("description", "Generische Beschreibung");
+		properties.put("text", "<b>Text</b>");
+		properties.put("docType", "ifinprojection");
+		properties.put("subjects", new String[] { "Tag1", "Tag2" });
+		properties.put("local_behaviors", new String[] { "elan" });
+		BaseObject bo = groupFolder.get().createObject("generisch" + r.nextInt(), properties, "DPDocument");
+		properties.clear();
+		properties.put("scenarios", new String[] { "scenario1", "scenario2" });
+		bo.update(properties);
+		log.info(bo.getStringAttribute("created_by"));
+		log.info(bo.getDateAttribute("effective"));
+
+		Map<String, Object> elanProperties = new HashMap<String, Object>();
+		elanProperties.put("scenarios", new String[] { "demo-am-24-4" });
+		Map<String, Object> rodosProperties = new HashMap<String, Object>();
+		rodosProperties.put("reportId", "REPORT");
+		Document d = groupFolder.get().createAppSpecificDocument("ausjava" + r.nextInt(), "Neu aus Java",
+				"Beschreibung über Java", "<p>Text aus Java!</p>", "ifinprojection", new String[] { "elan", "rodos" },
+				elanProperties,
+				null,
+				rodosProperties,
+				null
+				);
+		log.info(d.getTitle());
+//		java.io.File file = new java.io.File("test.pdf");
+//		d.uploadFile("neue_datei", "Neue Datei", "Datei Beschreibung", FileUtils.readFileToByteArray(file), "test.pdf");
+//		file = new java.io.File("test.jpg");
+//		d.uploadImage("neues_bild", "Neues Bild", "Bild Beschreibung", FileUtils.readFileToByteArray(file), "test.jpg");
+		log.info(d.getWorkflowStatus());
+		log.info(d.getStringsAttribute("local_behaviors"));
+// 		System.out.println(myDocumentPool.get().path);
+// 		User user = myDocumentPool.get().createUser("testuserxml", "testuserxml", "XMLTESTER", myDocumentPool.get().path);
+// 		if (user == null) {
+// 			log.error("Kein Nutzer angelegt!");
+// 		} else {
+// 			log.info("Nutzer " + user.getUserId() + " angelegt.");
+// 		}
+// 		Group group = myDocumentPool.get().createGroup("groupxml", "GroupXML", "Fuer XMLRPC", myDocumentPool.get().path);
+// 		if (group == null) {
+// 			log.error("Keine Gruppe angelegt.");
+// 		} else {
+// 			log.info("Gruppe " + group.getGroupId() + " angelegt.");
+// 		}
+// 		// user.addToGroup(group);
+// 		group.addUser(user, myDocumentPool.get().path);
+// 		String[] docTypes = { "airactivity", "ifinprojection", "protectiveactions" };
+// 		group.setAllowedDocTypes(docTypes);
+// 		List<String> gDoctypes = group.getAllowedDocTypes();
+// 		log.info("docTypes " + docTypes);
+// 		log.info("gDocTypes " + gDoctypes);
+// 		if (gDoctypes != null && gDoctypes.equals(Arrays.asList(docTypes))) {
+// 			log.info("Gruppenproperties erfolgreich angepasst.");
+// 		} else {
+// 			log.error("Fehler bei der Anpassung der Gruppenproperties.");
+// 		}
+
 	}
 
 	/**
