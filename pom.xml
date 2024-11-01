@@ -58,11 +58,6 @@
 			<version>1.0.2</version>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-			<version>${spring.boot.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
 			<version>2.15.3</version>
@@ -194,7 +189,6 @@
 		</pluginManagement>
 	</build>
 	<properties>
-		<spring.boot.version>2.7.17</spring.boot.version>
 		<project.custom.java.version>11</project.custom.java.version>
 		<maven.compiler.source>${project.custom.java.version}</maven.compiler.source>
 		<maven.compiler.target>${project.custom.java.version}</maven.compiler.target>

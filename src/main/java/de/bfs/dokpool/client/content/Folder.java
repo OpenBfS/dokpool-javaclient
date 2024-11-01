@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.apache.xmlrpc.client.XmlRpcClient;
-import org.springframework.util.CollectionUtils;
 
 import de.bfs.dokpool.client.base.App;
 import de.bfs.dokpool.client.base.BaseObject;
@@ -19,6 +18,10 @@ import de.bfs.dokpool.client.utils.Utils;
  */
 public class Folder extends BaseObject {
 	protected Map<String, Object> contents = null;
+
+	private static boolean mapEmptyOrNull(final Map<String, Object> map) {
+		return map == null || map.isEmpty();
+	}
 
 	public Folder(XmlRpcClient client, String path, Object[] alldata) {
 		super(client, path, alldata);
@@ -158,19 +161,19 @@ public class Folder extends BaseObject {
 			App app = App.fromString(appName);
 			switch (app) {
 			case ELAN:
-				assert(!CollectionUtils.isEmpty(elanProperties));
+				assert(!mapEmptyOrNull(elanProperties));
 				properties.putAll(elanProperties);
 				break;
 			case RODOS:
-				assert(!CollectionUtils.isEmpty(rodosProperties));
+				assert(!mapEmptyOrNull(rodosProperties));
 				properties.putAll(rodosProperties);
 				break;
 			case DOKSYS:
-				assert(!CollectionUtils.isEmpty(doksysProperties));
+				assert(!mapEmptyOrNull(doksysProperties));
 				properties.putAll(doksysProperties);
 				break;
 			case REI:
-				assert(!CollectionUtils.isEmpty(reiProperties));
+				assert(!mapEmptyOrNull(reiProperties));
 				properties.putAll(reiProperties);
 				break;
 			}
