@@ -4,8 +4,6 @@
 
 package de.bfs.dokpool;
 
-// import java.io.*;
-// import java.text.DecimalFormat;
 import java.util.*;
 import org.junit.*;
 import de.bfs.dokpool.client.base.*;
@@ -24,8 +22,8 @@ import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class dokpoolTest {
-	private static Log log = LogFactory.getLog(dokpoolTest.class);
+public class DokpoolTest {
+	private static final Log log = LogFactory.getLog(DokpoolTest.class);
 
 	private static final String ENCODING       = "UTF-8";
 	private static final String PACKAGE        = "de.bfs.dokpool";
@@ -68,7 +66,7 @@ public class dokpoolTest {
 		XmlRpcClient client = (XmlRpcClient) clientField.get(folder);
 		Vector<String[]> delParams = new Vector<String[]>();
 		delParams.add(new String[]{folder.getFolderPath() + "/" + objId});
-		Object[] res = (Object[]) Utils.execute(client, "delete_object", delParams);
+		Utils.execute(client, "delete_object", delParams);
 	}
 
 	public static String extractPath(BaseObject bo) throws Exception {
@@ -103,7 +101,7 @@ public class dokpoolTest {
 			log.info("Group folder remains: " +  myGroupFolder.getFolderPath());
 		}
 
-		Boolean docExists = false;
+		boolean docExists = false;
 		try {
 			myGroupFolder.getFolder(DOCID);
 			log.info("Object exists: " +   myGroupFolder.getFolderPath() + "/" + DOCID);
@@ -153,7 +151,7 @@ public class dokpoolTest {
 		DocpoolBaseService docpoolBaseService = new DocpoolBaseService(PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE, USER, PW);
 
 		List<DocumentPool> documentpools = docpoolBaseService.getDocumentPools();
-		if (documentpools.size() < 1) {
+		if (documentpools.isEmpty()) {
 			log.warn("No DocumentPools found!");
 		}
 
@@ -175,7 +173,7 @@ public class dokpoolTest {
 		List<Object> documents = groupFolder.getContents(null);
 		List<Folder> tf = myDocumentPool.getTransferFolders();
 		Map<String, Object> properties = new HashMap<String, Object>();
-		properties.put("title", "Generic Titel");
+		properties.put("title", "Generic Title");
 		properties.put("description", "Generic Description");
 		properties.put("text", "<b>Text</b>");
 		properties.put("docType", "ifinprojection");
@@ -196,7 +194,7 @@ public class dokpoolTest {
 		rodosProperties.put("reportId", "REPORT");
 		randId = "fromjava" + r.nextInt();
 		Document d = groupFolder.createAppSpecificDocument(randId, "New from Java",
-				"Descriotion from Java", "<p>Text from Java!</p>", "ifinprojection", new String[] { "elan", "rodos" },
+				"Description from Java", "<p>Text from Java!</p>", "ifinprojection", new String[] { "elan", "rodos" },
 				elanProperties,
 				null,
 				rodosProperties,
@@ -235,9 +233,9 @@ public class dokpoolTest {
 		log.info("docTypes " + docTypes);
 		log.info("gDocTypes " + gDoctypes);
 		if (gDoctypes != null && gDoctypes.equals(Arrays.asList(docTypes))) {
-			log.info("Group properties were succesfully set.");
+			log.info("Group properties were successfully set.");
 		} else {
-			log.error("Error while seting group properties.");
+			log.error("Error while setting group properties.");
 		}
 // 		Assert.assertEquals(5,5);
 	}

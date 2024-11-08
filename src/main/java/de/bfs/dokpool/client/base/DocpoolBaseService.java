@@ -1,30 +1,21 @@
 package de.bfs.dokpool.client.base;
 
-import java.io.IOException;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Vector;
 
 import org.apache.xmlrpc.client.XmlRpcClient;
 
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 
-import de.bfs.dokpool.client.content.DocType;
-import de.bfs.dokpool.client.content.Document;
 import de.bfs.dokpool.client.content.DocumentPool;
-import de.bfs.dokpool.client.content.Folder;
-import de.bfs.dokpool.client.content.Group;
-import de.bfs.dokpool.client.content.User;
 import de.bfs.dokpool.client.utils.Utils;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -33,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
  *
  */
 public class DocpoolBaseService {
-	private Log log = LogFactory.getLog(DocpoolBaseService.class);
+	private final Log log = LogFactory.getLog(DocpoolBaseService.class);
 	private XmlRpcClient client = null;
 
 	/**
