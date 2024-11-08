@@ -1,3 +1,8 @@
+# dokpool_javaclient - java library providing access to Dokpool via REST-Calls
+
+
+## Building
+
 To create dokpool-client simply build it with:
 
     mvn package
@@ -14,6 +19,12 @@ Test with
 
     cp .testenv.example .testenv #adapt to dokpool instance
     source .testenv && mvn test
+
+If you plan to use IDEA J then do
+
+    sed 's/export//' .testenv |  tr '\n' ';'
+
+and copy the output to the Environment variable entry in Run -> Edit Configurations (should open the JUnit config).
 
 To go on with building irix-xxx install it into your local maven repo ~/.m2:
 
