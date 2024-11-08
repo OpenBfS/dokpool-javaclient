@@ -126,7 +126,7 @@ public class DokpoolTest {
 		log.info("Creating new document at " + myGroupFolder.getFolderPath() + "/" + DOCID);
 		Document d = myGroupFolder.createDPDocument(DOCID, docProperties);
 
-		byte[] fileData = Files.readAllBytes(Paths.get("README"));
+		byte[] fileData = Files.readAllBytes(Paths.get("README.md"));
 		d.uploadFile("readme", "Read me!", "A file you should read.", fileData, "README.txt");
 		byte[] imageData = Files.readAllBytes(Paths.get("src/test/resources/image.png"));
 		d.uploadImage("image", "Look at me!", "An image you should look at.", imageData, "image.png");
