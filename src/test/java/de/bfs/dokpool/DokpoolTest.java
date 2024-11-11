@@ -241,6 +241,15 @@ public class DokpoolTest {
 	}
 
 	/**
+	 * Test basic http(s) functionality
+	 *
+	 */
+	@Test
+	public void httpClientTest() throws Exception {
+		HttpClient.doGetRequest(PROTO, HOST, PORT, PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE);
+	}
+
+	/**
 	 * not used
 	 */
 	static class HelperClass {
