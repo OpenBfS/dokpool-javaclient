@@ -22,9 +22,21 @@ Test with
 
 If you plan to use IDEA J then do
 
-    sed 's/export//' .testenv |  tr '\n' ';'
+    cat .testenv |  tr '\n' ';'
 
 and copy the output to the Environment variable entry in Run -> Edit Configurations (should open the JUnit config).
+
+If you plan to use VSCode, add this to your `.vscode/settings.json`:
+
+```json
+{
+    "java.test.config": {
+        "name": "dokpoolTestConfig",
+        "workingDirectory": "${workspaceFolder}",
+        "envFile" : "${workspaceFolder}/.testenv"
+    }
+}
+```
 
 To go on with building irix-xxx install it into your local maven repo ~/.m2:
 
