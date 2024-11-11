@@ -5,7 +5,7 @@
 
 To create dokpool-client simply build it with:
 
-    mvn package
+    mvn package -DskipTests
 
 and find from:
 
@@ -18,7 +18,7 @@ To create the api docs within folder apidocs run:
 Test with
 
     cp .testenv.example .testenv #adapt to dokpool instance
-    source .testenv && mvn test
+    bash -c 'set -o allexport && source .testenv && mvn test'
 
 If you plan to use IDEA J then do
 

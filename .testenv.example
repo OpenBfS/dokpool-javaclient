@@ -1,10 +1,10 @@
-export DOKPOOL_PROTO=https
-export DOKPOOL_HOST=host
-export DOKPOOL_PORT=port
-export DOKPOOL_PLONESITE=site
-export DOKPOOL_DOKPOOL=bund
-export DOKPOOL_GROUPFOLDER=grouo_folder
-export DOKPOOL_DOCUMENTOWNER=user
+DOKPOOL_PROTO=https
+DOKPOOL_HOST=host
+DOKPOOL_PORT=port
+DOKPOOL_PLONESITE=site
+DOKPOOL_DOKPOOL=bund
+DOKPOOL_GROUPFOLDER=grouo_folder
+DOKPOOL_DOCUMENTOWNER=user
 #The following User must have enough rights to also delete documents (e.g. role DocPoolAdmin)
-export DOKPOOL_USER=user
-export DOKPOOL_PW=pw
+DOKPOOL_USER=user
+DOKPOOL_PW=pw
