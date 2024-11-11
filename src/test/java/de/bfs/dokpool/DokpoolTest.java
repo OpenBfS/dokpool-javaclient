@@ -24,18 +24,22 @@ import java.nio.file.Paths;
 
 public class DokpoolTest {
 	private static final Log log = LogFactory.getLog(DokpoolTest.class);
+	private static final String envOrEmpty(String envVar){
+		String env = System.getenv(envVar);
+		return (env != null ? env: "");
+	}
 
 	private static final String ENCODING       = "UTF-8";
 	private static final String PACKAGE        = "de.bfs.dokpool";
-	private static final String PROTO          = System.getenv("DOKPOOL_PROTO");
-	private static final String HOST           = System.getenv("DOKPOOL_HOST");
-	private static final String PORT           = System.getenv("DOKPOOL_PORT");
-	private static final String PLONESITE      = System.getenv("DOKPOOL_PLONESITE");
-	private static final String USER           = System.getenv("DOKPOOL_USER");
-	private static final String PW             = System.getenv("DOKPOOL_PW");
-	private static final String DOCUMENTOWNER  = System.getenv("DOKPOOL_DOCUMENTOWNER");
-	private static final String DOKPOOL        = System.getenv("DOKPOOL_DOKPOOL");
-	private static final String GROUPFOLDER    = System.getenv("DOKPOOL_GROUPFOLDER");
+	private static final String PROTO          = envOrEmpty("DOKPOOL_PROTO");
+	private static final String HOST           = envOrEmpty("DOKPOOL_HOST");
+	private static final String PORT           = envOrEmpty("DOKPOOL_PORT");
+	private static final String PLONESITE      = envOrEmpty("DOKPOOL_PLONESITE");
+	private static final String USER           = envOrEmpty("DOKPOOL_USER");
+	private static final String PW             = envOrEmpty("DOKPOOL_PW");
+	private static final String DOCUMENTOWNER  = envOrEmpty("DOKPOOL_DOCUMENTOWNER");
+	private static final String DOKPOOL        = envOrEmpty("DOKPOOL_DOKPOOL");
+	private static final String GROUPFOLDER    = envOrEmpty("DOKPOOL_GROUPFOLDER");
 	private static final String DOCID          = "java-docpool-test-doc";
 
 
@@ -246,7 +250,10 @@ public class DokpoolTest {
 	 */
 	@Test
 	public void httpClientTest() throws Exception {
-		HttpClient.doGetRequest(PROTO, HOST, PORT, PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE);
+		HttpClient.tlsLogging = true;
+		String urlPortStr = PORT.equals("") ? "": (":"+PORT);
+		String portStr = PORT.equals("") ? (PROTO.equals("https")?"443":"80"): PORT;
+		log.info(HttpClient.doGetRequest(PROTO, HOST, portStr, PROTO + "://" + HOST + urlPortStr + "/" + PLONESITE).content);
 	}
 
 	/**
