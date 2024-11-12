@@ -4,6 +4,8 @@ import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
 
 import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.classic.methods.HttpPut;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.protocol.HttpClientContext;
@@ -27,10 +29,21 @@ public class HttpClient {
 	private static final Log log = LogFactory.getLog(HttpClient.class);
 	public static boolean tlsLogging = false;
 
+	private static int intPortFromPortOrProtocol(String port, final String proto){
+		port = port != null? port : "";
+		port = port.equals("") ? (proto.equals("https")?"443":"80"): port;
+		return Integer.parseInt(port);
+	}
+
+	public static String composeUrl(final String proto, final String host, String port, final String path){
+		port = port.equals("") ? "" : (":" +  port);
+		return proto + "://" + host + port + path;
+	}
+
 	public final static Response doGetRequest(final String proto, final String host, String port, final String url) throws Exception {
 		try (CloseableHttpClient httpclient = HttpClients.createSystem()) {
 
-			final int portInt = Integer.parseInt(port);
+			final int portInt = intPortFromPortOrProtocol(port,proto);
 			final HttpHost target = new HttpHost(proto, host, portInt);
 			final HttpGet httpget = new HttpGet(url);
 
@@ -51,6 +64,7 @@ public class HttpClient {
 			return response;
 		}
 	}
+
 
 	public static class Response {
         public final int status;

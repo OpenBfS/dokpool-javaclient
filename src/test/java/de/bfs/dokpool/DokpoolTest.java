@@ -251,9 +251,7 @@ public class DokpoolTest {
 	@Test
 	public void httpClientTest() throws Exception {
 		HttpClient.tlsLogging = true;
-		String urlPortStr = PORT.equals("") ? "": (":"+PORT);
-		String portStr = PORT.equals("") ? (PROTO.equals("https")?"443":"80"): PORT;
-		log.info(HttpClient.doGetRequest(PROTO, HOST, portStr, PROTO + "://" + HOST + urlPortStr + "/" + PLONESITE).content);
+		log.info(HttpClient.doGetRequest(PROTO,HOST,PORT,HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE)).content);
 	}
 
 	/**
