@@ -18,7 +18,7 @@ import org.apache.xmlrpc.client.XmlRpcClient;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -251,7 +251,17 @@ public class DokpoolTest {
 	@Test
 	public void httpClientTest() throws Exception {
 		HttpClient.tlsLogging = true;
-		log.info(HttpClient.doGetRequest(PROTO,HOST,PORT,HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE)).content);
+		HttpClient.Response rsp = HttpClient.doGetRequest(PROTO,HOST,PORT,HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE));
+		log.info(rsp.content.length());
+		HashMap<String,String> postPar = new HashMap<>();
+		postPar.put("__ac_name", USER);
+		postPar.put("__ac_password", PW);
+		rsp = HttpClient.doPostRequest(PROTO,HOST,PORT,HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/login_form"),postPar);
+		log.info(rsp.content.length());
+		rsp = HttpClient.doPutRequest(PROTO,HOST,PORT,HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/testupload"),"text/plain",("hellö!").getBytes(Charset.forName("UTF-8")));
+		log.info(rsp.content.length());
+		rsp = HttpClient.doDeleteRequest(PROTO,HOST,PORT,HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/testupload"));
+		log.info(rsp.content.length());
 	}
 
 	/**
