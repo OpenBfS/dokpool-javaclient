@@ -1,6 +1,8 @@
 package de.bfs.dokpool.client.base;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +20,6 @@ import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.protocol.HttpClientContext;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.HttpEntity;
-import org.apache.hc.core5.http.HttpHeaders;
 import org.apache.hc.core5.http.HttpHost;
 import org.apache.hc.core5.http.HttpRequest;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
@@ -39,6 +40,16 @@ public class HttpClient {
 
 	private static final Log log = LogFactory.getLog(HttpClient.class);
 
+	public class Headers {
+		public static final String AUTHORIZATION = "Authorization";
+		public static final String ACCEPT = "Accept";
+	}
+
+	public class MimeTypes {
+		public static final String JSON = "application/json";
+		public static final String PLAIN = "text/plain";
+	}
+
 	public static class Response {
         public final int status;
         public final String content;
@@ -58,6 +69,14 @@ public class HttpClient {
 	public static String composeUrl(final String proto, final String host, String port, final String path){
 		port = port.equals("") ? "" : (":" +  port);
 		return proto + "://" + host + port + path;
+	}
+
+	public static void addBasicAuthToHeaders(Map<String, String> headers, final String username, final String password){
+		final String auth = username + ":" + password;
+		//if we need multiple charset support, there is also: Charset.forName("UTF-8")
+        byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(StandardCharsets.UTF_8));
+        final String authHeaderVal = "Basic " + new String(encodedAuth);
+		headers.put(Headers.AUTHORIZATION, authHeaderVal);
 	}
 
 	private static void addHeadersToRequest(HttpRequest request, Map<String,String> headers){

@@ -18,7 +18,7 @@ import org.apache.xmlrpc.client.XmlRpcClient;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -252,6 +252,7 @@ public class DokpoolTest {
 	public void httpClientTest() throws Exception {
 		HttpClient.tlsLogging = true;
 		Map<String,String> headers = new HashMap<String,String>();
+		headers.put(HttpClient.Headers.ACCEPT,HttpClient.MimeTypes.PLAIN);
 		HttpClient.Response rsp = HttpClient.doGetRequest(PROTO,HOST,PORT,HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE),headers);
 		log.info(rsp.content.length());
 		HashMap<String,String> postPar = new HashMap<>();
@@ -259,17 +260,12 @@ public class DokpoolTest {
 		postPar.put("__ac_password", PW);
 		rsp = HttpClient.doPostRequest(PROTO,HOST,PORT,HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/login_form"),headers,postPar);
 		log.info(rsp.content.length());
-		rsp = HttpClient.doPutRequest(PROTO,HOST,PORT,HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/testupload"),headers,"text/plain",("hellö!").getBytes(Charset.forName("UTF-8")));
+		rsp = HttpClient.doPutRequest(PROTO,HOST,PORT,HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/testupload"),headers,"text/plain",("hellö!").getBytes(StandardCharsets.UTF_8));
 		log.info(rsp.content.length());
 		rsp = HttpClient.doDeleteRequest(PROTO,HOST,PORT,HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/testupload"),headers);
 		log.info(rsp.content.length());
 	}
 
-	/**
-	 * not used
-	 */
-	static class HelperClass {
-		public List<Object> elemente = new ArrayList<Object>();
-	}
+
 }
 
