@@ -5,6 +5,9 @@ DOKPOOL_PLONESITE=site
 DOKPOOL_DOKPOOL=bund
 DOKPOOL_GROUPFOLDER=grouo_folder
 DOKPOOL_DOCUMENTOWNER=user
+#The following user should have an associated user folder in DOKPOOL_DOKPOOL
+DOKPOOL_MEMBER=nvo--loc
+DOKPOOL_EVENT=routinemode
 #The following User must have enough rights to also delete documents (e.g. role DocPoolAdmin)
 DOKPOOL_USER=user
 DOKPOOL_PW=pw

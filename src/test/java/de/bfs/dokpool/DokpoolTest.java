@@ -12,7 +12,6 @@ import de.bfs.dokpool.client.utils.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 // import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 
@@ -40,6 +39,9 @@ public class DokpoolTest {
 	private static final String DOCUMENTOWNER  = envOrEmpty("DOKPOOL_DOCUMENTOWNER");
 	private static final String DOKPOOL        = envOrEmpty("DOKPOOL_DOKPOOL");
 	private static final String GROUPFOLDER    = envOrEmpty("DOKPOOL_GROUPFOLDER");
+	//MEMBER should have an associated user folder
+	private static final String MEMBER         = envOrEmpty("DOKPOOL_MEMBER");
+	private static final String EVENT          = envOrEmpty("DOKPOOL_EVENT");
 	private static final String DOCID          = "java-docpool-test-doc";
 
 
@@ -245,7 +247,7 @@ public class DokpoolTest {
 	}
 
 	/**
-	 * Test basic http(s) functionality
+	 * Test basic http(s) functionality.
 	 *
 	 */
 	@Test
@@ -264,6 +266,42 @@ public class DokpoolTest {
 		log.info(rsp.content.length());
 		rsp = HttpClient.doDeleteRequest(PROTO,HOST,PORT,HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/testupload"),headers);
 		log.info(rsp.content.length());
+	}
+
+	/**
+	 * Some REST tests just using the HttpClient class and none of the Dokpool specific classes.
+	 */
+	@Test
+	public void httpPureRestTest() throws Exception {
+		//"/@get_primary_documentpool/test-land"
+		Map<String,String> headers = new HashMap<String,String>();
+		headers.put(HttpClient.Headers.ACCEPT,HttpClient.MimeTypes.JSON);
+		HttpClient.addBasicAuthToHeaders(headers,USER,PW);
+
+		//These should also work with Plone 5 instances, except where stated otherwise:
+		//r
+		String[] endpoints = new String[] {
+			"/@users",//requires admin privileges, for normal users 401 is expected
+			"/@groups",//requires admin privileges, for normal users 401 is expected
+			"/"+DOKPOOL+"/content/Members",//200
+			"/"+DOKPOOL+"/content/Groups",//200
+			"/@users/"+USER,//200
+			"/@get_group_folders/",//not part of Plone.restapi -> only plone6-Dokpool
+			"/@get_group_folders/saarland",//not part of Plone.restapi -> only plone6-Dokpool
+			"/"+DOKPOOL+"/content/Members/"+MEMBER,//200
+			"/"+DOKPOOL+"/content/Transfers",//200
+			"/"+DOKPOOL+"/contentconfig/scen/@search?portal_type=DPEvent&dp_type=active",//200
+			"/"+DOKPOOL+"/contentconfig/scen/"+EVENT,//200
+			"/"+DOKPOOL+"/@search?review_state=pending",//200
+		};
+		String path;
+		HttpClient.Response rsp = null;
+		for (String ep : endpoints){
+			path = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE + ep);
+			rsp = HttpClient.doGetRequest(PROTO,HOST,PORT,path,headers);
+			log.info(rsp.content.length());
+		}
+		log.info(rsp != null?rsp.content:"");
 	}
 
 
