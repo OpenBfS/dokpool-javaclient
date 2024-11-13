@@ -18,7 +18,9 @@ import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.protocol.HttpClientContext;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.HttpHeaders;
 import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.HttpRequest;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.ByteArrayEntity;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
@@ -49,12 +51,22 @@ public class HttpClient {
 		return proto + "://" + host + port + path;
 	}
 
-	public final static Response doGetRequest(final String proto, final String host, String port, final String url) throws Exception {
+	private static void addHeadersToRequest(HttpRequest request, Map<String,String> headers){
+		if (headers == null){
+			return;
+		}
+		for (Map.Entry<String, String> entry : headers.entrySet()) {
+			request.setHeader(entry.getKey(), entry.getValue());
+		}
+	}
+
+	public final static Response doGetRequest(final String proto, final String host, String port, final String url, Map<String,String> headers) throws Exception {
 		try (CloseableHttpClient httpclient = HttpClients.createSystem()) {
 
 			final int portInt = intPortFromPortOrProtocol(port,proto);
 			final HttpHost target = new HttpHost(proto, host, portInt);
 			final HttpGet httpget = new HttpGet(url);
+			addHeadersToRequest(httpget,headers);
 
 			log.info("Executing request " + httpget.getMethod() + " " + httpget.getUri());
 
@@ -74,12 +86,13 @@ public class HttpClient {
 		}
 	}
 
-	public final static Response doDeleteRequest(final String proto, final String host, String port, final String url) throws Exception {
+	public final static Response doDeleteRequest(final String proto, final String host, String port, final String url, Map<String,String> headers) throws Exception {
 		try (CloseableHttpClient httpclient = HttpClients.createSystem()) {
 
 			final int portInt = intPortFromPortOrProtocol(port,proto);
 			final HttpHost target = new HttpHost(proto, host, portInt);
 			final HttpDelete httpdel = new HttpDelete(url);
+			addHeadersToRequest(httpdel,headers);
 
 			log.info("Executing request " + httpdel.getMethod() + " " + httpdel.getUri());
 
@@ -99,11 +112,12 @@ public class HttpClient {
 		}
 	}
 
-	public final static Response doPostRequest(final String proto, final String host, String port, final String url, Map<String,String> parameters) throws Exception {
+	public final static Response doPostRequest(final String proto, final String host, String port, final String url, Map<String,String> headers, Map<String,String> parameters) throws Exception {
 		try (CloseableHttpClient httpclient = HttpClients.createSystem()) {
 			final int portInt = intPortFromPortOrProtocol(port,proto);
 			final HttpHost target = new HttpHost(proto, host, portInt);
 			final HttpPost httppost = new HttpPost(url);
+			addHeadersToRequest(httppost,headers);
 
 			log.info("Executing request " + httppost.getMethod() + " " + httppost.getUri());
 
@@ -131,11 +145,12 @@ public class HttpClient {
 		}
 	}
 
-	public final static Response doPutRequest(final String proto, final String host, String port, final String url, String contentType, byte[] data) throws Exception {
+	public final static Response doPutRequest(final String proto, final String host, String port, final String url, Map<String,String> headers, String contentType, byte[] data) throws Exception {
 		try (CloseableHttpClient httpclient = HttpClients.createSystem()) {
 			final int portInt = intPortFromPortOrProtocol(port,proto);
 			final HttpHost target = new HttpHost(proto, host, portInt);
 			final HttpPut httpput = new HttpPut(url);
+			addHeadersToRequest(httpput,headers);
 
 			httpput.setHeader("Content-type", contentType);
 			ByteArrayEntity putEntity = new ByteArrayEntity(data,ContentType.create(contentType));

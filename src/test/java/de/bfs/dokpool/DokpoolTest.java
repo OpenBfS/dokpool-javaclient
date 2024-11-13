@@ -251,16 +251,17 @@ public class DokpoolTest {
 	@Test
 	public void httpClientTest() throws Exception {
 		HttpClient.tlsLogging = true;
-		HttpClient.Response rsp = HttpClient.doGetRequest(PROTO,HOST,PORT,HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE));
+		Map<String,String> headers = new HashMap<String,String>();
+		HttpClient.Response rsp = HttpClient.doGetRequest(PROTO,HOST,PORT,HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE),headers);
 		log.info(rsp.content.length());
 		HashMap<String,String> postPar = new HashMap<>();
 		postPar.put("__ac_name", USER);
 		postPar.put("__ac_password", PW);
-		rsp = HttpClient.doPostRequest(PROTO,HOST,PORT,HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/login_form"),postPar);
+		rsp = HttpClient.doPostRequest(PROTO,HOST,PORT,HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/login_form"),headers,postPar);
 		log.info(rsp.content.length());
-		rsp = HttpClient.doPutRequest(PROTO,HOST,PORT,HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/testupload"),"text/plain",("hellö!").getBytes(Charset.forName("UTF-8")));
+		rsp = HttpClient.doPutRequest(PROTO,HOST,PORT,HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/testupload"),headers,"text/plain",("hellö!").getBytes(Charset.forName("UTF-8")));
 		log.info(rsp.content.length());
-		rsp = HttpClient.doDeleteRequest(PROTO,HOST,PORT,HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/testupload"));
+		rsp = HttpClient.doDeleteRequest(PROTO,HOST,PORT,HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/testupload"),headers);
 		log.info(rsp.content.length());
 	}
 
