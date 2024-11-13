@@ -264,6 +264,8 @@ public class DokpoolTest {
 		log.info(rsp.content.length());
 		rsp = HttpClient.doPutRequest(PROTO,HOST,PORT,HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/testupload"),headers,"text/plain",("hellö!").getBytes(StandardCharsets.UTF_8));
 		log.info(rsp.content.length());
+		rsp = HttpClient.doPatchRequest(PROTO,HOST,PORT,HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/testupload"),headers,"text/plain",("hellö nöchma!").getBytes(StandardCharsets.UTF_8));
+		log.info(rsp.content.length());
 		rsp = HttpClient.doDeleteRequest(PROTO,HOST,PORT,HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/testupload"),headers);
 		log.info(rsp.content.length());
 	}

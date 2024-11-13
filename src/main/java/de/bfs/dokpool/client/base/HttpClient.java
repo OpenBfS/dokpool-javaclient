@@ -11,6 +11,7 @@ import javax.net.ssl.SSLSession;
 
 import org.apache.hc.client5.http.classic.methods.HttpDelete;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPatch;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.classic.methods.HttpPut;
 import org.apache.hc.client5.http.cookie.BasicCookieStore;
@@ -47,6 +48,12 @@ public class HttpClient {
 
 	public class MimeTypes {
 		public static final String JSON = "application/json";
+		/* Plone-REST-API does not actually use the application/json-patch+json format,
+		 * but expects normal JSON with only the updated attributes set, see
+		 * https://6.docs.plone.org/plone.restapi/docs/source/usage/content.html
+		 * We nevertheless introduce JSONPATCH:
+		 */
+		public static final String JSONPATCH = "application/json-patch+json";
 		public static final String PLAIN = "text/plain";
 	}
 
@@ -200,10 +207,37 @@ public class HttpClient {
 			log.info("Executing request " + httpput.getMethod() + " " + httpput.getUri());
 
 			final HttpClientContext clientContext = HttpClientContext.create();
-			// final BasicCookieStore cookieStore = new BasicCookieStore();
-			// clientContext.setCookieStore(cookieStore);
 			Response response = httpclient.execute(target, httpput, clientContext, rsp -> {
 				log.info(httpput + "->" + new StatusLine(rsp));
+				if (proto.equals("https") && tlsLogging){
+					logTLS(clientContext);
+				}
+				HttpEntity entity = rsp.getEntity();
+				String content = EntityUtils.toString(entity);
+				EntityUtils.consume(entity);
+				return new Response(rsp.getCode(), content);
+			});
+
+			return response;
+		}
+	}
+
+	public final static Response doPatchRequest(final String proto, final String host, String port, final String url, Map<String,String> headers, String contentType, byte[] data) throws Exception {
+		try (CloseableHttpClient httpclient = HttpClients.createSystem()) {
+			final int portInt = intPortFromPortOrProtocol(port,proto);
+			final HttpHost target = new HttpHost(proto, host, portInt);
+			final HttpPatch httppatch = new HttpPatch(url);
+			addHeadersToRequest(httppatch,headers);
+
+			httppatch.setHeader("Content-type", contentType);
+			ByteArrayEntity putEntity = new ByteArrayEntity(data,ContentType.create(contentType));
+			httppatch.setEntity(putEntity);
+
+			log.info("Executing request " + httppatch.getMethod() + " " + httppatch.getUri());
+
+			final HttpClientContext clientContext = HttpClientContext.create();
+			Response response = httpclient.execute(target, httppatch, clientContext, rsp -> {
+				log.info(httppatch + "->" + new StatusLine(rsp));
 				if (proto.equals("https") && tlsLogging){
 					logTLS(clientContext);
 				}
