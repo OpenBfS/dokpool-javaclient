@@ -38,7 +38,16 @@ import org.apache.commons.logging.LogFactory;
 public class HttpClient {
 
 	private static final Log log = LogFactory.getLog(HttpClient.class);
-	public static boolean tlsLogging = false;
+
+	public static class Response {
+        public final int status;
+        public final String content;
+
+        Response(final int status, final String content) {
+            this.status = status;
+            this.content = content;
+        }
+    }
 
 	private static int intPortFromPortOrProtocol(String port, final String proto){
 		port = port != null? port : "";
@@ -57,6 +66,19 @@ public class HttpClient {
 		}
 		for (Map.Entry<String, String> entry : headers.entrySet()) {
 			request.setHeader(entry.getKey(), entry.getValue());
+		}
+	}
+
+	public static boolean tlsLogging = false;
+	private final static void logTLS(HttpClientContext clientContext){
+		final SSLSession sslSession = clientContext.getSSLSession();
+		if (sslSession != null) {
+			try {
+				log.info("Peer: " + sslSession.getPeerPrincipal());
+				log.info("TLS protocol: " + sslSession.getProtocol());
+				log.info("TLS cipher suite: " + sslSession.getCipherSuite());
+			} catch (final SSLPeerUnverifiedException ignore) {
+			}
 		}
 	}
 
@@ -173,28 +195,6 @@ public class HttpClient {
 			});
 
 			return response;
-		}
-	}
-
-	public static class Response {
-        public final int status;
-        public final String content;
-
-        Response(final int status, final String content) {
-            this.status = status;
-            this.content = content;
-        }
-    }
-
-	private final static void logTLS(HttpClientContext clientContext){
-		final SSLSession sslSession = clientContext.getSSLSession();
-		if (sslSession != null) {
-			try {
-				log.info("Peer: " + sslSession.getPeerPrincipal());
-				log.info("TLS protocol: " + sslSession.getProtocol());
-				log.info("TLS cipher suite: " + sslSession.getCipherSuite());
-			} catch (final SSLPeerUnverifiedException ignore) {
-			}
 		}
 	}
 }
