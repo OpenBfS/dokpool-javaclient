@@ -58,14 +58,14 @@ public class HttpClient {
 	}
 
 	public static class Response {
-        public final int status;
-        public final String content;
+		public final int status;
+		public final String content;
 
-        Response(final int status, final String content) {
-            this.status = status;
-            this.content = content;
-        }
-    }
+		Response(final int status, final String content) {
+			this.status = status;
+			this.content = content;
+		}
+	}
 
 	private static int intPortFromPortOrProtocol(String port, final String proto){
 		port = port != null? port : "";
@@ -81,8 +81,8 @@ public class HttpClient {
 	public static void addBasicAuthToHeaders(Map<String, String> headers, final String username, final String password){
 		final String auth = username + ":" + password;
 		//if we need multiple charset support, there is also: Charset.forName("UTF-8")
-        byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(StandardCharsets.UTF_8));
-        final String authHeaderVal = "Basic " + new String(encodedAuth);
+		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(StandardCharsets.UTF_8));
+		final String authHeaderVal = "Basic " + new String(encodedAuth);
 		headers.put(Headers.AUTHORIZATION, authHeaderVal);
 	}
 
@@ -173,7 +173,7 @@ public class HttpClient {
 			for (Map.Entry<String, String> entry : parameters.entrySet()) {
 				paramList.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
 			}
-        	httppost.setEntity(new UrlEncodedFormEntity(paramList));
+			httppost.setEntity(new UrlEncodedFormEntity(paramList));
 
 			final HttpClientContext clientContext = HttpClientContext.create();
 			// final BasicCookieStore cookieStore = new BasicCookieStore();
