@@ -62,28 +62,31 @@ public class JSON {
 		 * @param index Position, if negative prepends, if >= size(), the node will be appended.
 		 * @param child The node to insert.
 		 */
-		public void set(String childId, Node child) throws Exception{
+		public Node set(String childId, Node child) throws Exception{
 			try {
 				((ObjectNode) jacksonNode).set(childId, child.jacksonNode.deepCopy());
 			} catch (ClassCastException cce){
 				throw new Exception("JSON node is not an object.");
 			}
+			return this;
 		}
 
-		public void set(String childId, String str) throws Exception{
+		public Node set(String childId, String str) throws Exception{
 			try {
 				((ObjectNode) jacksonNode).put(childId, str);
 			} catch (ClassCastException cce){
 				throw new Exception("JSON node is not an object.");
 			}
+			return this;
 		}
 
-		public void set(String childId, double d) throws Exception{
+		public Node set(String childId, double d) throws Exception{
 			try {
 				((ObjectNode) jacksonNode).put(childId, d);
 			} catch (ClassCastException cce){
 				throw new Exception("JSON node is not an object.");
 			}
+			return this;
 		}
 
 		/**
@@ -92,12 +95,13 @@ public class JSON {
 		 * @param index Position, if negative prepends, if >= size(), the node will be appended.
 		 * @param child The node to insert.
 		 */
-		public void insert(int index, Node child) throws Exception{
+		public Node insert(int index, Node child) throws Exception{
 			try {
 				((ArrayNode) jacksonNode).insert(index, child.jacksonNode.deepCopy());
 			} catch (ClassCastException cce){
 				throw new Exception("JSON node is not an array.");
 			}
+			return this;
 		}
 
 	    /**
@@ -105,12 +109,13 @@ public class JSON {
 		 * @param index Position, if negative prepends, if >= size(), the node will be appended.
 		 * @param d The double to insert.
 		 */
-		public void insert(int index, double d) throws Exception{
+		public Node insert(int index, double d) throws Exception{
 			try {
 				((ArrayNode) jacksonNode).insert(index, d);
 			} catch (ClassCastException cce){
 				throw new Exception("JSON node is not an array.");
 			}
+			return this;
 		}
 
 		/**
@@ -118,12 +123,13 @@ public class JSON {
 		 * @param index Position, if negative prepends, if >= size(), the node will be appended.
 		 * @param str The string to insert.
 		 */
-		public void insert(int index, String str) throws Exception{
+		public Node insert(int index, String str) throws Exception{
 			try {
 				((ArrayNode) jacksonNode).insert(index, str);
 			} catch (ClassCastException cce){
 				throw new Exception("JSON node is not an array.");
 			}
+			return this;
 		}
 
 		/**
@@ -131,36 +137,39 @@ public class JSON {
 		 * This creates a **deep copy** of the child.
 		 * @param child The node to insert.
 		 */
-		public void append(Node child) throws Exception {
+		public Node append(Node child) throws Exception {
 			try {
 				((ArrayNode) jacksonNode).add(child.jacksonNode.deepCopy());
 			} catch (ClassCastException cce){
 				throw new Exception("JSON node is not an array.");
 			}
+			return this;
 		}
 
 		/**
 		 * Appends a double if node is an array.
 		 * @param d The double to insert.
 		 */
-		public void append(double d) throws Exception{
+		public Node append(double d) throws Exception{
 			try {
 				((ArrayNode) jacksonNode).add(d);
 			} catch (ClassCastException cce){
 				throw new Exception("JSON node is not an array.");
 			}
+			return this;
 		}
 
 		/**
 		 * Appends a string if node is an array.
 		 * @param str The string to insert.
 		 */
-		public void append(String str) throws Exception{
+		public Node append(String str) throws Exception{
 			try {
 				((ArrayNode) jacksonNode).add(str);
 			} catch (ClassCastException cce){
 				throw new Exception("JSON node is not an array.");
 			}
+			return this;
 		}
 
 		public String type(){
