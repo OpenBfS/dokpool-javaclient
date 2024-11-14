@@ -125,7 +125,7 @@ public class HttpClient {
 					logTLS(clientContext);
 				}
 				HttpEntity entity = rsp.getEntity();
-				String content = EntityUtils.toString(entity);
+				String content = entity != null ? EntityUtils.toString(entity): "";
 				EntityUtils.consume(entity);
 				return new Response(rsp.getCode(), content);
 			});
@@ -151,7 +151,7 @@ public class HttpClient {
 					logTLS(clientContext);
 				}
 				HttpEntity entity = rsp.getEntity();
-				String content = EntityUtils.toString(entity);
+				String content = entity != null ? EntityUtils.toString(entity): "";
 				EntityUtils.consume(entity);
 				return new Response(rsp.getCode(), content);
 			});
@@ -160,7 +160,7 @@ public class HttpClient {
 		}
 	}
 
-	public final static Response doPostRequest(final String proto, final String host, String port, final String url, Map<String,String> headers, Map<String,String> parameters) throws Exception {
+	public final static Response doPostRequest(final String proto, final String host, String port, final String url, Map<String,String> headers, Map<String,String> parameters, String contentType, byte[] data) throws Exception {
 		try (CloseableHttpClient httpclient = HttpClients.createSystem()) {
 			final int portInt = intPortFromPortOrProtocol(port,proto);
 			final HttpHost target = new HttpHost(proto, host, portInt);
@@ -169,11 +169,19 @@ public class HttpClient {
 
 			log.info("Executing request " + httppost.getMethod() + " " + httppost.getUri());
 
-			List<NameValuePair> paramList = new ArrayList<>();
-			for (Map.Entry<String, String> entry : parameters.entrySet()) {
-				paramList.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
+			if (parameters != null){
+				List<NameValuePair> paramList = new ArrayList<>();
+				for (Map.Entry<String, String> entry : parameters.entrySet()) {
+					paramList.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
+				}
+				httppost.setEntity(new UrlEncodedFormEntity(paramList));
 			}
-			httppost.setEntity(new UrlEncodedFormEntity(paramList));
+
+			if (data != null){
+				httppost.setHeader("Content-type", contentType);
+				ByteArrayEntity dataEntity = new ByteArrayEntity(data,ContentType.create(contentType));
+				httppost.setEntity(dataEntity);
+			}
 
 			final HttpClientContext clientContext = HttpClientContext.create();
 			// final BasicCookieStore cookieStore = new BasicCookieStore();
@@ -184,7 +192,7 @@ public class HttpClient {
 					logTLS(clientContext);
 				}
 				HttpEntity entity = rsp.getEntity();
-				String content = EntityUtils.toString(entity);
+				String content = entity != null ? EntityUtils.toString(entity): "";
 				EntityUtils.consume(entity);
 				return new Response(rsp.getCode(), content);
 			});
@@ -213,7 +221,7 @@ public class HttpClient {
 					logTLS(clientContext);
 				}
 				HttpEntity entity = rsp.getEntity();
-				String content = EntityUtils.toString(entity);
+				String content = entity != null ? EntityUtils.toString(entity): "";
 				EntityUtils.consume(entity);
 				return new Response(rsp.getCode(), content);
 			});
@@ -242,7 +250,7 @@ public class HttpClient {
 					logTLS(clientContext);
 				}
 				HttpEntity entity = rsp.getEntity();
-				String content = EntityUtils.toString(entity);
+				String content = entity != null ? EntityUtils.toString(entity): "";
 				EntityUtils.consume(entity);
 				return new Response(rsp.getCode(), content);
 			});
