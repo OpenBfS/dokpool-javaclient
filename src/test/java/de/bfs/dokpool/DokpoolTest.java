@@ -260,7 +260,7 @@ public class DokpoolTest {
 		HashMap<String,String> postPar = new HashMap<>();
 		postPar.put("__ac_name", USER);
 		postPar.put("__ac_password", PW);
-		rsp = HttpClient.doPostRequest(PROTO,HOST,PORT,HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/login_form"),headers,postPar);
+		rsp = HttpClient.doPostRequest(PROTO,HOST,PORT,HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/login_form"),headers,postPar,null,null);
 		log.info(rsp.content.length());
 		rsp = HttpClient.doPutRequest(PROTO,HOST,PORT,HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/testupload"),headers,"text/plain",("hellö!").getBytes(StandardCharsets.UTF_8));
 		log.info(rsp.content.length());
@@ -302,7 +302,51 @@ public class DokpoolTest {
 			rsp = HttpClient.doGetRequest(PROTO,HOST,PORT,path,headers);
 			log.info(rsp.content.length());
 		}
-		log.info(rsp != null?rsp.content:"");
+		// log.info(rsp != null?rsp.content:"");
+		JSON.Node pendingRoot = new JSON.Node(rsp.content);
+		log.info(pendingRoot.get("items").get(0).get("@id").toJSON());
+
+		String createUrl = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/"+DOKPOOL+"/content/Groups/"+ GROUPFOLDER);
+		JSON.Node createJS = new JSON.Node("{}")
+			.set("@type","DPDocument")
+			.set("title", "My Document")
+			// .set("uid",DOCID+"-REST")
+		;
+		byte[] createData = createJS.toJSON().getBytes();
+		rsp = HttpClient.doPostRequest(PROTO,HOST,PORT,createUrl,headers,null,HttpClient.MimeTypes.JSON,createData);
+		log.info(rsp.content);
+
+		String patchUrl = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/"+DOKPOOL+"/content/Groups/"+ GROUPFOLDER+"/"+DOCID);
+		JSON.Node patchJS = new JSON.Node("{}")
+			.set("title", "JavaAPIDocumentNameChangedByPATCHRequest")
+		;
+		byte[] patchData = patchJS.toJSON().getBytes();
+		rsp = HttpClient.doPatchRequest(PROTO,HOST,PORT,patchUrl,headers,HttpClient.MimeTypes.JSON,patchData);
+		log.info(rsp.content);
+		Assert.assertEquals(rsp.status, 204);
+
+		String deleteUrl = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/"+DOKPOOL+"/content/Groups/"+ GROUPFOLDER+"/copy_of_"+DOCID);
+		rsp = HttpClient.doDeleteRequest(PROTO,HOST,PORT,deleteUrl,headers);
+		log.info(rsp.content);
+
+		String copySrcUrl = patchUrl;
+		String copyTgtUrl = createUrl+"/@copy";
+		JSON.Node copyJS = new JSON.Node("{}")
+			.set("source", copySrcUrl)
+			.set("target", DOCID+"-two")
+		;
+		byte[] copyData = copyJS.toJSON().getBytes();
+		rsp = HttpClient.doPostRequest(PROTO,HOST,PORT,copyTgtUrl,headers,null,HttpClient.MimeTypes.JSON,copyData);
+		log.info(rsp.content);
+
+		String renameUrl = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/"+DOKPOOL+"/content/Groups/"+ GROUPFOLDER+"/copy_of_"+DOCID);
+		JSON.Node renameJS = new JSON.Node("{}")
+			.set("id", DOCID+"-two")
+		;
+		byte[] renameData = renameJS.toJSON().getBytes();
+		rsp = HttpClient.doPatchRequest(PROTO,HOST,PORT,renameUrl,headers,HttpClient.MimeTypes.JSON,renameData);
+		log.info(rsp.content);
+		Assert.assertEquals(204, rsp.status);
 	}
 
 	/**
@@ -325,6 +369,13 @@ public class DokpoolTest {
 		root.set("arr2",arr);
 		log.info("root JSON: "+root.toJSON());
 		Assert.assertEquals("{\"num\":7.3,\"arr\":[{\"num\":7.3,\"arr\":[0,1,2,\"three\"]},0,1,2,\"three\"],\"arr2\":[{\"num\":7.3,\"arr\":[0,1,2,\"three\"]},0,1,2,\"three\"]}",root.toJSON());
+		
+		Map<String,String> hmap = new HashMap<String,String>();
+		hmap.put("one","1");
+		hmap.put("two","2");
+		JSON.Node hmapnode = new JSON.Node(hmap);
+		log.info("root JSON: "+hmapnode.toJSON());
+		Assert.assertEquals("{\"one\":\"1\",\"two\":\"2\"}", hmapnode.toJSON());
 	}
 
 }
