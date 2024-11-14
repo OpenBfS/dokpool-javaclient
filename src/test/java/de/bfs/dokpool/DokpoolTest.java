@@ -281,7 +281,6 @@ public class DokpoolTest {
 		HttpClient.addBasicAuthToHeaders(headers,USER,PW);
 
 		//These should also work with Plone 5 instances, except where stated otherwise:
-		//r
 		String[] endpoints = new String[] {
 			"/@users",//requires admin privileges, for normal users 401 is expected
 			"/@groups",//requires admin privileges, for normal users 401 is expected
@@ -306,6 +305,27 @@ public class DokpoolTest {
 		log.info(rsp != null?rsp.content:"");
 	}
 
+	/**
+	 * Tests for JSON handling.
+	 */
+	@Test
+	public void jsonTest() throws Exception {
+		JSON.Node root = new JSON.Node("{ \"num\": 7.3, \"arr\": [0,1,2,\"three\"] }");
+		log.info("root type: "+root.type());
+		JSON.Node num = root.get("num");
+		log.info("num type: "+num.type() + " num: " + num.toDouble());
+		JSON.Node arr = root.get("arr");
+		log.info("arr type: "+arr.type());
+		log.info("arr JSON: "+arr.toJSON());
+		JSON.Node three = arr.get(3);
+		log.info("three type: "+three.type());
+		//set creates deep copys before adding
+		arr.insert(-1,root);
+		log.info("root JSON: "+root.toJSON());
+		root.set("arr2",arr);
+		log.info("root JSON: "+root.toJSON());
+		Assert.assertEquals("{\"num\":7.3,\"arr\":[{\"num\":7.3,\"arr\":[0,1,2,\"three\"]},0,1,2,\"three\"],\"arr2\":[{\"num\":7.3,\"arr\":[0,1,2,\"three\"]},0,1,2,\"three\"]}",root.toJSON());
+	}
 
 }
 
