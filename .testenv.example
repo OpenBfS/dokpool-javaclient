@@ -1,6 +1,11 @@
+#Main Test instance, must be Plone 6 with DOKPOOL specific REST endpoints 
 DOKPOOL_PROTO=https
 DOKPOOL_HOST=host
 DOKPOOL_PORT=port
+#Second Test instance, must be Plone5 with XMLRPC for now, will be removed
+DOKPOOL_PROTOP5=https
+DOKPOOL_HOSTP5=hostp5
+DOKPOOL_PORTP5=portp5
 DOKPOOL_PLONESITE=site
 DOKPOOL_DOKPOOL=bund
 DOKPOOL_GROUPFOLDER=grouo_folder
@@ -8,6 +13,6 @@ DOKPOOL_DOCUMENTOWNER=user
 #The following user should have an associated user folder in DOKPOOL_DOKPOOL
 DOKPOOL_MEMBER=nvo--loc
 DOKPOOL_EVENT=routinemode
-#The following User must have enough rights to also delete documents (e.g. role DocPoolAdmin)
+#The following User must have enough rights to also delete documents (e.g. role DocPoolAdmin or Manage and ContentAdmin)
 DOKPOOL_USER=user
 DOKPOOL_PW=pw

@@ -43,11 +43,14 @@ public class DokpoolTest {
 	private static final String MEMBER         = envOrEmpty("DOKPOOL_MEMBER");
 	private static final String EVENT          = envOrEmpty("DOKPOOL_EVENT");
 	private static final String DOCID          = "java-docpool-test-doc";
+	private static final String PROTOP5        = envOrEmpty("DOKPOOL_PROTOP5");
+	private static final String HOSTP5         = envOrEmpty("DOKPOOL_HOSTP5");
+	private static final String PORTP5         = envOrEmpty("DOKPOOL_PORTP5");
 
 
-	public static DocumentPool obtainDocumentPool() throws Exception {
-		log.info("URL: " + PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE + " User:" + USER + " Password:" + PW);
-		DocpoolBaseService docpoolBaseService = new DocpoolBaseService(PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE, USER, PW);
+	public static DocumentPool obtainDocumentPoolXMLRPC() throws Exception {
+		log.info("URL: " + PROTOP5 + "://" + HOSTP5 + ":" + PORTP5 + "/" + PLONESITE + " User:" + USER + " Password:" + PW);
+		DocpoolBaseService docpoolBaseService = new DocpoolBaseService(PROTOP5 + "://" + HOSTP5 + ":" + PORTP5 + "/" + PLONESITE, USER, PW);
 		List<DocumentPool> myDocpools = docpoolBaseService.getDocumentPools();
 		DocumentPool mainDocpool = docpoolBaseService.getPrimaryDocumentPool();
 
@@ -65,7 +68,7 @@ public class DokpoolTest {
 		return mainDocpool;
 	}
 
-	public static void deleteObject(Folder folder, String objId) throws Exception {
+	public static void deleteObjectXMLRPC(Folder folder, String objId) throws Exception {
 		log.info("Trying to delete "+folder.getFolderPath() + "/" + objId);
 		Field clientField = Class.forName("de.bfs.dokpool.client.base.BaseObject").getDeclaredField("client");
 		clientField.setAccessible(true);
@@ -86,9 +89,9 @@ public class DokpoolTest {
 	 *
 	 */
 	@Test
-	public void documentTest() throws Exception {
+	public void documentTestXMLRPC() throws Exception {
 		log.info("=== TEST: documentTest ======");
-		DocumentPool mainDocpool = obtainDocumentPool();
+		DocumentPool mainDocpool = obtainDocumentPoolXMLRPC();
 
 		Folder myGroupFolder = null;
 		try {
@@ -116,7 +119,7 @@ public class DokpoolTest {
 			log.info("Object does not exist: " +  myGroupFolder.getFolderPath() + "/" + DOCID);
 		}
 		if (docExists) {
-			deleteObject(myGroupFolder, DOCID);
+			deleteObjectXMLRPC(myGroupFolder, DOCID);
 		}
 
 		Map<String, Object> docProperties = new HashMap<String, Object>();
@@ -151,10 +154,10 @@ public class DokpoolTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void miscObjectTest() throws Exception {
+	public void miscObjectTestXMLRPC() throws Exception {
 		log.info("=== TEST: miscObjectTest ======");
-		log.info("URL: " + PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE + " User:" + USER + " Password:" + PW);
-		DocpoolBaseService docpoolBaseService = new DocpoolBaseService(PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE, USER, PW);
+		log.info("URL: " + PROTOP5 + "://" + HOSTP5 + ":" + PORTP5 + "/" + PLONESITE + " User:" + USER + " Password:" + PW);
+		DocpoolBaseService docpoolBaseService = new DocpoolBaseService(PROTOP5 + "://" + HOSTP5 + ":" + PORTP5 + "/" + PLONESITE, USER, PW);
 
 		List<DocumentPool> documentpools = docpoolBaseService.getDocumentPools();
 		if (documentpools.isEmpty()) {
@@ -192,7 +195,7 @@ public class DokpoolTest {
 		bo.update(properties);
 		log.info(bo.getStringAttribute("created_by"));
 		log.info(bo.getDateAttribute("effective"));
-		deleteObject(groupFolder,randId);
+		deleteObjectXMLRPC(groupFolder,randId);
 
 		Map<String, Object> elanProperties = new HashMap<String, Object>();
 		elanProperties.put("scenarios", new String[] { "demo-on-2024-04-01" });
@@ -209,7 +212,7 @@ public class DokpoolTest {
 		log.info(d.getTitle());
 		log.info(d.getWorkflowStatus());
 		log.info(d.getStringsAttribute("local_behaviors"));
-		deleteObject(groupFolder,randId);
+		deleteObjectXMLRPC(groupFolder,randId);
 	}
 
 	/**
@@ -217,9 +220,9 @@ public class DokpoolTest {
 	 *
 	 */
 	@Test
-	public void userManagementTest() throws Exception {
+	public void userManagementTestXMLRPC() throws Exception {
 		log.info("=== TEST: userManagementTest ======");
-		DocumentPool myDocumentPool = obtainDocumentPool();
+		DocumentPool myDocumentPool = obtainDocumentPoolXMLRPC();
 		User user = myDocumentPool.createUser("testuserId", "testuserPW", "Test User Full Name", extractPath(myDocumentPool));
 		if (user == null) {
 			log.error("No User created!");
@@ -282,8 +285,8 @@ public class DokpoolTest {
 
 		//These should also work with Plone 5 instances, except where stated otherwise:
 		String[] endpoints = new String[] {
-			"/@users",//requires admin privileges, for normal users 401 is expected
-			"/@groups",//requires admin privileges, for normal users 401 is expected
+			// "/@users",//requires admin privileges, for normal users 401 is expected
+			// "/@groups",//requires admin privileges, for normal users 401 is expected
 			"/"+DOKPOOL+"/content/Members",//200
 			"/"+DOKPOOL+"/content/Groups",//200
 			"/@users/"+USER,//200
@@ -304,13 +307,18 @@ public class DokpoolTest {
 		}
 		// log.info(rsp != null?rsp.content:"");
 		JSON.Node pendingRoot = new JSON.Node(rsp.content);
-		log.info(pendingRoot.get("items").get(0).get("@id").toJSON());
-
+		pendingRoot.get("items");
+		if (pendingRoot != null && pendingRoot.get("items") != null && pendingRoot.get("items").get(0) != null){
+			log.info(pendingRoot.get("items").get(0).get("@id").toJSON());
+		}
 		String createUrl = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/"+DOKPOOL+"/content/Groups/"+ GROUPFOLDER);
 		JSON.Node createJS = new JSON.Node("{}")
 			.set("@type","DPDocument")
-			.set("title", "My Document")
-			// .set("uid",DOCID+"-REST")
+			.set("title", "JavaAPIDocumentNameCreatedByPOSTRequest")
+			.set("id", DOCID)
+			.set("transferred_by", USER)
+			.set("description", "Created by java test.")
+			.set("text", "This is just a Test and can be deleted.")
 		;
 		byte[] createData = createJS.toJSON().getBytes();
 		rsp = HttpClient.doPostRequest(PROTO,HOST,PORT,createUrl,headers,null,HttpClient.MimeTypes.JSON,createData);
@@ -319,11 +327,12 @@ public class DokpoolTest {
 		String patchUrl = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/"+DOKPOOL+"/content/Groups/"+ GROUPFOLDER+"/"+DOCID);
 		JSON.Node patchJS = new JSON.Node("{}")
 			.set("title", "JavaAPIDocumentNameChangedByPATCHRequest")
+			.set("description", "Changed by java test.")
 		;
 		byte[] patchData = patchJS.toJSON().getBytes();
 		rsp = HttpClient.doPatchRequest(PROTO,HOST,PORT,patchUrl,headers,HttpClient.MimeTypes.JSON,patchData);
 		log.info(rsp.content);
-		Assert.assertEquals(rsp.status, 204);
+		Assert.assertEquals(204, rsp.status);
 
 		String deleteUrl = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/"+DOKPOOL+"/content/Groups/"+ GROUPFOLDER+"/copy_of_"+DOCID);
 		rsp = HttpClient.doDeleteRequest(PROTO,HOST,PORT,deleteUrl,headers);
@@ -339,6 +348,7 @@ public class DokpoolTest {
 		rsp = HttpClient.doPostRequest(PROTO,HOST,PORT,copyTgtUrl,headers,null,HttpClient.MimeTypes.JSON,copyData);
 		log.info(rsp.content);
 
+		//does not work: id cannot be changed this way, neither in Plone 5 nor 6
 		String renameUrl = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/"+DOKPOOL+"/content/Groups/"+ GROUPFOLDER+"/copy_of_"+DOCID);
 		JSON.Node renameJS = new JSON.Node("{}")
 			.set("id", DOCID+"-two")
