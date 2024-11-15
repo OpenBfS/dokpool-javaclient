@@ -49,11 +49,11 @@ public class JSON {
 		}
 
 		public Node get(String childId){
-			return new Node(jacksonNode.get(childId));
+			return jacksonNode != null ? new Node(jacksonNode.get(childId)) : null;
 		}
 
 		public Node get(int index){
-			return new Node(jacksonNode.get(index));
+			return jacksonNode != null ?  new Node(jacksonNode.get(index)) : null;
 		}
 		
 		/**
