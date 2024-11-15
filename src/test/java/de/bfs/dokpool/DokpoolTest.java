@@ -324,14 +324,14 @@ public class DokpoolTest {
 		rsp = HttpClient.doPostRequest(PROTO,HOST,PORT,createUrl,headers,null,HttpClient.MimeTypes.JSON,createData);
 		log.info(rsp.content);
 
-		String patchUrl = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/"+DOKPOOL+"/content/Groups/"+ GROUPFOLDER+"/"+DOCID);
-		JSON.Node patchJS = new JSON.Node("{}")
-			.set("title", "JavaAPIDocumentNameChangedByPATCHRequest")
-			.set("description", "Changed by java test.")
-		;
-		byte[] patchData = patchJS.toJSON().getBytes();
-		rsp = HttpClient.doPatchRequest(PROTO,HOST,PORT,patchUrl,headers,HttpClient.MimeTypes.JSON,patchData);
-		log.info(rsp.content);
+String patchUrl = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/"+DOKPOOL+"/content/Groups/"+ GROUPFOLDER+"/"+DOCID);
+JSON.Node patchJS = new JSON.Node("{}")
+	.set("title", "JavaAPIDocumentNameChangedByPATCHRequest")
+	.set("description", "Changed by java test.")
+;
+byte[] patchData = patchJS.toJSON().getBytes();
+rsp = HttpClient.doPatchRequest(PROTO,HOST,PORT,patchUrl,headers,HttpClient.MimeTypes.JSON,patchData);
+log.info(rsp.content);
 		Assert.assertEquals(204, rsp.status);
 
 		String deleteUrl = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/"+DOKPOOL+"/content/Groups/"+ GROUPFOLDER+"/copy_of_"+DOCID);
@@ -377,15 +377,21 @@ public class DokpoolTest {
 		arr.insert(-1,root);
 		log.info("root JSON: "+root.toJSON());
 		root.set("arr2",arr);
-		log.info("root JSON: "+root.toJSON());
 		Assert.assertEquals("{\"num\":7.3,\"arr\":[{\"num\":7.3,\"arr\":[0,1,2,\"three\"]},0,1,2,\"three\"],\"arr2\":[{\"num\":7.3,\"arr\":[0,1,2,\"three\"]},0,1,2,\"three\"]}",root.toJSON());
+		log.info("root JSON: "+root.toJSON());
+		Map<String,Object> rootMap = root.toMap();
+		JSON.Node root2 = new JSON.Node(rootMap);
+		Assert.assertEquals("{\"arr\":[{\"arr\":[0,1,2,\"three\"],\"num\":7.3},0,1,2,\"three\"],\"num\":7.3,\"arr2\":[{\"arr\":[0,1,2,\"three\"],\"num\":7.3},0,1,2,\"three\"]}",root2.toJSON());
 		
-		Map<String,String> hmap = new HashMap<String,String>();
+		Map<String,Object> hmap = new HashMap<String,Object>();
+		Map<String,Object> mthree = new HashMap<String,Object>();
 		hmap.put("one","1");
 		hmap.put("two","2");
+		mthree.put("four","4");
+		hmap.put("three",mthree);
 		JSON.Node hmapnode = new JSON.Node(hmap);
 		log.info("root JSON: "+hmapnode.toJSON());
-		Assert.assertEquals("{\"one\":\"1\",\"two\":\"2\"}", hmapnode.toJSON());
+		Assert.assertEquals("{\"one\":\"1\",\"two\":\"2\",\"three\":{\"four\":\"4\"}}", hmapnode.toJSON());
 	}
 
 }
