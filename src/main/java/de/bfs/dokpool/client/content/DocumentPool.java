@@ -4,6 +4,7 @@ import java.util.*;
 
 import org.apache.xmlrpc.client.XmlRpcClient;
 
+import de.bfs.dokpool.client.base.DocpoolBaseService;
 import de.bfs.dokpool.client.utils.Utils;
 
 /**
@@ -14,6 +15,14 @@ public class DocumentPool extends Folder {
 	
 	public DocumentPool(XmlRpcClient client, String path, Object[] data) {
 		super(client, path, data);
+	}
+
+	public DocumentPool(DocpoolBaseService service, String path, Object[] data) {
+		super(service, path, data);
+	}
+
+	public DocumentPool(DocpoolBaseService service, String path, Map<String,Object> data) {
+		super(service, path, data);
 	}
 
 	

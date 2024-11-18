@@ -10,6 +10,7 @@ import org.apache.xmlrpc.client.XmlRpcClient;
 
 import de.bfs.dokpool.client.base.App;
 import de.bfs.dokpool.client.base.BaseObject;
+import de.bfs.dokpool.client.base.DocpoolBaseService;
 import de.bfs.dokpool.client.utils.Utils;
 
 /**
@@ -28,6 +29,17 @@ public class Folder extends BaseObject {
 		if (alldata != null) {
 			contents = (Map<String, Object>) ((Map<String, Object>) alldata[2]).get("contents");
 		}
+	}
+
+	public Folder(DocpoolBaseService service, String path, Object[] alldata) {
+		super(service, path, alldata);
+		if (alldata != null) {
+			contents = (Map<String, Object>) ((Map<String, Object>) alldata[2]).get("contents");
+		}
+	}
+
+	public Folder(DocpoolBaseService service, String path, Map<String,Object> data) {
+		super(service, path, data);
 	}
 
 	/**

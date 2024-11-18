@@ -17,6 +17,7 @@ import de.bfs.dokpool.client.utils.Utils;
  */
 public class BaseObject {
 	protected XmlRpcClient client = null;
+	protected DocpoolBaseService service = null;
 	protected String path = null;
 	protected Map<String,Object> data = null;
 	protected Map<String,Object> metadata = null;
@@ -27,6 +28,20 @@ public class BaseObject {
 		if (alldata != null) {
 			data = (Map<String,Object>)alldata[0];
 		}
+	}
+
+	public BaseObject(DocpoolBaseService service, String path, Object[] alldata) {
+		this.service = service;
+		this.path = path;
+		if (alldata != null) {
+			data = (Map<String,Object>)alldata[0];
+		}
+	}
+
+	public BaseObject(DocpoolBaseService service, String path, Map<String,Object> data) {
+		this.service = service;
+		this.path = path;
+		this.data = data;
 	}
 	
 

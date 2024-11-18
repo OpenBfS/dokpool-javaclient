@@ -51,8 +51,8 @@ public class DokpoolTest {
 	public static DocumentPool obtainDocumentPoolXMLRPC() throws Exception {
 		log.info("URL: " + PROTOP5 + "://" + HOSTP5 + ":" + PORTP5 + "/" + PLONESITE + " User:" + USER + " Password:" + PW);
 		DocpoolBaseService docpoolBaseService = new DocpoolBaseService(PROTOP5 + "://" + HOSTP5 + ":" + PORTP5 + "/" + PLONESITE, USER, PW);
-		List<DocumentPool> myDocpools = docpoolBaseService.getDocumentPools();
-		DocumentPool mainDocpool = docpoolBaseService.getPrimaryDocumentPool();
+		List<DocumentPool> myDocpools = docpoolBaseService.getDocumentPoolsX();
+		DocumentPool mainDocpool = docpoolBaseService.getPrimaryDocumentPoolX();
 
 		log.info("Number of Dokppols: " + myDocpools.size());
 		log.info("Main Dokpool: " + mainDocpool.getFolderPath());
@@ -64,6 +64,26 @@ public class DokpoolTest {
 				break;
 			}
 		}
+
+		return mainDocpool;
+	}
+
+	public static DocumentPool obtainDocumentPoolREST() throws Exception {
+		log.info("URL: " + PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE + " User:" + USER + " Password:" + PW);
+		DocpoolBaseService docpoolBaseService = new DocpoolBaseService(PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE, USER, PW);
+		List<DocumentPool> myDocpools = docpoolBaseService.getDocumentPools();
+		DocumentPool mainDocpool = docpoolBaseService.getPrimaryDocumentPool();
+
+		log.info("Number of Dokppols: " + myDocpools.size());
+		// log.info("Main Dokpool: " + mainDocpool.getFolderPath());
+
+		// for (DocumentPool sDocpool : myDocpools) {
+		// 	if (sDocpool.getFolderPath().matches("/" + PLONESITE + "/" + DOKPOOL)) {
+		// 		mainDocpool = sDocpool;
+		// 		log.info("Main Dokpool is now: " + mainDocpool.getFolderPath());
+		// 		break;
+		// 	}
+		// }
 
 		return mainDocpool;
 	}
@@ -147,6 +167,69 @@ public class DokpoolTest {
 
 	}
 
+	/**
+	 * Test document creation, file upload and setting properties.
+	 *
+	 */
+	@Test
+	public void documentTestREST() throws Exception {
+		log.info("=== TEST: documentTest ======");
+		DocumentPool mainDocpool = obtainDocumentPoolREST();
+
+		// Folder myGroupFolder = null;
+		// try {
+		// 	myGroupFolder = mainDocpool.getGroupFolders().get(0);
+		// } catch (NullPointerException e) {
+		// 	throw new NullPointerException("Could not find any valid GroupFolder for Dokpool " + mainDocpool.getFolderPath());
+		// }
+
+		// log.info("Group folder path (first from Dokpool): " + myGroupFolder.getFolderPath());
+
+		// try {
+		// 	myGroupFolder = mainDocpool.getFolder(/*mainDocpool.getFolderPath() + "/*/"content/Groups/" + GROUPFOLDER);
+		// 	log.info("Group folder now set from from env: " +  myGroupFolder.getFolderPath());
+		// } catch (NullPointerException e) {
+		// 	log.warn("Could not find DOKPOOL_GROUPFOLDER: " + mainDocpool.getFolderPath() + "/content/Groups/" + GROUPFOLDER);
+		// 	log.info("Group folder remains: " +  myGroupFolder.getFolderPath());
+		// }
+
+		// boolean docExists = false;
+		// try {
+		// 	myGroupFolder.getFolder(DOCID);
+		// 	log.info("Object exists: " +   myGroupFolder.getFolderPath() + "/" + DOCID);
+		// 	docExists = true;
+		// } catch (NullPointerException e) {
+		// 	log.info("Object does not exist: " +  myGroupFolder.getFolderPath() + "/" + DOCID);
+		// }
+		// if (docExists) {
+		// 	deleteObjectXMLRPC(myGroupFolder, DOCID);
+		// }
+
+		// Map<String, Object> docProperties = new HashMap<String, Object>();
+		// docProperties.put("title", "JavaDocpoolTestDocument");
+		// docProperties.put("description", "Created by mvn test.");
+		// docProperties.put("text", "This is just a Test and can be deleted.");
+
+		// List<String> creatorsList = new ArrayList<String>();
+		// creatorsList.add(DOCUMENTOWNER);
+		// creatorsList.add(USER);
+		// docProperties.put("creators", creatorsList);
+
+		// log.info("Creating new document at " + myGroupFolder.getFolderPath() + "/" + DOCID);
+		// Document d = myGroupFolder.createDPDocument(DOCID, docProperties);
+
+		// byte[] fileData = Files.readAllBytes(Paths.get("README.md"));
+		// d.uploadFile("readme", "Read me!", "A file you should read.", fileData, "README.txt");
+		// byte[] imageData = Files.readAllBytes(Paths.get("src/test/resources/image.png"));
+		// d.uploadImage("image", "Look at me!", "An image you should look at.", imageData, "image.png");
+
+		// //TODO: needed? What does this do?
+		// d.autocreateSubdocuments();
+
+		// d.setWorkflowStatus("publish");
+
+	}
+
 
 	/**
 	 * Document handling parts of old main Test method.
@@ -159,7 +242,7 @@ public class DokpoolTest {
 		log.info("URL: " + PROTOP5 + "://" + HOSTP5 + ":" + PORTP5 + "/" + PLONESITE + " User:" + USER + " Password:" + PW);
 		DocpoolBaseService docpoolBaseService = new DocpoolBaseService(PROTOP5 + "://" + HOSTP5 + ":" + PORTP5 + "/" + PLONESITE, USER, PW);
 
-		List<DocumentPool> documentpools = docpoolBaseService.getDocumentPools();
+		List<DocumentPool> documentpools = docpoolBaseService.getDocumentPoolsX();
 		if (documentpools.isEmpty()) {
 			log.warn("No DocumentPools found!");
 		}
@@ -324,14 +407,14 @@ public class DokpoolTest {
 		rsp = HttpClient.doPostRequest(PROTO,HOST,PORT,createUrl,headers,null,HttpClient.MimeTypes.JSON,createData);
 		log.info(rsp.content);
 
-String patchUrl = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/"+DOKPOOL+"/content/Groups/"+ GROUPFOLDER+"/"+DOCID);
-JSON.Node patchJS = new JSON.Node("{}")
-	.set("title", "JavaAPIDocumentNameChangedByPATCHRequest")
-	.set("description", "Changed by java test.")
-;
-byte[] patchData = patchJS.toJSON().getBytes();
-rsp = HttpClient.doPatchRequest(PROTO,HOST,PORT,patchUrl,headers,HttpClient.MimeTypes.JSON,patchData);
-log.info(rsp.content);
+		String patchUrl = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/"+DOKPOOL+"/content/Groups/"+ GROUPFOLDER+"/"+DOCID);
+		JSON.Node patchJS = new JSON.Node("{}")
+			.set("title", "JavaAPIDocumentNameChangedByPATCHRequest")
+			.set("description", "Changed by java test.")
+		;
+		byte[] patchData = patchJS.toJSON().getBytes();
+		rsp = HttpClient.doPatchRequest(PROTO,HOST,PORT,patchUrl,headers,HttpClient.MimeTypes.JSON,patchData);
+		log.info(rsp.content);
 		Assert.assertEquals(204, rsp.status);
 
 		String deleteUrl = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/"+DOKPOOL+"/content/Groups/"+ GROUPFOLDER+"/copy_of_"+DOCID);
