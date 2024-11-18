@@ -47,7 +47,7 @@ public class Folder extends BaseObject {
 	 */
 	private Map<String, Object> getContents() {
 		if (contents == null) {
-			contents = (Map<String, Object>) ((Map<String, Object>) ((Object[]) (getObjectData()[1]))[2])
+			contents = (Map<String, Object>) ((Map<String, Object>) ((Object[]) (getObjectDataX()[1]))[2])
 					.get("contents");
 		}
 		return contents;
@@ -151,7 +151,7 @@ public class Folder extends BaseObject {
 		params.add(id);
 		params.add(properties);
 		params.add("DPDocument");
-		String newpath = (String) execute("create_dp_object", params);
+		String newpath = (String) executeX("create_dp_object", params);
 		return new Document(client, newpath, null);
 	}
 
@@ -161,7 +161,7 @@ public class Folder extends BaseObject {
 		params.add(id);
 		params.add(properties);
 		params.add(type);
-		String newpath = (String) execute("create_dp_object", params);
+		String newpath = (String) executeX("create_dp_object", params);
 		return new BaseObject(client, newpath, null);
 	}
 
@@ -191,7 +191,7 @@ public class Folder extends BaseObject {
 			}
 		}
 		Document document = createDPDocument(id, title, description, text, docType, behaviors);
-		document.update(properties);
+		document.updateX(properties);
 		return document;
 	}
 

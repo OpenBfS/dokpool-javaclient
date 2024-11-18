@@ -85,6 +85,8 @@ public class DokpoolTest {
 			}
 		}
 
+		// new Folder(docpoolBaseService, "/bund/content/Groups/bund_zdb/java-docpool-test-doc", (Object[])null).setWorkflowStatus("retract");
+		// log.info(new Folder(docpoolBaseService, "/bund/content/Groups/bund_zdb/java-docpool-test-doc", (Object[])null).getWorkflowStatus());
 		return mainDocpool;
 	}
 
@@ -163,7 +165,7 @@ public class DokpoolTest {
 		//TODO: needed? What does this do?
 		d.autocreateSubdocuments();
 
-		d.setWorkflowStatus("publish");
+		d.setWorkflowStatusX("publish");
 
 	}
 
@@ -175,6 +177,7 @@ public class DokpoolTest {
 	public void documentTestREST() throws Exception {
 		log.info("=== TEST: documentTest ======");
 		DocumentPool mainDocpool = obtainDocumentPoolREST();
+		log.info(mainDocpool.getWorkflowStatus());
 
 		// Folder myGroupFolder = null;
 		// try {
@@ -275,9 +278,9 @@ public class DokpoolTest {
 		BaseObject bo = groupFolder.createObject(randId, properties, "DPDocument");
 		properties.clear();
 		properties.put("scenarios", new String[] { "scenario1", "scenario2" });
-		bo.update(properties);
+		bo.updateX(properties);
 		log.info(bo.getStringAttribute("created_by"));
-		log.info(bo.getDateAttribute("effective"));
+		log.info(bo.getDateAttributeX("effective"));
 		deleteObjectXMLRPC(groupFolder,randId);
 
 		Map<String, Object> elanProperties = new HashMap<String, Object>();
@@ -293,7 +296,7 @@ public class DokpoolTest {
 				null
 				);
 		log.info(d.getTitle());
-		log.info(d.getWorkflowStatus());
+		log.info(d.getWorkflowStatusX());
 		log.info(d.getStringsAttribute("local_behaviors"));
 		deleteObjectXMLRPC(groupFolder,randId);
 	}

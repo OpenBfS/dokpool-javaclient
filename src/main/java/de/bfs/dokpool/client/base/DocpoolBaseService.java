@@ -146,6 +146,25 @@ public class DocpoolBaseService {
 		return new JSON.Node(rsp.content);
 	}
 
+	public HttpClient.Response patchRequestWithMap(String endpoint, Map<String,Object> patchMap) throws Exception {
+		String patchUrl = urlPrefix + endpoint;
+		JSON.Node patchJS = new JSON.Node(patchMap);
+		byte[] patchData = patchJS.toJSON().getBytes();
+		return HttpClient.doPatchRequest(proto,host,port,patchUrl,defaultHeaders(),HttpClient.MimeTypes.JSON,patchData);
+	}
+
+	public HttpClient.Response patchRequestWithNode(String endpoint, JSON.Node patchNode) throws Exception {
+		String patchUrl = urlPrefix + endpoint;
+		byte[] patchData = patchNode.toJSON().getBytes();
+		return HttpClient.doPatchRequest(proto,host,port,patchUrl,defaultHeaders(),HttpClient.MimeTypes.JSON,patchData);
+	}
+
+	public HttpClient.Response postRequestWithNode(String endpoint, JSON.Node patchNode) throws Exception {
+		String patchUrl = urlPrefix + endpoint;
+		byte[] patchData = patchNode.toJSON().getBytes();
+		return HttpClient.doPostRequest(proto,host,port,patchUrl,defaultHeaders(),null,HttpClient.MimeTypes.JSON,patchData);
+	}
+
 	/**
 	 * Get all ESDs available to the current user.
 	 * 

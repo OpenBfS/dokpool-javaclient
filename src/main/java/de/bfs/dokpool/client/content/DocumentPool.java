@@ -118,7 +118,7 @@ public class DocumentPool extends Folder {
 	public Folder getUserFolder() {
 		Vector<String> params = new Vector<String>();
 		params.add(fullpath());
-		Object[] res = (Object[])execute("get_user_folder", params);
+		Object[] res = (Object[])executeX("get_user_folder", params);
 		return new Folder(client, (String)res[0], (Object[])res[1]);
 	}
 	
@@ -128,7 +128,7 @@ public class DocumentPool extends Folder {
 	public List<Folder> getGroupFolders() {
 		Vector<String> params = new Vector<String>();
 		params.add(fullpath());
-		Map<String, Object> folders = (Map<String, Object>)execute("get_group_folders", params);
+		Map<String, Object> folders = (Map<String, Object>)executeX("get_group_folders", params);
 		if (folders != null) {
 			ArrayList<Folder> res = new ArrayList<Folder>();
 			for (String path: folders.keySet()) {
@@ -146,7 +146,7 @@ public class DocumentPool extends Folder {
 	public List<Folder> getTransferFolders() {
 		Vector<String> params = new Vector<String>();
 		params.add(fullpath());
-		Map<String, Object> folders = (Map<String, Object>)execute("get_transfer_folders", params);
+		Map<String, Object> folders = (Map<String, Object>)executeX("get_transfer_folders", params);
 		if (folders != null) {
 			ArrayList<Folder> res = new ArrayList<Folder>();
 			for (String path: folders.keySet()) {
@@ -165,7 +165,7 @@ public class DocumentPool extends Folder {
 		params.add(password);
 		params.add(fullname);
 		params.add(esd);
-		Object o = execute("post_user", params);
+		Object o = executeX("post_user", params);
 		if (((String) o).equals(userId)) {
 			user = new User(client, fullpath(), userId, password, fullname, esd);
 		}
@@ -179,7 +179,7 @@ public class DocumentPool extends Folder {
 		params.add(title);
 		params.add(description);
 		params.add(esd);
-		Object o = execute("post_group", params);
+		Object o = executeX("post_group", params);
 		System.out.println((String) o+"  "+groupId);
 		if (((String) o).equals(groupId)) {
 			group = new Group(client, fullpath(), groupId, title, description, esd);

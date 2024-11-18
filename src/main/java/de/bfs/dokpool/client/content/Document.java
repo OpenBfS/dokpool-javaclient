@@ -32,7 +32,7 @@ public class Document extends Folder {
 		params.add(description);
 		params.add(data);
 		params.add(filename);
-		String newpath = (String)execute("upload_file", params);
+		String newpath = (String)executeX("upload_file", params);
 		return new File(client, newpath, null);
 	}
 
@@ -53,20 +53,20 @@ public class Document extends Folder {
 		params.add(description);
 		params.add(data);
 		params.add(filename);
-		String newpath = (String)execute("upload_image", params);
+		String newpath = (String)executeX("upload_image", params);
 		return new Image(client, newpath, null);
 	}
 	public String autocreateSubdocuments() {
 		Vector<Object> params = new Vector<Object>();
 		params.add(fullpath());
-		String msg = (String)execute("autocreate_subdocuments", params);
+		String msg = (String)executeX("autocreate_subdocuments", params);
 		return msg;
 	 }
 	 
 	 public String readPropertiesFromFile() {
 		Vector<Object> params = new Vector<Object>();
 		params.add(fullpath());
-		String msg = (String)execute("read_properties_from_file", params);
+		String msg = (String)executeX("read_properties_from_file", params);
 		return msg;
 	 }
 
@@ -76,7 +76,7 @@ public class Document extends Folder {
 		params.add(name);
 		params.add(value);
 		params.add(type);
-		String msg = (String)execute("set_property", params);
+		String msg = (String)executeX("set_property", params);
 		return msg;
 	}
 
@@ -84,7 +84,7 @@ public class Document extends Folder {
 		Vector<Object> params = new Vector<Object>();
 		params.add(fullpath());
 		params.add(name);
-		String msg = (String)execute("delete_property", params);
+		String msg = (String)executeX("delete_property", params);
 		return msg;
 	}
 
@@ -92,14 +92,14 @@ public class Document extends Folder {
 		Vector<Object> params = new Vector<Object>();
 		params.add(fullpath());
 		params.add(name);
-		String msg = (String)execute("get_property", params);
+		String msg = (String)executeX("get_property", params);
 		return msg;
 	}
 
 	public Map<String,String> getProperties() {
         Vector<Object> params = new Vector<Object>();
         params.add(fullpath());
-        Map<String,String> msg = (Map<String,String>)execute("get_properties", params);
+        Map<String,String> msg = (Map<String,String>)executeX("get_properties", params);
         return msg;
 
     }
