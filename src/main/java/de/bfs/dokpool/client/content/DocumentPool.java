@@ -30,7 +30,7 @@ public class DocumentPool extends Folder {
 	 * @return all DocTypes within this ESD
 	 */
 	public List<DocType> getTypes() {
-		Map<String, Object> types = Utils.queryObjects(client, path, "DocType");
+		Map<String, Object> types = Utils.queryObjects(client, fullpath(), "DocType");
 		if (types != null) {
 			ArrayList<DocType> res = new ArrayList<DocType>();
 			for (String path: types.keySet()) {
@@ -47,7 +47,7 @@ public class DocumentPool extends Folder {
 	 * @deprecated
 	 */
 	@Deprecated public List<Scenario> getScenarios() {
-		Map<String, Object> scen = Utils.queryObjects(client, path, "ELANScenario");
+		Map<String, Object> scen = Utils.queryObjects(client, fullpath(), "ELANScenario");
 		if (scen != null) {
 			ArrayList<Scenario> res = new ArrayList<Scenario>();
 			for (String path: scen.keySet()) {
@@ -66,7 +66,7 @@ public class DocumentPool extends Folder {
 	@Deprecated public List<Scenario> getActiveScenarios() {
 		HashMap<String, String> filterparams = new HashMap<String, String>();
 		filterparams.put("dp_type", "active");
-		Map<String, Object> scen = Utils.queryObjects(client, path, "ELANScenario", filterparams);
+		Map<String, Object> scen = Utils.queryObjects(client, fullpath(), "ELANScenario", filterparams);
 		if (scen != null) {
 			ArrayList<Scenario> res = new ArrayList<Scenario>();
 			for (String path: scen.keySet()) {
@@ -82,7 +82,7 @@ public class DocumentPool extends Folder {
 	 * @return all Events within this ESD
 	 */
 	public List<Event> getEvents() {
-		Map<String, Object> events = Utils.queryObjects(client, path, "DPEvent");
+		Map<String, Object> events = Utils.queryObjects(client, fullpath(), "DPEvent");
 		if (events != null) {
 			ArrayList<Event> res = new ArrayList<Event>();
 			for (String path: events.keySet()) {
@@ -100,7 +100,7 @@ public class DocumentPool extends Folder {
 	public List<Event> getActiveEvents() {
 		HashMap<String, String> filterparams = new HashMap<String, String>();
 		filterparams.put("dp_type", "active");
-		Map<String, Object> events = Utils.queryObjects(client, path, "DPEvent", filterparams);
+		Map<String, Object> events = Utils.queryObjects(client, fullpath(), "DPEvent", filterparams);
 		if (events != null) {
 			ArrayList<Event> res = new ArrayList<Event>();
 			for (String path: events.keySet()) {
@@ -117,7 +117,7 @@ public class DocumentPool extends Folder {
 	 */
 	public Folder getUserFolder() {
 		Vector<String> params = new Vector<String>();
-		params.add(path);
+		params.add(fullpath());
 		Object[] res = (Object[])execute("get_user_folder", params);
 		return new Folder(client, (String)res[0], (Object[])res[1]);
 	}
@@ -127,7 +127,7 @@ public class DocumentPool extends Folder {
 	 */
 	public List<Folder> getGroupFolders() {
 		Vector<String> params = new Vector<String>();
-		params.add(path);
+		params.add(fullpath());
 		Map<String, Object> folders = (Map<String, Object>)execute("get_group_folders", params);
 		if (folders != null) {
 			ArrayList<Folder> res = new ArrayList<Folder>();
@@ -145,7 +145,7 @@ public class DocumentPool extends Folder {
 	 */
 	public List<Folder> getTransferFolders() {
 		Vector<String> params = new Vector<String>();
-		params.add(path);
+		params.add(fullpath());
 		Map<String, Object> folders = (Map<String, Object>)execute("get_transfer_folders", params);
 		if (folders != null) {
 			ArrayList<Folder> res = new ArrayList<Folder>();
@@ -167,7 +167,7 @@ public class DocumentPool extends Folder {
 		params.add(esd);
 		Object o = execute("post_user", params);
 		if (((String) o).equals(userId)) {
-			user = new User(client, path, userId, password, fullname, esd);
+			user = new User(client, fullpath(), userId, password, fullname, esd);
 		}
 		return user;
 	}
@@ -182,7 +182,7 @@ public class DocumentPool extends Folder {
 		Object o = execute("post_group", params);
 		System.out.println((String) o+"  "+groupId);
 		if (((String) o).equals(groupId)) {
-			group = new Group(client, path, groupId, title, description, esd);
+			group = new Group(client, fullpath(), groupId, title, description, esd);
 		}
 		return group;
 	}

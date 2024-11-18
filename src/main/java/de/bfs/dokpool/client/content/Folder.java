@@ -62,7 +62,7 @@ public class Folder extends BaseObject {
 	 */
 	public Folder getFolder(String subpath) {
 		Vector<String> params = new Vector<String>();
-		params.add(path);
+		params.add(fullpath());
 		params.add(subpath);
 		Object[] res = (Object[]) Utils.execute(client, "get_plone_object", params);
 		return new Folder(client, (String) res[0], (Object[]) res[1]);
@@ -112,7 +112,7 @@ public class Folder extends BaseObject {
 	 * @return path of Folder
 	 */
 	public String getFolderPath() {
-		return this.path;
+		return this.fullpath();
 	}
 
 	/**
@@ -147,7 +147,7 @@ public class Folder extends BaseObject {
 
 	public Document createDPDocument(String id, Map<String, Object> properties) {
 		Vector<Object> params = new Vector<Object>();
-		params.add(path);
+		params.add(fullpath());
 		params.add(id);
 		params.add(properties);
 		params.add("DPDocument");
@@ -157,7 +157,7 @@ public class Folder extends BaseObject {
 
 	public BaseObject createObject(String id, Map<String, Object> properties, String type) {
 		Vector<Object> params = new Vector<Object>();
-		params.add(path);
+		params.add(fullpath());
 		params.add(id);
 		params.add(properties);
 		params.add(type);

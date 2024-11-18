@@ -35,7 +35,7 @@ public class DocpoolBaseService {
 	private String proto;
 	private String host;
 	private String port;
-	private String plonesite;
+	/*package-private*/ String plonesite;
 	private String username;
 	private String password;
 	public final String urlPrefix;
@@ -193,7 +193,7 @@ public class DocpoolBaseService {
 		}
 		List<DocumentPool> dpList = new ArrayList<>();
 		for (JSON.Node child : node){
-			dpList.add(new DocumentPool(this, child.toString(), (Map<String,Object>) null));
+			dpList.add(new DocumentPool(this, "/"+child.toString(), (Map<String,Object>) null));
 		}
 		return dpList;//new DocumentPool(this, pathWithoutPrefix((String) map.get("@id")), map);
 	}
@@ -243,6 +243,11 @@ public class DocpoolBaseService {
 
 	private Optional<DocumentPool> getDocumentPoolX(String name) {
 		List<DocumentPool> documentPools = getDocumentPoolsX();
+		return documentPools.stream().filter(pool -> pool.getId().equals(name)).findFirst();
+	}
+
+	private Optional<DocumentPool> getDocumentPool(String name) {
+		List<DocumentPool> documentPools = getDocumentPools();
 		return documentPools.stream().filter(pool -> pool.getId().equals(name)).findFirst();
 	}
 

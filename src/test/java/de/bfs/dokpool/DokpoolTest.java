@@ -75,15 +75,15 @@ public class DokpoolTest {
 		DocumentPool mainDocpool = docpoolBaseService.getPrimaryDocumentPool();
 
 		log.info("Number of Dokppols: " + myDocpools.size());
-		// log.info("Main Dokpool: " + mainDocpool.getFolderPath());
+		log.info("Main Dokpool: " + mainDocpool.getFolderPath());
 
-		// for (DocumentPool sDocpool : myDocpools) {
-		// 	if (sDocpool.getFolderPath().matches("/" + PLONESITE + "/" + DOKPOOL)) {
-		// 		mainDocpool = sDocpool;
-		// 		log.info("Main Dokpool is now: " + mainDocpool.getFolderPath());
-		// 		break;
-		// 	}
-		// }
+		for (DocumentPool sDocpool : myDocpools) {
+			if (sDocpool.getFolderPath().matches("/" + PLONESITE + "/" + DOKPOOL)) {
+				mainDocpool = sDocpool;
+				log.info("Main Dokpool is now: " + mainDocpool.getFolderPath());
+				break;
+			}
+		}
 
 		return mainDocpool;
 	}

@@ -18,13 +18,15 @@ import de.bfs.dokpool.client.utils.Utils;
 public class BaseObject {
 	protected XmlRpcClient client = null;
 	protected DocpoolBaseService service = null;
-	protected String path = null;
+	//
+	protected String pathWithPlonesite = null;
+	private String pathAfterPlonesite = null;
 	protected Map<String,Object> data = null;
 	protected Map<String,Object> metadata = null;
 	
 	public BaseObject(XmlRpcClient client, String path, Object[] alldata) {
 		this.client = client;
-		this.path = path;
+		this.pathWithPlonesite = path;
 		if (alldata != null) {
 			data = (Map<String,Object>)alldata[0];
 		}
@@ -32,7 +34,7 @@ public class BaseObject {
 
 	public BaseObject(DocpoolBaseService service, String path, Object[] alldata) {
 		this.service = service;
-		this.path = path;
+		this.pathAfterPlonesite = path;
 		if (alldata != null) {
 			data = (Map<String,Object>)alldata[0];
 		}
@@ -40,8 +42,16 @@ public class BaseObject {
 
 	public BaseObject(DocpoolBaseService service, String path, Map<String,Object> data) {
 		this.service = service;
-		this.path = path;
+		this.pathAfterPlonesite = path;
 		this.data = data;
+	}
+
+	protected String fullpath(){
+		if (pathAfterPlonesite != null){
+			return "/" + service.plonesite + pathAfterPlonesite;
+		} else {
+			return pathWithPlonesite;
+		}
 	}
 	
 
@@ -51,7 +61,7 @@ public class BaseObject {
 	 */
 	protected Object[] getObjectData() {
 		Vector<String> params = new Vector<String>();
-		params.add(path);
+		params.add(fullpath());
 		params.add("");
 		Object[] res = (Object[])execute("get_plone_object", params);
 		return res;
@@ -128,7 +138,7 @@ public class BaseObject {
 	 */
 	public String getWorkflowStatus() {
 		Vector<String> params = new Vector<String>();
-		params.add(path);
+		params.add(fullpath());
 		Map<String, Object> res = (Map<String, Object>)execute("get_workflow", params);
 		return (String)res.get("state");
 	}
@@ -140,7 +150,7 @@ public class BaseObject {
 	public void setWorkflowStatus(String transition) {
 		Vector<String> params = new Vector<String>();
 		params.add(transition);
-		params.add(path);
+		params.add(fullpath());
 		execute("set_workflow", params);		
 	}
 	
@@ -150,7 +160,7 @@ public class BaseObject {
 	 */
 	public void update(Map<String, Object> properties) {
 		Vector<Object> params = new Vector<Object>();
-		params.add(path);
+		params.add(fullpath());
 		params.add(properties);
 		execute("update_dp_object", params);
 

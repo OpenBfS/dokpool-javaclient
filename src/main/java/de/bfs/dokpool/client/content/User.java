@@ -21,7 +21,7 @@ public class User extends BaseObject{
 		params.add(this.userId);
 		params.add(group.getGroupId());
 		Object o = execute("add_user_to_group", params);*/
-		group.addUser(this,this.path);
+		group.addUser(this,this.fullpath());
 	}
 	
 	public String getUserId() {
