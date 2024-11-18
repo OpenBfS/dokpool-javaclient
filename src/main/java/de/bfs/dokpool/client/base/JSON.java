@@ -26,7 +26,7 @@ public class JSON {
 	private static final Log log = LogFactory.getLog(JSON.class);
 	private static final ObjectMapper mapper = new ObjectMapper();
 
-	public static class Node {
+	public static class Node implements Iterable<Node> {
 		private JsonNode jacksonNode;
 
 		public Node(String json) throws Exception {
@@ -368,6 +368,31 @@ public class JSON {
 				throw new Exception("JSON processing error.");
 			}
 		}
+
+		@Override
+		public Iterator<JSON.Node> iterator() {
+			Iterator<JSON.Node> it = new Iterator<JSON.Node>() {
+
+				private Iterator<JsonNode> it = jacksonNode.iterator();
+
+				@Override
+				public boolean hasNext() {
+					return it.hasNext();
+				}
+
+				@Override
+				public JSON.Node next() {
+					return new JSON.Node(it.next());
+				}
+
+				@Override
+				public void remove() {
+					it.remove();
+				}
+			};
+			return it;
+		}
+
 	}
 }
 
