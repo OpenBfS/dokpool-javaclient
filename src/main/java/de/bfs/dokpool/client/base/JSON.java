@@ -319,10 +319,8 @@ public class JSON {
 					return toList();
 				case "number":
 					if (toDouble() == toLong()){
-						log.info("equal:" + toDouble());
 						return new Long(toLong());
 					} else {
-						log.info("not equal:" + toDouble());
 						return new Double(toDouble());
 					}
 				case "string":
