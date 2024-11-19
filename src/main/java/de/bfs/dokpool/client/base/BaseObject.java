@@ -22,13 +22,13 @@ import org.apache.commons.logging.LogFactory;
  *
  */
 public class BaseObject {
-	private final Log log = LogFactory.getLog(DocpoolBaseService.class);
+	protected final Log log = LogFactory.getLog(DocpoolBaseService.class);
 
 	protected XmlRpcClient client = null;
 	protected DocpoolBaseService service = null;
 	//
-	protected String pathWithPlonesite = null;
-	private String pathAfterPlonesite = null;
+	private String pathWithPlonesite = null;
+	protected String pathAfterPlonesite = null;
 	protected Map<String,Object> data = null;
 	protected Map<String,Object> metadata = null;
 	

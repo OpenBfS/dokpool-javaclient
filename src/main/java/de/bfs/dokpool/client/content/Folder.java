@@ -11,6 +11,8 @@ import org.apache.xmlrpc.client.XmlRpcClient;
 import de.bfs.dokpool.client.base.App;
 import de.bfs.dokpool.client.base.BaseObject;
 import de.bfs.dokpool.client.base.DocpoolBaseService;
+import de.bfs.dokpool.client.base.HttpClient;
+import de.bfs.dokpool.client.base.JSON;
 import de.bfs.dokpool.client.utils.Utils;
 
 /**
@@ -19,6 +21,7 @@ import de.bfs.dokpool.client.utils.Utils;
  */
 public class Folder extends BaseObject {
 	protected Map<String, Object> contents = null;
+	protected JSON.Node contentsNode = null;
 
 	private static boolean mapEmptyOrNull(final Map<String, Object> map) {
 		return map == null || map.isEmpty();
@@ -45,12 +48,26 @@ public class Folder extends BaseObject {
 	/**
 	 * @return the complete contents of this folder
 	 */
-	private Map<String, Object> getContents() {
+	private Map<String, Object> getContentsX() {
 		if (contents == null) {
 			contents = (Map<String, Object>) ((Map<String, Object>) ((Object[]) (getObjectDataX()[1]))[2])
 					.get("contents");
 		}
 		return contents;
+	}
+
+	/**
+	 * @return the complete contents of this folder
+	 */
+	private JSON.Node getContentsNode() {
+		if (contentsNode == null) {
+			try {
+				contentsNode = service.nodeFromGetRequest(pathAfterPlonesite);
+			} catch (Exception ex){
+				log.error(ex.getLocalizedMessage());
+			}
+		}
+		return contentsNode;
 	}
 
 	/**
@@ -75,10 +92,10 @@ public class Folder extends BaseObject {
 	 *            the Plone type name or null
 	 * @return folder contents, possibly filtered by type
 	 */
-	public List<Object> getContents(String type) {
-		if (getContents() != null) {
+	public List<Object> getContentsX(String type) {
+		if (getContentsX() != null) {
 			ArrayList<Object> res = new ArrayList<Object>();
-			for (String path : getContents().keySet()) {
+			for (String path : getContentsX().keySet()) {
 				Map<String, Object> metadata = (Map<String, Object>) contents.get(path);
 				String portal_type = (String) metadata.get("Type");
 				portal_type = portal_type == null ? "" : portal_type;
@@ -101,11 +118,50 @@ public class Folder extends BaseObject {
 
 	}
 
+	// JSON.Node folderNode = service.nodeFromGetRequest(pathAfterPlonesite);
+	// log.info(folderNode.toJSON());
+	// for (JSON.Node itemNode : folderNode.get("items")) {
+	// 	log.info(itemNode.toJSON());
+	// }
+
+	/**
+	 * Return all folder contents, can be filtered by type.
+	 * 
+	 * @param type:
+	 *            the Plone type name or null
+	 * @return folder contents, possibly filtered by type
+	 */
+	public List<Object> getContents(String type) {
+		if (getContentsNode() != null) {
+			ArrayList<Object> res = new ArrayList<Object>();
+			for (JSON.Node itemNode : contentsNode.get("items")) {
+				String portal_type = itemNode.get("@type").toString();
+				portal_type = portal_type == null ? "" : portal_type;
+				String path = service.pathWithoutPrefix(itemNode);
+				if ((type == null) || (type.equals(portal_type))) {
+					if (portal_type.equals("SimpleFolder") || portal_type.equals("ELANTransferFolder")) {
+						res.add(new Folder(service, path, (Object[]) null));
+					} else if (portal_type.equals("DPDocument") || portal_type.equals("InfoDocument")) {
+						res.add(new Document(service, path, (Object[]) null));
+					} else if (portal_type.equals("File")) {
+						res.add(new File(service, path, (Object[]) null));
+					} else if (portal_type.equals("Image")) {
+						res.add(new Image(service, path, (Object[]) null));
+					}
+				}
+			}
+			return res;
+		} else {
+			return null;
+		}
+	}
+
 	/**
 	 * @return only subfolders of type ELANFolder
 	 */
 	public List<Object> getSubFolders() {
-		return getContents("SimpleFolder");
+		//TODO: remove XMLRPC part
+		return client != null ? getContentsX("SimpleFolder"): getContents("SimpleFolder");
 	}
 
 	/**
@@ -119,7 +175,8 @@ public class Folder extends BaseObject {
 	 * @return only documents within this folder
 	 */
 	public List<Object> getDocuments() {
-		return getContents("DPDocument");
+		//TODO: remove XMLRPC part
+		return client != null ? getContentsX("DPDocument"): getContents("DPDocument");
 	}
 
 	/**
@@ -142,10 +199,10 @@ public class Folder extends BaseObject {
 		properties.put("text", text);
 		properties.put("docType", docType);
 		properties.put("local_behaviors", behaviors);
-		return createDPDocument(id, properties);
+		return createDPDocumentX(id, properties);
 	}
 
-	public Document createDPDocument(String id, Map<String, Object> properties) {
+	public Document createDPDocumentX(String id, Map<String, Object> properties) {
 		Vector<Object> params = new Vector<Object>();
 		params.add(fullpath());
 		params.add(id);
@@ -155,7 +212,7 @@ public class Folder extends BaseObject {
 		return new Document(client, newpath, null);
 	}
 
-	public BaseObject createObject(String id, Map<String, Object> properties, String type) {
+	public BaseObject createObjectX(String id, Map<String, Object> properties, String type) {
 		Vector<Object> params = new Vector<Object>();
 		params.add(fullpath());
 		params.add(id);
@@ -163,6 +220,28 @@ public class Folder extends BaseObject {
 		params.add(type);
 		String newpath = (String) executeX("create_dp_object", params);
 		return new BaseObject(client, newpath, null);
+	}
+
+	//TODO: does not work, because of some error in Python code
+	public BaseObject createObject(String id, Map<String, Object> properties, String type) {
+		// JSON.Node createJS = new JSON.Node("{}")
+		// 	.set("@type","DPDocument")
+		// 	.set("title", "JavaAPIDocumentNameCreatedByPOSTRequest")
+		// 	.set("id", DOCID)
+		// 	.set("transferred_by", USER)
+		// 	.set("description", "Created by java test.")
+		// 	.set("text", "This is just a Test and can be deleted.")
+		// ;
+		try {
+			JSON.Node createJS = new JSON.Node(properties);
+			HttpClient.Response rsp = service.postRequestWithNode(pathAfterPlonesite, createJS);
+			JSON.Node rspNode = new JSON.Node(rsp.content);
+			String newpath = service.pathWithoutPrefix(rspNode);
+			return new BaseObject(service, newpath, (Object[]) null);
+		} catch (Exception ex){
+			log.error(ex.getLocalizedMessage());
+			return null;
+		}
 	}
 
 	public Document createAppSpecificDocument(String id, String title, String description, String text, String docType,

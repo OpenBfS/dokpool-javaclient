@@ -155,7 +155,7 @@ public class DokpoolTest {
 		docProperties.put("creators", creatorsList);
 
 		log.info("Creating new document at " + myGroupFolder.getFolderPath() + "/" + DOCID);
-		Document d = myGroupFolder.createDPDocument(DOCID, docProperties);
+		Document d = myGroupFolder.createDPDocumentX(DOCID, docProperties);
 
 		byte[] fileData = Files.readAllBytes(Paths.get("README.md"));
 		d.uploadFile("readme", "Read me!", "A file you should read.", fileData, "README.txt");
@@ -178,6 +178,7 @@ public class DokpoolTest {
 		log.info("=== TEST: documentTest ======");
 		DocumentPool mainDocpool = obtainDocumentPoolREST();
 		log.info(mainDocpool.getWorkflowStatus());
+
 
 		// Folder myGroupFolder = null;
 		// try {
@@ -265,7 +266,7 @@ public class DokpoolTest {
 		Random r = new Random();
 		log.info(groupFolder);
 		log.info(groupFolder.getTitle());
-		List<Object> documents = groupFolder.getContents(null);
+		List<Object> documents = groupFolder.getContentsX(null);
 		List<Folder> tf = myDocumentPool.getTransferFolders();
 		Map<String, Object> properties = new HashMap<String, Object>();
 		properties.put("title", "Generic Title");
@@ -275,7 +276,7 @@ public class DokpoolTest {
 		properties.put("subjects", new String[] { "Tag1", "Tag2" });
 		properties.put("local_behaviors", new String[] { "elan" });
 		String randId = "generic" + r.nextInt();
-		BaseObject bo = groupFolder.createObject(randId, properties, "DPDocument");
+		BaseObject bo = groupFolder.createObjectX(randId, properties, "DPDocument");
 		properties.clear();
 		properties.put("scenarios", new String[] { "scenario1", "scenario2" });
 		bo.updateX(properties);

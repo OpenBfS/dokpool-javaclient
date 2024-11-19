@@ -5,6 +5,8 @@ import java.util.Vector;
 
 import org.apache.xmlrpc.client.XmlRpcClient;
 
+import de.bfs.dokpool.client.base.DocpoolBaseService;
+
 /**
  * Wraps the ELANDocument type
  *
@@ -12,6 +14,14 @@ import org.apache.xmlrpc.client.XmlRpcClient;
 public class Document extends Folder {
 	public Document(XmlRpcClient client, String path, Object[] data) {
 		super(client, path, data);
+	}
+
+	public Document(DocpoolBaseService service, String path, Object[] alldata) {
+		super(service, path, alldata);
+	}
+
+	public Document(DocpoolBaseService service, String path, Map<String,Object> data) {
+		super(service, path, data);
 	}
 	
 	/**
