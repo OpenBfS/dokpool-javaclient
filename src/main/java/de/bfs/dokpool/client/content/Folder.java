@@ -77,13 +77,38 @@ public class Folder extends BaseObject {
 	 *            the relative path of the subfolder
 	 * @return the subfolder
 	 */
-	public Folder getFolder(String subpath) {
+	public Folder getFolderX(String subpath) {
 		Vector<String> params = new Vector<String>();
 		params.add(fullpath());
 		params.add(subpath);
 		Object[] res = (Object[]) Utils.execute(client, "get_plone_object", params);
 		return new Folder(client, (String) res[0], (Object[]) res[1]);
 	}
+
+	/**
+	 * Get a subfolder.
+	 * 
+	 * @param subpath:
+	 *            the relative path of the subfolder
+	 * @return the subfolder
+	 */
+	public Folder getFolder(String subpath) {
+		subpath = subpath.startsWith("/") ? subpath: ("/" + subpath);
+		try {
+			JSON.Node subpathNode = service.nodeFromGetRequest(pathAfterPlonesite + subpath);
+			if (subpathNode.get("type").toString().equals("NotFound")){
+				log.info(subpathNode.get("message"));
+				return null;
+			}
+			return new Folder(service, service.pathWithoutPrefix(subpathNode), subpathNode.toMap());
+		} catch (Exception ex){
+			log.error(ex.toString()+": "+ ex.getLocalizedMessage());
+			return null;
+		}
+	}
+
+
+	// data = service.mapFromGetRequest(pathAfterPlonesite);
 
 	/**
 	 * Return all folder contents, can be filtered by type.
@@ -199,7 +224,7 @@ public class Folder extends BaseObject {
 		properties.put("text", text);
 		properties.put("docType", docType);
 		properties.put("local_behaviors", behaviors);
-		return createDPDocumentX(id, properties);
+		return client != null ? createDPDocumentX(id, properties) : createDPDocumentX(id, properties);
 	}
 
 	public Document createDPDocumentX(String id, Map<String, Object> properties) {
@@ -210,6 +235,24 @@ public class Folder extends BaseObject {
 		params.add("DPDocument");
 		String newpath = (String) executeX("create_dp_object", params);
 		return new Document(client, newpath, null);
+	}
+
+	//TODO: does not work, because of some error in Python code
+	public BaseObject createDPDocument(String id, Map<String, Object> properties) {
+		try {
+			JSON.Node createJS = new JSON.Node(properties);
+			createJS
+				.set("@type","DPDocument")
+				.set("id", id)
+			;
+			HttpClient.Response rsp = service.postRequestWithNode(pathAfterPlonesite, createJS);
+			JSON.Node rspNode = new JSON.Node(rsp.content);
+			String newpath = service.pathWithoutPrefix(rspNode);
+			return new BaseObject(service, newpath, (Object[]) null);
+		} catch (Exception ex){
+			log.error(ex.getLocalizedMessage());
+			return null;
+		}
 	}
 
 	public BaseObject createObjectX(String id, Map<String, Object> properties, String type) {
@@ -223,15 +266,8 @@ public class Folder extends BaseObject {
 	}
 
 	//TODO: does not work, because of some error in Python code
+	//TODO: if @type is needed, we should check it ourself before sending the request
 	public BaseObject createObject(String id, Map<String, Object> properties, String type) {
-		// JSON.Node createJS = new JSON.Node("{}")
-		// 	.set("@type","DPDocument")
-		// 	.set("title", "JavaAPIDocumentNameCreatedByPOSTRequest")
-		// 	.set("id", DOCID)
-		// 	.set("transferred_by", USER)
-		// 	.set("description", "Created by java test.")
-		// 	.set("text", "This is just a Test and can be deleted.")
-		// ;
 		try {
 			JSON.Node createJS = new JSON.Node(properties);
 			HttpClient.Response rsp = service.postRequestWithNode(pathAfterPlonesite, createJS);
@@ -270,7 +306,8 @@ public class Folder extends BaseObject {
 			}
 		}
 		Document document = createDPDocument(id, title, description, text, docType, behaviors);
-		document.updateX(properties);
+		//TODO: remove XMLRPC
+		if (client!= null) {document.updateX(properties);} else {document.update(properties);}
 		return document;
 	}
 

@@ -125,7 +125,7 @@ public class DokpoolTest {
 		log.info("Group folder path (first from Dokpool): " + myGroupFolder.getFolderPath());
 
 		try {
-			myGroupFolder = mainDocpool.getFolder(/*mainDocpool.getFolderPath() + "/*/"content/Groups/" + GROUPFOLDER);
+			myGroupFolder = mainDocpool.getFolderX(/*mainDocpool.getFolderPath() + "/*/"content/Groups/" + GROUPFOLDER);
 			log.info("Group folder now set from from env: " +  myGroupFolder.getFolderPath());
 		} catch (NullPointerException e) {
 			log.warn("Could not find DOKPOOL_GROUPFOLDER: " + mainDocpool.getFolderPath() + "/content/Groups/" + GROUPFOLDER);
@@ -134,7 +134,7 @@ public class DokpoolTest {
 
 		boolean docExists = false;
 		try {
-			myGroupFolder.getFolder(DOCID);
+			myGroupFolder.getFolderX(DOCID);
 			log.info("Object exists: " +   myGroupFolder.getFolderPath() + "/" + DOCID);
 			docExists = true;
 		} catch (NullPointerException e) {
