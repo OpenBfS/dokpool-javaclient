@@ -199,7 +199,7 @@ public class DocumentPool extends Folder {
 	/**
 	 * @return all group folders for the current user
 	 */
-	public List<Folder> getGroupFolders() {
+	public List<Folder> getGroupFoldersX() {
 		Vector<String> params = new Vector<String>();
 		params.add(fullpath());
 		Map<String, Object> folders = (Map<String, Object>)executeX("get_group_folders", params);
@@ -215,9 +215,31 @@ public class DocumentPool extends Folder {
 	}
 
 	/**
+	 * @return all group folders for the current user
+	 * TODO: really the current user? Or just the current Dokpool?
+	 */
+	public List<Folder> getGroupFolders() {
+		try {
+			JSON.Node gfListNode = service.nodeFromGetRequest(pathAfterPlonesite + "/content/Groups/");
+			if (gfListNode.get("type") != null && gfListNode.get("type").toString().equals("NotFound")){
+				log.info(gfListNode.get("message"));
+				return null;
+			}
+			ArrayList<Folder> res = new ArrayList<Folder>();
+			for (JSON.Node gfNode : gfListNode.get("items")) {
+				res.add(new Folder(service, service.pathWithoutPrefix(gfNode), (Object[]) null));
+			}
+			return res;
+		} catch (Exception ex){
+			log.error(exeptionToString(ex));
+			return null;
+		}
+	}
+
+	/**
 	 * @return all transfer folders for the current user
 	 */
-	public List<Folder> getTransferFolders() {
+	public List<Folder> getTransferFoldersX() {
 		Vector<String> params = new Vector<String>();
 		params.add(fullpath());
 		Map<String, Object> folders = (Map<String, Object>)executeX("get_transfer_folders", params);
@@ -231,8 +253,30 @@ public class DocumentPool extends Folder {
 			return null;
 		}		
 	}
+
+	/**
+	 * @return all transfer folders for the current user
+	 * TODO: really the current user? Or just the current Dokpool?
+	 */
+	public List<Folder> getTransferFolders() {
+		try {
+			JSON.Node tfListNode = service.nodeFromGetRequest(pathAfterPlonesite + "/content/Transfers");
+			if (tfListNode.get("type") != null && tfListNode.get("type").toString().equals("NotFound")){
+				log.info(tfListNode.get("message"));
+				return null;
+			}
+			ArrayList<Folder> res = new ArrayList<Folder>();
+			for (JSON.Node tfNode : tfListNode.get("items")) {
+				res.add(new Folder(service, service.pathWithoutPrefix(tfNode), (Object[]) null));
+			}
+			return res;
+		} catch (Exception ex){
+			log.error(exeptionToString(ex));
+			return null;
+		}
+	}
 	
-	public User createUser(String userId, String password, String fullname, String esd){
+	public User createUserX(String userId, String password, String fullname, String esd){
 		User user = null;
 		Vector<String> params = new Vector<String>();
 		params.add(userId);
@@ -246,7 +290,7 @@ public class DocumentPool extends Folder {
 		return user;
 	}
 	
-	public Group createGroup(String groupId, String title, String description, String esd) {
+	public Group createGroupX(String groupId, String title, String description, String esd) {
 		Group group = null;
 		Vector<String> params = new Vector<String>();
 		params.add(groupId);
@@ -263,7 +307,7 @@ public class DocumentPool extends Folder {
 
 
 	public Optional<Folder> getGroupFolder(String name) {
-		List<Folder> groupFolders = getGroupFolders();
+		List<Folder> groupFolders = client != null ? getGroupFoldersX() : getGroupFolders();
 		return groupFolders.stream().filter(folder -> folder.getId().equals(name)).findFirst();
 	}
 	

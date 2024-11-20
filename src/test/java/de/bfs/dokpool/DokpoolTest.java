@@ -118,9 +118,11 @@ public class DokpoolTest {
 		log.info("numer of events: " + mainDocpool.getEventsX().size());
 		log.info("numer of active events: " + mainDocpool.getActiveEventsX().size());
 
+		log.info("My very own user folder: " + mainDocpool.getUserFolderX());
+
 		Folder myGroupFolder = null;
 		try {
-			myGroupFolder = mainDocpool.getGroupFolders().get(0);
+			myGroupFolder = mainDocpool.getGroupFoldersX().get(0);
 		} catch (NullPointerException e) {
 			throw new NullPointerException("Could not find any valid GroupFolder for Dokpool " + mainDocpool.getFolderPath());
 		}
@@ -130,10 +132,21 @@ public class DokpoolTest {
 		try {
 			myGroupFolder = mainDocpool.getFolderX(/*mainDocpool.getFolderPath() + "/*/"content/Groups/" + GROUPFOLDER);
 			log.info("Group folder now set from from env: " +  myGroupFolder.getFolderPath());
+			myGroupFolder = mainDocpool.getGroupFolder(GROUPFOLDER).get();
+			log.info("Group folder set from from env again: " +  myGroupFolder.getFolderPath());
 		} catch (NullPointerException e) {
 			log.warn("Could not find DOKPOOL_GROUPFOLDER: " + mainDocpool.getFolderPath() + "/content/Groups/" + GROUPFOLDER);
 			log.info("Group folder remains: " +  myGroupFolder.getFolderPath());
 		}
+
+		Folder myTransferFolder = null;
+		try {
+			myTransferFolder = mainDocpool.getTransferFoldersX().get(0);
+			log.info("Transfer folder path (first from Dokpool): " + myTransferFolder.getFolderPath());
+		} catch (NullPointerException e) {
+			log.info("Could not find any valid TransferFolder for Dokpool " + mainDocpool.getFolderPath());
+		}
+		
 
 		boolean docExists = false;
 		try {
@@ -189,22 +202,32 @@ public class DokpoolTest {
 		log.info("The user folder of some well known user: " + mainDocpool.getUserFolder(MEMBER));
 
 
-		// Folder myGroupFolder = null;
-		// try {
-		// 	myGroupFolder = mainDocpool.getGroupFolders().get(0);
-		// } catch (NullPointerException e) {
-		// 	throw new NullPointerException("Could not find any valid GroupFolder for Dokpool " + mainDocpool.getFolderPath());
-		// }
+		Folder myGroupFolder = null;
+		try {
+			myGroupFolder = mainDocpool.getGroupFolders().get(0);
+		} catch (NullPointerException e) {
+			throw new NullPointerException("Could not find any valid GroupFolder for Dokpool " + mainDocpool.getFolderPath());
+		}
 
-		// log.info("Group folder path (first from Dokpool): " + myGroupFolder.getFolderPath());
+		log.info("Group folder path (first from Dokpool): " + myGroupFolder.getFolderPath());
 
-		// try {
-		// 	myGroupFolder = mainDocpool.getFolder(/*mainDocpool.getFolderPath() + "/*/"content/Groups/" + GROUPFOLDER);
-		// 	log.info("Group folder now set from from env: " +  myGroupFolder.getFolderPath());
-		// } catch (NullPointerException e) {
-		// 	log.warn("Could not find DOKPOOL_GROUPFOLDER: " + mainDocpool.getFolderPath() + "/content/Groups/" + GROUPFOLDER);
-		// 	log.info("Group folder remains: " +  myGroupFolder.getFolderPath());
-		// }
+		try {
+			myGroupFolder = mainDocpool.getFolder("content/Groups/" + GROUPFOLDER);
+			log.info("Group folder now set from from env: " +  myGroupFolder.getFolderPath());
+			myGroupFolder = mainDocpool.getGroupFolder(GROUPFOLDER).get();
+			log.info("Group folder set from from env again: " +  myGroupFolder.getFolderPath());
+		} catch (NullPointerException e) {
+			log.warn("Could not find DOKPOOL_GROUPFOLDER: " + mainDocpool.getFolderPath() + "/content/Groups/" + GROUPFOLDER);
+			log.info("Group folder remains: " +  myGroupFolder.getFolderPath());
+		}
+
+		Folder myTransferFolder = null;
+		try {
+			myTransferFolder = mainDocpool.getTransferFolders().get(0);
+			log.info("Transfer folder path (first from Dokpool): " + myTransferFolder.getFolderPath());
+		} catch (NullPointerException e) {
+			log.info("Could not find any valid TransferFolder for Dokpool " + mainDocpool.getFolderPath());
+		}
 
 		// boolean docExists = false;
 		// try {
@@ -276,7 +299,7 @@ public class DokpoolTest {
 		log.info(groupFolder);
 		log.info(groupFolder.getTitle());
 		List<Object> documents = groupFolder.getContentsX(null);
-		List<Folder> tf = myDocumentPool.getTransferFolders();
+		List<Folder> tf = myDocumentPool.getTransferFoldersX();
 		Map<String, Object> properties = new HashMap<String, Object>();
 		properties.put("title", "Generic Title");
 		properties.put("description", "Generic Description");
@@ -319,13 +342,13 @@ public class DokpoolTest {
 	public void userManagementTestXMLRPC() throws Exception {
 		log.info("=== TEST: userManagementTest ======");
 		DocumentPool myDocumentPool = obtainDocumentPoolXMLRPC();
-		User user = myDocumentPool.createUser("testuserId", "testuserPW", "Test User Full Name", extractPath(myDocumentPool));
+		User user = myDocumentPool.createUserX("testuserId", "testuserPW", "Test User Full Name", extractPath(myDocumentPool));
 		if (user == null) {
 			log.error("No User created!");
 		} else {
 			log.info("User " + user.getUserId() + " created.");
 		}
-		Group group = myDocumentPool.createGroup("testgroupId", "Test Group Full Name","for java tests", extractPath(myDocumentPool));
+		Group group = myDocumentPool.createGroupX("testgroupId", "Test Group Full Name","for java tests", extractPath(myDocumentPool));
 		if (group == null) {
 			log.error("No group created.");
 		} else {

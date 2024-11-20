@@ -96,7 +96,7 @@ public class Folder extends BaseObject {
 		subpath = subpath.startsWith("/") ? subpath: ("/" + subpath);
 		try {
 			JSON.Node subpathNode = service.nodeFromGetRequest(pathAfterPlonesite + subpath);
-			if (subpathNode.get("type").toString().equals("NotFound")){
+			if (subpathNode.get("type") != null && subpathNode.get("type").toString().equals("NotFound")){
 				log.info(subpathNode.get("message"));
 				return null;
 			}
