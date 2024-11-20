@@ -118,6 +118,10 @@ public class DocpoolBaseService {
 		return node.get("@id").toString().substring(urlPrefixLength);
 	}
 
+	public String getUsername() {
+		return username;
+	}
+
 	/**
 	 * 
 	 * @return A Map with authentication and accept (JSON) headers.
@@ -207,7 +211,7 @@ public class DocpoolBaseService {
 		try {//TODO: current API does not throw exceptions, change?
 			node = nodeFromGetRequest(ep);
 		} catch (Exception ex){
-			log.error(ex.getLocalizedMessage());
+			log.error(ex.toString()+": "+ ex.getLocalizedMessage());
 			return null;
 		}
 		List<DocumentPool> dpList = new ArrayList<>();
@@ -254,7 +258,7 @@ public class DocpoolBaseService {
 		try {//TODO: current API does not throw exceptions, change?
 			map = mapFromGetRequest(ep);
 		} catch (Exception ex){
-			log.error(ex.getLocalizedMessage());
+			log.error(ex.toString()+": "+ ex.getLocalizedMessage());
 			return null;
 		}
 		return new DocumentPool(this, pathWithoutPrefix((String) map.get("@id")), map);

@@ -115,6 +115,9 @@ public class DokpoolTest {
 		log.info("=== TEST: documentTest ======");
 		DocumentPool mainDocpool = obtainDocumentPoolXMLRPC();
 
+		log.info("numer of events: " + mainDocpool.getEventsX().size());
+		log.info("numer of active events: " + mainDocpool.getActiveEventsX().size());
+
 		Folder myGroupFolder = null;
 		try {
 			myGroupFolder = mainDocpool.getGroupFolders().get(0);
@@ -178,6 +181,9 @@ public class DokpoolTest {
 		log.info("=== TEST: documentTest ======");
 		DocumentPool mainDocpool = obtainDocumentPoolREST();
 		log.info(mainDocpool.getWorkflowStatus());
+
+		log.info("numer of events: " + mainDocpool.getEvents().size());
+		log.info("numer of active events: " + mainDocpool.getActiveEvents().size());
 
 
 		// Folder myGroupFolder = null;
@@ -256,7 +262,7 @@ public class DokpoolTest {
 		DocumentPool myDocumentPool = ((Optional<DocumentPool>) gdPField.invoke(docpoolBaseService,DOKPOOL)).get();
 		log.info(myDocumentPool.getTitle());
 		log.info(myDocumentPool.getDescription());
-		List<DocType> types = myDocumentPool.getTypes();
+		List<DocType> types = myDocumentPool.getTypesX();
 		for (DocType t : types) {
 			log.info(t.getId());
 			log.info(t.getTitle());

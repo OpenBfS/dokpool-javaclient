@@ -5,6 +5,7 @@ import java.util.*;
 import org.apache.xmlrpc.client.XmlRpcClient;
 
 import de.bfs.dokpool.client.base.DocpoolBaseService;
+import de.bfs.dokpool.client.base.JSON;
 import de.bfs.dokpool.client.utils.Utils;
 
 /**
@@ -29,7 +30,7 @@ public class DocumentPool extends Folder {
 	/**
 	 * @return all DocTypes within this ESD
 	 */
-	public List<DocType> getTypes() {
+	public List<DocType> getTypesX() {
 		Map<String, Object> types = Utils.queryObjects(client, fullpath(), "DocType");
 		if (types != null) {
 			ArrayList<DocType> res = new ArrayList<DocType>();
@@ -46,7 +47,7 @@ public class DocumentPool extends Folder {
 	 * @return all Scenarios within this ESD
 	 * @deprecated
 	 */
-	@Deprecated public List<Scenario> getScenarios() {
+	@Deprecated public List<Scenario> getScenariosX() {
 		Map<String, Object> scen = Utils.queryObjects(client, fullpath(), "ELANScenario");
 		if (scen != null) {
 			ArrayList<Scenario> res = new ArrayList<Scenario>();
@@ -63,7 +64,7 @@ public class DocumentPool extends Folder {
 	 * @return all active Scenarios within this ESD
 	 * @deprecated
 	 */
-	@Deprecated public List<Scenario> getActiveScenarios() {
+	@Deprecated public List<Scenario> getActiveScenariosX() {
 		HashMap<String, String> filterparams = new HashMap<String, String>();
 		filterparams.put("dp_type", "active");
 		Map<String, Object> scen = Utils.queryObjects(client, fullpath(), "ELANScenario", filterparams);
@@ -81,7 +82,7 @@ public class DocumentPool extends Folder {
 	/**
 	 * @return all Events within this ESD
 	 */
-	public List<Event> getEvents() {
+	public List<Event> getEventsX() {
 		Map<String, Object> events = Utils.queryObjects(client, fullpath(), "DPEvent");
 		if (events != null) {
 			ArrayList<Event> res = new ArrayList<Event>();
@@ -95,9 +96,31 @@ public class DocumentPool extends Folder {
 	}
 
 	/**
+	 * @return all Events within this ESD
+	 */
+	public List<Event> getEvents() {
+		JSON.Node itemsNode = null;
+		try {
+			itemsNode = service.nodeFromGetRequest(pathAfterPlonesite + "/contentconfig/scen").get("items");
+		} catch (Exception ex){
+			log.error(ex.toString()+": "+ ex.getLocalizedMessage());
+			return null;
+		}
+		if (itemsNode != null) {
+			ArrayList<Event> res = new ArrayList<Event>();
+			for (JSON.Node eventNode : itemsNode) {
+				res.add(new Event(service, service.pathWithoutPrefix(eventNode), (Object[]) null));
+			}
+			return res;
+		} else {
+			return null;
+		}
+	}
+
+	/**
 	 * @return all active Events within this ESD
 	 */
-	public List<Event> getActiveEvents() {
+	public List<Event> getActiveEventsX() {
 		HashMap<String, String> filterparams = new HashMap<String, String>();
 		filterparams.put("dp_type", "active");
 		Map<String, Object> events = Utils.queryObjects(client, fullpath(), "DPEvent", filterparams);
@@ -113,14 +136,65 @@ public class DocumentPool extends Folder {
 	}
 
 	/**
-	 * @return the user folder of the current user
+	 * @return all Events within this ESD
 	 */
-	public Folder getUserFolder() {
+	public List<Event> getActiveEvents() {
+		JSON.Node itemsNode = null;
+		try {
+			itemsNode = service.nodeFromGetRequest(pathAfterPlonesite + "/contentconfig/scen/@search?portal_type=DPEvent&dp_type=active").get("items");
+		} catch (Exception ex){
+			log.error(ex.toString()+": "+ ex.getLocalizedMessage());
+			return null;
+		}
+		if (itemsNode != null) {
+			ArrayList<Event> res = new ArrayList<Event>();
+			for (JSON.Node eventNode : itemsNode) {
+				res.add(new Event(service, service.pathWithoutPrefix(eventNode), (Object[]) null));
+			}
+			return res;
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * @return the user folder of the current user /content/Members/<username>
+	 */
+	public Folder getUserFolderX() {
 		Vector<String> params = new Vector<String>();
 		params.add(fullpath());
 		Object[] res = (Object[])executeX("get_user_folder", params);
 		return new Folder(client, (String)res[0], (Object[])res[1]);
 	}
+
+	/**
+	 * @return the user folder of the current user
+	 */
+	public Folder getUserFolder() {
+		return getUserFolder(service.getUsername());
+	}
+
+	/**
+	 * @return the user folder of the current user /content/Members/<username>
+	 */
+	public Folder getUserFolder(String username) {
+		if (username.contains("-") && !username.contains("--")){
+			username = username.replaceAll("-","--");
+		}
+		try {
+			JSON.Node folderNode = service.nodeFromGetRequest(pathAfterPlonesite + "/content/Members/" + username);
+			if (folderNode.get("type").toString().equals("NotFound")){
+				log.info(folderNode.get("message"));
+				return null;
+			}
+			return new Folder(service, service.pathWithoutPrefix(folderNode), folderNode.toMap());
+		} catch (Exception ex){
+			log.error(ex.toString()+": "+ ex.getLocalizedMessage());
+			return null;
+		}
+	}
+
+	
 	
 	/**
 	 * @return all group folders for the current user

@@ -101,7 +101,7 @@ public class BaseObject {
 			try {
 				data = service.mapFromGetRequest(pathAfterPlonesite);
 			} catch (Exception ex) {
-				log.error(ex.getLocalizedMessage());
+				log.error(ex.toString()+": "+ ex.getLocalizedMessage());
 			}
 		}
 		return data;
@@ -193,7 +193,7 @@ public class BaseObject {
 			JSON.Node node = service.nodeFromGetRequest(pathAfterPlonesite+"/@workflow").get("state").get("id");
 			return node.toString();
 		} catch (Exception ex){
-			log.error(ex.getLocalizedMessage());
+			log.error(ex.toString()+": "+ ex.getLocalizedMessage());
 			return null;
 		}
 	}
@@ -235,7 +235,7 @@ public class BaseObject {
 			}
 			service.postRequestWithNode(pathAfterPlonesite+endpoint, transNode);
 		} catch (Exception ex) {
-			log.error(ex.getLocalizedMessage());
+			log.error(ex.toString()+": "+ ex.getLocalizedMessage());
 		}
 
 	}
@@ -259,7 +259,7 @@ public class BaseObject {
 		try {
 			service.patchRequestWithMap(pathAfterPlonesite, properties);
 		} catch(Exception ex) {
-			log.error(ex.getLocalizedMessage());
+			log.error(ex.toString()+": "+ ex.getLocalizedMessage());
 		}
 	}
 	
