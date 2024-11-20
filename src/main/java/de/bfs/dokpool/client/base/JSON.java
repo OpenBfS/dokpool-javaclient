@@ -30,9 +30,15 @@ public class JSON {
 		private JsonNode jacksonNode;
 
 		public Node(String json) throws Exception {
+			if (json == null) {
+				throw new NullPointerException();
+			}
 			try {
 				jacksonNode = mapper.readTree(json);
 			} catch(JsonProcessingException jpe) {
+				throw new Exception("JSON processing error.");
+			}
+			if (jacksonNode == null){
 				throw new Exception("JSON processing error.");
 			}
 		}
@@ -105,15 +111,20 @@ public class JSON {
 		}
 
 		private Node(JsonNode jacksonNode){
+			if (jacksonNode == null) {
+				throw new NullPointerException();
+			}
 			this.jacksonNode = jacksonNode;
 		}
 
 		public Node get(String childId){
-			return jacksonNode != null ? new Node(jacksonNode.get(childId)) : null;
+			JsonNode gotNode = jacksonNode != null ? jacksonNode.get(childId) : null;
+			return gotNode != null ? new Node(gotNode) : null;
 		}
 
 		public Node get(int index){
-			return jacksonNode != null ?  new Node(jacksonNode.get(index)) : null;
+			JsonNode gotNode = jacksonNode != null ? jacksonNode.get(index) : null;
+			return gotNode != null ? new Node(gotNode) : null;
 		}
 		
 		/**
