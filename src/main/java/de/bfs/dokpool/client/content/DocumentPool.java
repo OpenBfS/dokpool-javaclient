@@ -103,7 +103,7 @@ public class DocumentPool extends Folder {
 		try {
 			itemsNode = service.nodeFromGetRequest(pathAfterPlonesite + "/contentconfig/scen").get("items");
 		} catch (Exception ex){
-			log.error(ex.toString()+": "+ ex.getLocalizedMessage());
+			log.error(exeptionToString(ex));
 			return null;
 		}
 		if (itemsNode != null) {
@@ -143,7 +143,7 @@ public class DocumentPool extends Folder {
 		try {
 			itemsNode = service.nodeFromGetRequest(pathAfterPlonesite + "/contentconfig/scen/@search?portal_type=DPEvent&dp_type=active").get("items");
 		} catch (Exception ex){
-			log.error(ex.toString()+": "+ ex.getLocalizedMessage());
+			log.error(exeptionToString(ex));
 			return null;
 		}
 		if (itemsNode != null) {
@@ -183,13 +183,13 @@ public class DocumentPool extends Folder {
 		}
 		try {
 			JSON.Node folderNode = service.nodeFromGetRequest(pathAfterPlonesite + "/content/Members/" + username);
-			if (folderNode.get("type").toString().equals("NotFound")){
+			if (folderNode.get("type") != null && folderNode.get("type").toString().equals("NotFound")){
 				log.info(folderNode.get("message"));
 				return null;
 			}
 			return new Folder(service, service.pathWithoutPrefix(folderNode), folderNode.toMap());
 		} catch (Exception ex){
-			log.error(ex.toString()+": "+ ex.getLocalizedMessage());
+			log.error(exeptionToString(ex));
 			return null;
 		}
 	}
