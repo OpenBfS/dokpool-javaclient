@@ -1,6 +1,9 @@
 package de.bfs.dokpool.client.base;
 
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -122,6 +125,13 @@ public class DocpoolBaseService {
 		return username;
 	}
 
+	public static String exeptionToString(Exception ex) {
+		Writer stBuffer = new StringWriter();
+		PrintWriter stPrintWriter = new PrintWriter(stBuffer);
+		ex.printStackTrace(stPrintWriter);
+		return ex.toString() + ": " + ex.getLocalizedMessage() + "\n" + stBuffer.toString();
+	}
+
 	/**
 	 * 
 	 * @return A Map with authentication and accept (JSON) headers.
@@ -211,7 +221,7 @@ public class DocpoolBaseService {
 		try {//TODO: current API does not throw exceptions, change?
 			node = nodeFromGetRequest(ep);
 		} catch (Exception ex){
-			log.error(ex.toString()+": "+ ex.getLocalizedMessage());
+			log.error(exeptionToString(ex));
 			return null;
 		}
 		List<DocumentPool> dpList = new ArrayList<>();
@@ -258,7 +268,7 @@ public class DocpoolBaseService {
 		try {//TODO: current API does not throw exceptions, change?
 			map = mapFromGetRequest(ep);
 		} catch (Exception ex){
-			log.error(ex.toString()+": "+ ex.getLocalizedMessage());
+			log.error(exeptionToString(ex));
 			return null;
 		}
 		return new DocumentPool(this, pathWithoutPrefix((String) map.get("@id")), map);

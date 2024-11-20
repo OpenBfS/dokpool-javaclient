@@ -64,7 +64,7 @@ public class Folder extends BaseObject {
 			try {
 				contentsNode = service.nodeFromGetRequest(pathAfterPlonesite);
 			} catch (Exception ex){
-				log.error(ex.toString()+": "+ ex.getLocalizedMessage());
+				log.error(exeptionToString(ex));
 			}
 		}
 		return contentsNode;
@@ -102,7 +102,7 @@ public class Folder extends BaseObject {
 			}
 			return new Folder(service, service.pathWithoutPrefix(subpathNode), subpathNode.toMap());
 		} catch (Exception ex){
-			log.error(ex.toString()+": "+ ex.getLocalizedMessage());
+			log.error(exeptionToString(ex));
 			return null;
 		}
 	}
@@ -250,7 +250,7 @@ public class Folder extends BaseObject {
 			String newpath = service.pathWithoutPrefix(rspNode);
 			return new BaseObject(service, newpath, (Object[]) null);
 		} catch (Exception ex){
-			log.error(ex.toString()+": "+ ex.getLocalizedMessage());
+			log.error(exeptionToString(ex));
 			return null;
 		}
 	}
@@ -275,7 +275,7 @@ public class Folder extends BaseObject {
 			String newpath = service.pathWithoutPrefix(rspNode);
 			return new BaseObject(service, newpath, (Object[]) null);
 		} catch (Exception ex){
-			log.error(ex.toString()+": "+ ex.getLocalizedMessage());
+			log.error(exeptionToString(ex));
 			return null;
 		}
 	}

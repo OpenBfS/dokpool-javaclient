@@ -185,6 +185,9 @@ public class DokpoolTest {
 		log.info("numer of events: " + mainDocpool.getEvents().size());
 		log.info("numer of active events: " + mainDocpool.getActiveEvents().size());
 
+		log.info("My very own user folder: " + mainDocpool.getUserFolder());
+		log.info("The user folder of some well known user: " + mainDocpool.getUserFolder(MEMBER));
+
 
 		// Folder myGroupFolder = null;
 		// try {
