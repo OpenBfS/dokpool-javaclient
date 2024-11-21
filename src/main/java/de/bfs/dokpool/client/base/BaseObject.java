@@ -297,16 +297,6 @@ public class BaseObject {
 		}
 	}
 
-	protected void atIdToId(JSON.Node node) {
-		String atid = node.get("@id").toString();
-		String id = atid.substring(atid.lastIndexOf("/")+1);
-		try {
-			node.set("id",id);;
-		} catch (Exception ex){
-			log.error(exeptionToString(ex));
-		}
-	}
-
 	private void idFromAtIdIfMissing() {
 		if (data == null || data.get("id") != null || data.get("id") != null) {
 			return;

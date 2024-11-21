@@ -198,6 +198,14 @@ public class DocpoolBaseService {
 		byte[] patchData = patchNode.toJSON().getBytes();
 		return HttpClient.doPostRequest(proto,host,port,patchUrl,defaultHeaders(),null,HttpClient.MimeTypes.JSON,patchData);
 	}
+	
+	public HttpClient.Response deleteRequest(String endpoint) throws Exception {
+		String path = urlPrefix + endpoint;
+		HttpClient.Response	rsp;
+		rsp = HttpClient.doDeleteRequest(proto,host,port,path,defaultHeaders());
+		log.info("response content length: " + rsp.content.length());
+		return rsp;
+	}
 
 	/**
 	 * Get all ESDs available to the current user.
