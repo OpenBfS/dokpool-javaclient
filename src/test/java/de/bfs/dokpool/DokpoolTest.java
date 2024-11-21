@@ -117,6 +117,37 @@ public class DokpoolTest {
 
 		log.info("numer of events: " + mainDocpool.getEventsX().size());
 		log.info("numer of active events: " + mainDocpool.getActiveEventsX().size());
+		List<Event> events = mainDocpool.getEventsX();
+		try {
+			Event ev = events.get(0);
+			log.info("First event from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
+		} catch (NullPointerException e) {
+			log.info("Could not find any events for " + mainDocpool.getFolderPath());
+		}
+
+		events = mainDocpool.getActiveEventsX();
+		try {
+			Event ev = events.get(0);
+			log.info("First active event from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
+		} catch (NullPointerException e) {
+			log.info("Could not find any active events for " + mainDocpool.getFolderPath());
+		}
+
+		List<Scenario> scenarios = mainDocpool.getScenariosX();
+		try {
+			Scenario ev = scenarios.get(0);
+			log.info("First scenario from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
+		} catch (NullPointerException | IndexOutOfBoundsException e) {
+			log.info("Could not find any scenarios for " + mainDocpool.getFolderPath());
+		}
+
+		scenarios = mainDocpool.getActiveScenariosX();
+		try {
+			Scenario ev = scenarios.get(0);
+			log.info("First active scenario from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
+		} catch (NullPointerException | IndexOutOfBoundsException e) {
+			log.info("Could not find any active scenarios for " + mainDocpool.getFolderPath());
+		}
 
 		log.info("My very own user folder: " + mainDocpool.getUserFolderX());
 
@@ -146,7 +177,6 @@ public class DokpoolTest {
 		} catch (NullPointerException e) {
 			log.info("Could not find any valid TransferFolder for Dokpool " + mainDocpool.getFolderPath());
 		}
-		
 
 		boolean docExists = false;
 		try {
@@ -197,6 +227,37 @@ public class DokpoolTest {
 
 		log.info("numer of events: " + mainDocpool.getEvents().size());
 		log.info("numer of active events: " + mainDocpool.getActiveEvents().size());
+		List<Event> events = mainDocpool.getEvents();
+		try {
+			Event ev = events.get(0);
+			log.info("First event from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
+		} catch (NullPointerException e) {
+			log.info("Could not find any events for " + mainDocpool.getFolderPath());
+		}
+
+		events = mainDocpool.getActiveEvents();
+		try {
+			Event ev = events.get(0);
+			log.info("First active event from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
+		} catch (NullPointerException e) {
+			log.info("Could not find any active events for " + mainDocpool.getFolderPath());
+		}
+
+		List<Scenario> scenarios = mainDocpool.getScenarios();
+		try {
+			Scenario ev = scenarios.get(0);
+			log.info("First scenario from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
+		} catch (NullPointerException | IndexOutOfBoundsException e) {
+			log.info("Could not find any scenarios for " + mainDocpool.getFolderPath());
+		}
+
+		scenarios = mainDocpool.getActiveScenarios();
+		try {
+			Scenario ev = scenarios.get(0);
+			log.info("First active scenario from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
+		} catch (NullPointerException | IndexOutOfBoundsException e) {
+			log.info("Could not find any active scenarios for " + mainDocpool.getFolderPath());
+		}
 
 		log.info("My very own user folder: " + mainDocpool.getUserFolder());
 		log.info("The user folder of some well known user: " + mainDocpool.getUserFolder(MEMBER));
@@ -228,6 +289,7 @@ public class DokpoolTest {
 		} catch (NullPointerException e) {
 			log.info("Could not find any valid TransferFolder for Dokpool " + mainDocpool.getFolderPath());
 		}
+
 
 		// boolean docExists = false;
 		// try {

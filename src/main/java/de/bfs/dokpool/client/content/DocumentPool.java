@@ -42,6 +42,28 @@ public class DocumentPool extends Folder {
 			return null;
 		}
 	}
+
+	/**
+	 * @return all DocTypes within this ESD
+	 */
+	public List<DocType> getTypes() {
+		JSON.Node typeListNode = null;
+		try {
+			typeListNode = service.nodeFromGetRequest(pathAfterPlonesite + "/@types");
+		} catch (Exception ex){
+			log.error(exeptionToString(ex));
+			return null;
+		}
+		if (typeListNode != null) {
+			ArrayList<DocType> res = new ArrayList<DocType>();
+			for (JSON.Node typeNode : typeListNode) {
+				res.add(new DocType(service, service.pathWithoutPrefix(typeNode), (Object[]) null));
+			}
+			return res;
+		} else {
+			return null;
+		}
+	}
 	
 	/**
 	 * @return all Scenarios within this ESD
@@ -61,6 +83,30 @@ public class DocumentPool extends Folder {
 	}
 
 	/**
+	 * @return all Scenarios within this ESD
+	 * @deprecated
+	 */
+	@Deprecated public List<Scenario> getScenarios() {
+		JSON.Node itemsNode = null;
+		try {
+			//TODO: only search /contentconfig/scen/?
+			itemsNode = service.nodeFromGetRequest(pathAfterPlonesite + "/@search?portal_type=ELANScenario").get("items");
+		} catch (Exception ex){
+			log.error(exeptionToString(ex));
+			return null;
+		}
+		if (itemsNode != null) {
+			ArrayList<Scenario> res = new ArrayList<Scenario>();
+			for (JSON.Node eventNode : itemsNode) {
+				res.add(new Scenario(service, service.pathWithoutPrefix(eventNode), (Object[]) null));
+			}
+			return res;
+		} else {
+			return null;
+		}
+	}
+
+	/**
 	 * @return all active Scenarios within this ESD
 	 * @deprecated
 	 */
@@ -72,6 +118,30 @@ public class DocumentPool extends Folder {
 			ArrayList<Scenario> res = new ArrayList<Scenario>();
 			for (String path: scen.keySet()) {
 				res.add(new Scenario(client, path, null));
+			}
+			return res;
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * @return all active Scenarios within this ESD
+	 * @deprecated
+	 */
+	@Deprecated public List<Scenario> getActiveScenarios() {
+		JSON.Node itemsNode = null;
+		try {
+			//TODO: only search /contentconfig/scen/?
+			itemsNode = service.nodeFromGetRequest(pathAfterPlonesite + "/@search?portal_type=ELANScenario&dp_type=active").get("items");
+		} catch (Exception ex){
+			log.error(exeptionToString(ex));
+			return null;
+		}
+		if (itemsNode != null) {
+			ArrayList<Scenario> res = new ArrayList<Scenario>();
+			for (JSON.Node eventNode : itemsNode) {
+				res.add(new Scenario(service, service.pathWithoutPrefix(eventNode), (Object[]) null));
 			}
 			return res;
 		} else {
@@ -101,7 +171,7 @@ public class DocumentPool extends Folder {
 	public List<Event> getEvents() {
 		JSON.Node itemsNode = null;
 		try {
-			itemsNode = service.nodeFromGetRequest(pathAfterPlonesite + "/contentconfig/scen").get("items");
+			itemsNode = service.nodeFromGetRequest(pathAfterPlonesite + "/contentconfig/scen/@search?portal_type=DPEvent").get("items");
 		} catch (Exception ex){
 			log.error(exeptionToString(ex));
 			return null;

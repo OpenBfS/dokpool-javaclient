@@ -9,6 +9,7 @@ import java.util.Vector;
 import org.apache.xmlrpc.client.XmlRpcClient;
 
 import de.bfs.dokpool.client.base.BaseObject;
+import de.bfs.dokpool.client.base.DocpoolBaseService;
 
 public class Group extends BaseObject {
 	
@@ -21,6 +22,14 @@ public class Group extends BaseObject {
 	
 	protected Group(XmlRpcClient client, String path, String groupId, String title, String description, String dp) {
 		super(client, path, null);
+		this.groupId = groupId;
+		this.title = title;
+		this.description = description;
+		this.dp = dp;
+	}
+
+	public Group(DocpoolBaseService service, String path, String groupId, String title, String description, String dp) {
+		super(service, path, (Object[])null);
 		this.groupId = groupId;
 		this.title = title;
 		this.description = description;
