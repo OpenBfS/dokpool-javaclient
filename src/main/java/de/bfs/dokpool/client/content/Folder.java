@@ -238,7 +238,7 @@ public class Folder extends BaseObject {
 	}
 
 	//TODO: does not work, because of some error in Python code
-	public BaseObject createDPDocument(String id, Map<String, Object> properties) {
+	public Document createDPDocument(String id, Map<String, Object> properties) {
 		try {
 			JSON.Node createJS = new JSON.Node(properties);
 			createJS
@@ -248,7 +248,7 @@ public class Folder extends BaseObject {
 			HttpClient.Response rsp = service.postRequestWithNode(pathAfterPlonesite, createJS);
 			JSON.Node rspNode = new JSON.Node(rsp.content);
 			String newpath = service.pathWithoutPrefix(rspNode);
-			return new BaseObject(service, newpath, (Object[]) null);
+			return new Document(service, newpath, (Object[]) null);
 		} catch (Exception ex){
 			log.error(exeptionToString(ex));
 			return null;
