@@ -293,7 +293,7 @@ public class DokpoolTest {
 		} catch (NullPointerException e) {
 			log.info("Could not find any valid TransferFolder for Dokpool " + mainDocpool.getFolderPath());
 		}
-
+		
 
 		// boolean docExists = false;
 		// try {

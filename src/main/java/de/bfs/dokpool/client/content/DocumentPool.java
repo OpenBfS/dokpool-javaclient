@@ -5,6 +5,7 @@ import java.util.*;
 import org.apache.xmlrpc.client.XmlRpcClient;
 
 import de.bfs.dokpool.client.base.DocpoolBaseService;
+import de.bfs.dokpool.client.base.HttpClient;
 import de.bfs.dokpool.client.base.JSON;
 import de.bfs.dokpool.client.utils.Utils;
 
@@ -370,7 +371,6 @@ public class DocumentPool extends Folder {
 	}
 
 	/**
-	/**
 	 * @return all transfer folders for this Dokpool.
 	 */
 	public List<Folder> getTransferFolders() {
@@ -405,6 +405,53 @@ public class DocumentPool extends Folder {
 		}
 		return user;
 	}
+
+	/**
+	 * Creates a new user. Currently the dokpool dp cannot be set and is silently ignored.
+	 * @return the created User.
+	 */
+	public User createUser(String userId, String password, String fullname, String dp) {
+		try {
+			JSON.Node createJS = new JSON.Node("{}")
+				.set("username", userId)
+				.set("email", "none@none.none")
+				.set("password", password)
+				.set("fullname", fullname)
+				//TODO: cannot set dp from REST?
+				//.set("unknown", dp)
+			;
+			HttpClient.Response rsp = service.postRequestWithNode("/@users", createJS);
+			JSON.Node rspNode = new JSON.Node(rsp.content);
+			if (rspNode.get("error") != null) {
+				log.info(rspNode.toJSON());
+				return null;
+			}
+			return new User(service, service.pathWithoutPrefix(rspNode), userId, password, fullname, dp);
+		} catch (Exception ex){
+			log.error(exeptionToString(ex));
+			return null;
+		}
+	}
+
+	/**
+	 * Deletes the given user.
+	 * DO NOT USE. Currently causes an error on the server side that crashes
+	 * @return true if deletion succeds, false otherwise
+	 */
+	public boolean deleteUser(String userId) {
+		try {
+			HttpClient.Response rsp = service.deleteRequest("/@users/"+userId);
+			JSON.Node rspNode = new JSON.Node(rsp.content);
+			if (rspNode.get("type") != null && rspNode.get("type").toString().equals("NotFound")){
+				log.info(rspNode.get("message"));
+				return false;
+			}
+			return true;
+		} catch (Exception ex){
+			log.error(exeptionToString(ex));
+			return false;
+		}
+	}
 	
 	public Group createGroupX(String groupId, String title, String description, String esd) {
 		Group group = null;
@@ -421,6 +468,51 @@ public class DocumentPool extends Folder {
 		return group;
 	}
 
+	/**
+	 * Creates a new user. Currently the dokpool dp cannot be set and is silently ignored.
+	 * @return the created User.
+	 */
+	public Group createGroup(String groupId, String title, String description, String dp) {
+		try {
+			JSON.Node createJS = new JSON.Node("{}")
+				.set("groupname", groupId)
+				.set("title", title)
+				.set("description", description)
+				//TODO: cannot set dp from REST?
+				//.set("unknown", dp)
+			;
+			HttpClient.Response rsp = service.postRequestWithNode("/@groups", createJS);
+			JSON.Node rspNode = new JSON.Node(rsp.content);
+			if (rspNode.get("error") != null) {
+				log.info(rspNode.toJSON());
+				return null;
+			}
+			return new Group(service, service.pathWithoutPrefix(rspNode), groupId, title, description, dp);
+		} catch (Exception ex){
+			log.error(exeptionToString(ex));
+			return null;
+		}
+	}
+
+	/**
+	 * Deletes the given group.
+	 * This methods actually works (but see deleteUser).
+	 * @return true if deletion succeds, false otherwise
+	 */
+	public boolean deleteGroup(String groupId) {
+		try {
+			HttpClient.Response rsp = service.deleteRequest("/@groups/"+groupId);
+			JSON.Node rspNode = new JSON.Node(rsp.content);
+			if (rspNode.get("type") != null && rspNode.get("type").toString().equals("NotFound")){
+				log.info(rspNode.get("message"));
+				return false;
+			}
+			return true;
+		} catch (Exception ex) {
+			log.error(exeptionToString(ex));
+			return false;
+		}
+	}
 
 	public Optional<Folder> getGroupFolder(String name) {
 		List<Folder> groupFolders = client != null ? getGroupFoldersX() : getGroupFolders();
