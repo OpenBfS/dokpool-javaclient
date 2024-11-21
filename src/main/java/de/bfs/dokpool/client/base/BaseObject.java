@@ -30,6 +30,8 @@ public class BaseObject {
 	private String pathWithPlonesite = null;
 	protected String pathAfterPlonesite = null;
 	protected Map<String,Object> data = null;
+	//we may initilize an Object with partial data
+	protected boolean dataComplete = false;
 	protected Map<String,Object> metadata = null;
 	
 	public BaseObject(XmlRpcClient client, String path, Object[] alldata) {
@@ -37,6 +39,7 @@ public class BaseObject {
 		this.pathWithPlonesite = path;
 		if (alldata != null) {
 			data = (Map<String,Object>)alldata[0];
+			dataComplete = true;
 		}
 	}
 
@@ -52,6 +55,7 @@ public class BaseObject {
 		this.service = service;
 		this.pathAfterPlonesite = path;
 		this.data = data;
+		idFromAtIdIfMissing();
 	}
 
 	protected String fullpath(){
@@ -84,6 +88,7 @@ public class BaseObject {
 	private Map<String,Object> getDataX() {
 		if (data == null) {
 			data = (Map<String,Object>)((Object[])(getObjectDataX()[1]))[0];
+			dataComplete = true;
 		}
 		return data;
 	}
@@ -93,7 +98,7 @@ public class BaseObject {
 	 * @return object attributes as map
 	 */
 	private Map<String,Object> getData() {
-		if (data == null) {
+		if (data == null || !dataComplete) {
 			//TODO: remove XMLRPC-Part
 			if (client != null){
 				return getDataX();
@@ -103,6 +108,7 @@ public class BaseObject {
 			} catch (Exception ex) {
 				log.error(exeptionToString(ex));
 			}
+			dataComplete = true;
 		}
 		return data;
 	}
@@ -111,6 +117,25 @@ public class BaseObject {
 	protected Object executeX(String command, Vector params) {
 		return Utils.execute(this.client, command, params);
 	}
+
+	/**
+	 * Helper to get value of an attribute.
+	 * @param name: the name of the attribute
+	 * @return the value
+	 */
+	public Object getAttribute(String name) {
+		//we fetch data if and only if we have no data or
+		//(incomplete data with the requesting string missing)
+		if (data == null || (!dataComplete && data.get(name) == null)) {
+			getData();
+		}
+		//data or data.get(name) may still be null
+		if (data != null) {
+			return data.get(name);			
+		} else {
+			return null;
+		}
+	}
 	
 	/**
 	 * Helper to get value of a string valued attribute.
@@ -118,18 +143,13 @@ public class BaseObject {
 	 * @return the String value
 	 */
 	public String getStringAttribute(String name) {
-		if (getData() != null) {
-			return (String)getData().get(name);			
-		}
-		else {
-			return null;
-		}
+		return (String) getAttribute(name);
 	}
 	
 	//TODO: Dates will be likely be Strings, so we can simplify this in a REST-only world.
 	public Date getDateAttributeX(String name) {
-		if (getData() != null) {
-			Object dateObject = getData().get(name);
+		if (getAttribute(name) != null) {
+			Object dateObject = getAttribute(name);
 			if (dateObject instanceof Date){
 				return (Date)dateObject;
 			} else {
@@ -149,9 +169,9 @@ public class BaseObject {
 	}
 	
 	public List<String> getStringsAttribute(String name) {
-		if (getData() != null) {
+		if (getAttribute(name) != null) {
 			List<String> values = new ArrayList<>();
-			Object[] results = (Object[])getData().get(name);
+			Object[] results = (Object[]) getAttribute(name);
 			for (Object result: results) {
 				values.add((String)result);
 			}
@@ -163,6 +183,7 @@ public class BaseObject {
 	}
 	
 	public String getId() {
+		idFromAtIdIfMissing();
 		return getStringAttribute("id");
 	}
 		
@@ -265,6 +286,34 @@ public class BaseObject {
 
 	public static String exeptionToString(Exception ex) {
 		return DocpoolBaseService.exeptionToString(ex);
+	}
+
+	protected Map<String,Object> dataFromNode(JSON.Node node) {
+		try {
+			return node.toMap();
+		} catch (Exception ex){
+			log.error(exeptionToString(ex));
+			return null;
+		}
+	}
+
+	protected void atIdToId(JSON.Node node) {
+		String atid = node.get("@id").toString();
+		String id = atid.substring(atid.lastIndexOf("/")+1);
+		try {
+			node.set("id",id);;
+		} catch (Exception ex){
+			log.error(exeptionToString(ex));
+		}
+	}
+
+	private void idFromAtIdIfMissing() {
+		if (data == null || data.get("id") != null || data.get("id") != null) {
+			return;
+		}
+		String atid = (String) data.get("@id");
+		String id = atid.substring(atid.lastIndexOf("/")+1);
+		data.put("id",id);
 	}
 	
 	
