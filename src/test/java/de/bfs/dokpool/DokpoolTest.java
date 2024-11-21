@@ -172,7 +172,9 @@ public class DokpoolTest {
 
 		Folder myTransferFolder = null;
 		try {
-			myTransferFolder = mainDocpool.getTransferFoldersX().get(0);
+			List<Folder> tfFolders = mainDocpool.getTransferFoldersX();
+			log.info("number of transfer folders: " + tfFolders.size());
+			myTransferFolder = tfFolders.get(0);
 			log.info("Transfer folder path (first from Dokpool): " + myTransferFolder.getFolderPath());
 		} catch (NullPointerException e) {
 			log.info("Could not find any valid TransferFolder for Dokpool " + mainDocpool.getFolderPath());
@@ -284,7 +286,9 @@ public class DokpoolTest {
 
 		Folder myTransferFolder = null;
 		try {
-			myTransferFolder = mainDocpool.getTransferFolders().get(0);
+			List<Folder> tfFolders = mainDocpool.getTransferFolders();
+			log.info("number of transfer folders: " + tfFolders.size());
+			myTransferFolder = tfFolders.get(0);
 			log.info("Transfer folder path (first from Dokpool): " + myTransferFolder.getFolderPath());
 		} catch (NullPointerException e) {
 			log.info("Could not find any valid TransferFolder for Dokpool " + mainDocpool.getFolderPath());

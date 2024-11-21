@@ -57,7 +57,7 @@ public class DocumentPool extends Folder {
 		if (typeListNode != null) {
 			ArrayList<DocType> res = new ArrayList<DocType>();
 			for (JSON.Node typeNode : typeListNode) {
-				res.add(new DocType(service, service.pathWithoutPrefix(typeNode), (Object[]) null));
+				res.add(new DocType(service, service.pathWithoutPrefix(typeNode), dataFromNode(typeNode)));
 			}
 			return res;
 		} else {
@@ -90,15 +90,15 @@ public class DocumentPool extends Folder {
 		JSON.Node itemsNode = null;
 		try {
 			//TODO: only search /contentconfig/scen/?
-			itemsNode = service.nodeFromGetRequest(pathAfterPlonesite + "/@search?portal_type=ELANScenario").get("items");
+			itemsNode = service.nodeFromGetRequest(pathAfterPlonesite + "/@search", "portal_type=ELANScenario").get("items");
 		} catch (Exception ex){
 			log.error(exeptionToString(ex));
 			return null;
 		}
 		if (itemsNode != null) {
 			ArrayList<Scenario> res = new ArrayList<Scenario>();
-			for (JSON.Node eventNode : itemsNode) {
-				res.add(new Scenario(service, service.pathWithoutPrefix(eventNode), (Object[]) null));
+			for (JSON.Node scenarioNode : itemsNode) {
+				res.add(new Scenario(service, service.pathWithoutPrefix(scenarioNode), dataFromNode(scenarioNode)));
 			}
 			return res;
 		} else {
@@ -133,15 +133,15 @@ public class DocumentPool extends Folder {
 		JSON.Node itemsNode = null;
 		try {
 			//TODO: only search /contentconfig/scen/?
-			itemsNode = service.nodeFromGetRequest(pathAfterPlonesite + "/@search?portal_type=ELANScenario&dp_type=active").get("items");
+			itemsNode = service.nodeFromGetRequest(pathAfterPlonesite + "/@search", "portal_type=ELANScenario&dp_type=active").get("items");
 		} catch (Exception ex){
 			log.error(exeptionToString(ex));
 			return null;
 		}
 		if (itemsNode != null) {
 			ArrayList<Scenario> res = new ArrayList<Scenario>();
-			for (JSON.Node eventNode : itemsNode) {
-				res.add(new Scenario(service, service.pathWithoutPrefix(eventNode), (Object[]) null));
+			for (JSON.Node scenarioNode : itemsNode) {
+				res.add(new Scenario(service, service.pathWithoutPrefix(scenarioNode), dataFromNode(scenarioNode)));
 			}
 			return res;
 		} else {
@@ -171,7 +171,7 @@ public class DocumentPool extends Folder {
 	public List<Event> getEvents() {
 		JSON.Node itemsNode = null;
 		try {
-			itemsNode = service.nodeFromGetRequest(pathAfterPlonesite + "/contentconfig/scen/@search?portal_type=DPEvent").get("items");
+			itemsNode = service.nodeFromGetRequest(pathAfterPlonesite + "/contentconfig/scen/@search", "portal_type=DPEvent").get("items");
 		} catch (Exception ex){
 			log.error(exeptionToString(ex));
 			return null;
@@ -179,7 +179,7 @@ public class DocumentPool extends Folder {
 		if (itemsNode != null) {
 			ArrayList<Event> res = new ArrayList<Event>();
 			for (JSON.Node eventNode : itemsNode) {
-				res.add(new Event(service, service.pathWithoutPrefix(eventNode), (Object[]) null));
+				res.add(new Event(service, service.pathWithoutPrefix(eventNode), dataFromNode(eventNode)));
 			}
 			return res;
 		} else {
@@ -211,7 +211,7 @@ public class DocumentPool extends Folder {
 	public List<Event> getActiveEvents() {
 		JSON.Node itemsNode = null;
 		try {
-			itemsNode = service.nodeFromGetRequest(pathAfterPlonesite + "/contentconfig/scen/@search?portal_type=DPEvent&dp_type=active").get("items");
+			itemsNode = service.nodeFromGetRequest(pathAfterPlonesite + "/contentconfig/scen/@search", "portal_type=DPEvent&dp_type=active").get("items");
 		} catch (Exception ex){
 			log.error(exeptionToString(ex));
 			return null;
@@ -219,7 +219,7 @@ public class DocumentPool extends Folder {
 		if (itemsNode != null) {
 			ArrayList<Event> res = new ArrayList<Event>();
 			for (JSON.Node eventNode : itemsNode) {
-				res.add(new Event(service, service.pathWithoutPrefix(eventNode), (Object[]) null));
+				res.add(new Event(service, service.pathWithoutPrefix(eventNode), dataFromNode(eventNode)));
 			}
 			return res;
 		} else {
@@ -238,21 +238,40 @@ public class DocumentPool extends Folder {
 	}
 
 	/**
-	 * @return the user folder of the current user
+	 * @return the user folder of the current user (via @get_user_folder)
 	 */
 	public Folder getUserFolder() {
-		return getUserFolder(service.getUsername());
+		try {
+			//the Dokpool is an argument to the endpoint, so we append ist
+			JSON.Node folderNode = service.nodeFromGetRequest("/@get_user_folder" + pathAfterPlonesite);
+			//be careful: While plone usually returns some json with "NotFound", this gives a plain null (and HTTP 200)
+			if (folderNode.type().equals("null")) {
+				return null;
+			}
+			//we still keep the usual check, as the endpoint behavior might change some day
+			if (folderNode.get("type") != null && folderNode.get("type").toString().equals("NotFound")){
+				log.info(folderNode.get("message"));
+				return null;
+			}
+			return new Folder(service, service.pathWithoutPrefix(folderNode), folderNode.toMap());
+		} catch (Exception ex){
+			log.error(exeptionToString(ex));
+			return null;
+		}
 	}
 
 	/**
-	 * @return the user folder of the current user /content/Members/<username>
+	 * Get user folders for any user. This does **not** use a special endpoint, but
+	 * as the endpoint get_user_folder constructs its path with the constant
+	 * "{esdpath}/content/Members/{username}", we can do the same.
+	 * @return the user folder under /DocumentPool.fullpath()/content/Members/<user>
 	 */
-	public Folder getUserFolder(String username) {
-		if (username.contains("-") && !username.contains("--")){
-			username = username.replaceAll("-","--");
+	public Folder getUserFolder(String user) {
+		if (user.contains("-") && !user.contains("--")){
+			user = user.replaceAll("-","--");
 		}
 		try {
-			JSON.Node folderNode = service.nodeFromGetRequest(pathAfterPlonesite + "/content/Members/" + username);
+			JSON.Node folderNode = service.nodeFromGetRequest(pathAfterPlonesite + "/content/Members/" + user);
 			if (folderNode.get("type") != null && folderNode.get("type").toString().equals("NotFound")){
 				log.info(folderNode.get("message"));
 				return null;
@@ -285,10 +304,36 @@ public class DocumentPool extends Folder {
 	}
 
 	/**
+	 * Get the current user's group folders.
+	 * The corresponding API endpoint get_group_folders gets all groups for the current user
+	 * and searches for folder with theier ids in /DocumentPool.fullpath()/content/Groups.
 	 * @return all group folders for the current user
-	 * TODO: really the current user? Or just the current Dokpool?
 	 */
 	public List<Folder> getGroupFolders() {
+		try {
+			//the Dokpool is an argument to the endpoint, so we append ist
+			JSON.Node gfListNode = service.nodeFromGetRequest("/@get_group_folders" + pathAfterPlonesite);
+			if (gfListNode.get("type") != null && gfListNode.get("type").toString().equals("NotFound")){
+				log.info(gfListNode.get("message"));
+				return null;
+			}
+			ArrayList<Folder> res = new ArrayList<Folder>();
+			for (JSON.Node gfNode : gfListNode.get("items")) {
+				res.add(new Folder(service, service.pathWithoutPrefix(gfNode), dataFromNode(gfNode)));
+			}
+			return res;
+		} catch (Exception ex){
+			log.error(exeptionToString(ex));
+			return null;
+		}
+	}
+
+	/**
+	 * This method returns all group folders, irrespective of the current users membership
+	 * within any of the returned groups (via. DocumentPool.fullpath()//content/Groups/).
+	 * @return all group folders of the current dokpool.
+	 */
+	public List<Folder> getAllGroupFolders() {
 		try {
 			JSON.Node gfListNode = service.nodeFromGetRequest(pathAfterPlonesite + "/content/Groups/");
 			if (gfListNode.get("type") != null && gfListNode.get("type").toString().equals("NotFound")){
@@ -297,7 +342,7 @@ public class DocumentPool extends Folder {
 			}
 			ArrayList<Folder> res = new ArrayList<Folder>();
 			for (JSON.Node gfNode : gfListNode.get("items")) {
-				res.add(new Folder(service, service.pathWithoutPrefix(gfNode), (Object[]) null));
+				res.add(new Folder(service, service.pathWithoutPrefix(gfNode), dataFromNode(gfNode)));
 			}
 			return res;
 		} catch (Exception ex){
@@ -325,19 +370,20 @@ public class DocumentPool extends Folder {
 	}
 
 	/**
-	 * @return all transfer folders for the current user
-	 * TODO: really the current user? Or just the current Dokpool?
+	/**
+	 * @return all transfer folders for this Dokpool.
 	 */
 	public List<Folder> getTransferFolders() {
 		try {
-			JSON.Node tfListNode = service.nodeFromGetRequest(pathAfterPlonesite + "/content/Transfers");
-			if (tfListNode.get("type") != null && tfListNode.get("type").toString().equals("NotFound")){
-				log.info(tfListNode.get("message"));
+			//the Dokpool is an argument to the endpoint, so we append ist
+			JSON.Node gfListNode = service.nodeFromGetRequest("/@get_transfer_folders" + pathAfterPlonesite);
+			if (gfListNode.get("type") != null && gfListNode.get("type").toString().equals("NotFound")){
+				log.info(gfListNode.get("message"));
 				return null;
 			}
 			ArrayList<Folder> res = new ArrayList<Folder>();
-			for (JSON.Node tfNode : tfListNode.get("items")) {
-				res.add(new Folder(service, service.pathWithoutPrefix(tfNode), (Object[]) null));
+			for (JSON.Node tfNode : gfListNode.get("items")) {
+				res.add(new Folder(service, service.pathWithoutPrefix(tfNode), dataFromNode(tfNode)));
 			}
 			return res;
 		} catch (Exception ex){
