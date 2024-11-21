@@ -143,6 +143,7 @@ public class DocpoolBaseService {
 		return headers;
 	}
 
+	//TODO: check if some Map requests need pagination support, too.
 	public Map<String,Object> mapFromGetRequest(String endpoint) throws Exception {
 		String path = urlPrefix + endpoint;
 		HttpClient.Response	rsp;
@@ -152,12 +153,31 @@ public class DocpoolBaseService {
 		return resJs.toMap();
 	}
 
-	public JSON.Node nodeFromGetRequest(String endpoint) throws Exception {
+	public JSON.Node nodeFromGetRequest(String endpoint, String queryString) throws Exception {
+		queryString = (queryString == null || queryString.equals("")) ? "" : ("?"+queryString);
 		String path = urlPrefix + endpoint;
 		HttpClient.Response	rsp;
-		rsp = HttpClient.doGetRequest(proto,host,port,path,defaultHeaders());
+		rsp = HttpClient.doGetRequest(proto,host,port,path+queryString,defaultHeaders());
 		log.info("response content length: " + rsp.content.length());
-		return new JSON.Node(rsp.content);
+		JSON.Node node = new JSON.Node(rsp.content);
+		if (node != null && node.get("batching") != null){
+			long itemsTotal = node.get("items_total").toLong();
+			//TODO: we should check for an already existing query string in a better way
+			//or even better: separate endpoint and query
+			if (queryString.equals("")){
+				queryString = "?b_size=" + itemsTotal;
+			} else {
+				queryString += "&b_size=" + itemsTotal;
+			}
+			rsp = HttpClient.doGetRequest(proto,host,port,path+queryString,defaultHeaders());
+			log.info("response content length: " + rsp.content.length());
+			node = new JSON.Node(rsp.content);
+		}
+		return node;
+	}
+
+	public JSON.Node nodeFromGetRequest(String endpoint) throws Exception {
+		return nodeFromGetRequest(endpoint, null);
 	}
 
 	public HttpClient.Response patchRequestWithMap(String endpoint, Map<String,Object> patchMap) throws Exception {
@@ -228,7 +248,7 @@ public class DocpoolBaseService {
 		for (JSON.Node child : node){
 			dpList.add(new DocumentPool(this, "/"+child.toString(), (Map<String,Object>) null));
 		}
-		return dpList;//new DocumentPool(this, pathWithoutPrefix((String) map.get("@id")), map);
+		return dpList;
 	}
 
 	/**
