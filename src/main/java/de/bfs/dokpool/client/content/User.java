@@ -1,7 +1,5 @@
 package de.bfs.dokpool.client.content;
 
-import java.util.Map;
-
 import org.apache.xmlrpc.client.XmlRpcClient;
 
 import de.bfs.dokpool.client.base.BaseObject;
@@ -19,7 +17,7 @@ public class User extends BaseObject {
 		this.dp = dp;
 	}
 
-	public User(DocpoolBaseService service, String path, String userId, String password, String fullname, String dp) {
+	protected User(DocpoolBaseService service, String path, String userId, String password, String fullname, String dp) {
 		super(service, path, (Object[])null);
 		this.userId = userId;
 		this.fullname = fullname;
@@ -27,11 +25,8 @@ public class User extends BaseObject {
 	}
 	
 	public void addToGroup(Group group) {
-		/*Vector<String> params = new Vector<String>();
-		params.add(this.userId);
-		params.add(group.getGroupId());
-		Object o = execute("add_user_to_group", params);*/
-		group.addUser(this,this.fullpath());
+		//TODO: remove XMLRPC code
+		if (client != null) {group.addUserX(this,this.dp);} else {group.addUser(this);}
 	}
 	
 	public String getUserId() {
@@ -42,6 +37,12 @@ public class User extends BaseObject {
 		return this.fullname;
 	}
 	
+	/**
+	 * Returns the Dokpool set while creating this User instance.
+	 * Note that the REST-API cannot currently set or retrieve Dokpools for a User,
+	 * so this field might be empty or wrong.
+	 * @return
+	 */
 	public String getEsd() {
 		return  this.dp;
 	}

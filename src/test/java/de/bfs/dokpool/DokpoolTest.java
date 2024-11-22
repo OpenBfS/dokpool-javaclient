@@ -420,9 +420,9 @@ public class DokpoolTest {
 		} else {
 			log.info("Group " + group.getGroupId() + " created.");
 		}
-		group.addUser(user, extractPath(myDocumentPool));
+		group.addUserX(user, extractPath(myDocumentPool));
 		String[] docTypes = {"airactivity", "ifinprojection", "protectiveactions"};
-		group.setAllowedDocTypes(docTypes);
+		group.setAllowedDocTypesX(docTypes);
 		List<String> gDoctypes = group.getAllowedDocTypes();
 		log.info("docTypes " + docTypes);
 		log.info("gDocTypes " + gDoctypes);
