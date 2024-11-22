@@ -68,7 +68,16 @@ public class DokpoolTest {
 		return mainDocpool;
 	}
 
-	public static DocumentPool obtainDocumentPoolREST() throws Exception {
+	private static class ObtainDPReturn {
+		public DocumentPool dp;
+		public DocpoolBaseService service;
+		public ObtainDPReturn(DocumentPool dp, DocpoolBaseService service) {
+			this.service = service;
+			this.dp = dp;
+		}
+	}
+
+	public static ObtainDPReturn obtainDocumentPoolREST() throws Exception {
 		log.info("URL: " + PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE + " User:" + USER + " Password:" + PW);
 		DocpoolBaseService docpoolBaseService = new DocpoolBaseService(PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE, USER, PW);
 		List<DocumentPool> myDocpools = docpoolBaseService.getDocumentPools();
@@ -87,7 +96,7 @@ public class DokpoolTest {
 
 		// new Folder(docpoolBaseService, "/bund/content/Groups/bund_zdb/java-docpool-test-doc", (Object[])null).setWorkflowStatus("retract");
 		// log.info(new Folder(docpoolBaseService, "/bund/content/Groups/bund_zdb/java-docpool-test-doc", (Object[])null).getWorkflowStatus());
-		return mainDocpool;
+		return new ObtainDPReturn(mainDocpool, docpoolBaseService);
 	}
 
 	public static void deleteObjectXMLRPC(Folder folder, String objId) throws Exception {
@@ -206,14 +215,20 @@ public class DokpoolTest {
 		Document d = myGroupFolder.createDPDocumentX(DOCID, docProperties);
 
 		byte[] fileData = Files.readAllBytes(Paths.get("README.md"));
-		d.uploadFile("readme", "Read me!", "A file you should read.", fileData, "README.txt");
+		d.uploadFileX("readme", "Read me!", "A file you should read.", fileData, "README.txt");
 		byte[] imageData = Files.readAllBytes(Paths.get("src/test/resources/image.png"));
-		d.uploadImage("image", "Look at me!", "An image you should look at.", imageData, "image.png");
+		d.uploadImageX("image", "Look at me!", "An image you should look at.", imageData, "image.png");
 
-		//TODO: needed? What does this do?
-		d.autocreateSubdocuments();
+		//This does nothing.
+		d.autocreateSubdocumentsX();
 
 		d.setWorkflowStatusX("publish");
+
+		d.getProperties();
+		for (Map.Entry<String,String> entry : d.getProperties().entrySet()){
+			log.info(entry.getKey() + ": " + entry.getValue());
+		}
+		log.info(new JSON.Node((Map<String,Object>)((Map) d.getProperties())));
 
 	}
 
@@ -224,7 +239,9 @@ public class DokpoolTest {
 	@Test
 	public void documentTestREST() throws Exception {
 		log.info("=== TEST: documentTest ======");
-		DocumentPool mainDocpool = obtainDocumentPoolREST();
+		ObtainDPReturn ret = obtainDocumentPoolREST();
+		DocumentPool mainDocpool = ret.dp;
+		DocpoolBaseService service = ret.service;
 		log.info(mainDocpool.getWorkflowStatus());
 
 		log.info("numer of events: " + mainDocpool.getEvents().size());
@@ -320,10 +337,13 @@ public class DokpoolTest {
 		// log.info("Creating new document at " + myGroupFolder.getFolderPath() + "/" + DOCID);
 		// Document d = myGroupFolder.createDPDocument(DOCID, docProperties);
 
-		// byte[] fileData = Files.readAllBytes(Paths.get("README.md"));
-		// d.uploadFile("readme", "Read me!", "A file you should read.", fileData, "README.txt");
-		// byte[] imageData = Files.readAllBytes(Paths.get("src/test/resources/image.png"));
-		// d.uploadImage("image", "Look at me!", "An image you should look at.", imageData, "image.png");
+		Document d = new Document(service, myGroupFolder.getFolderPath().substring(8) + "/" + DOCID, (Object[])null);
+		log.info(d.getId());
+
+		byte[] fileData = Files.readAllBytes(Paths.get("README.md"));
+		d.uploadFile("readme3", "Read me!", "A file you should read.", fileData, "README.txt");
+		byte[] imageData = Files.readAllBytes(Paths.get("src/test/resources/image.png"));
+		d.uploadImage("image3", "Look at me!", "An image you should look at.", imageData, "image.png");
 
 		// //TODO: needed? What does this do?
 		// d.autocreateSubdocuments();
