@@ -107,6 +107,21 @@ public class Document extends Folder {
 		return new Image(client, newpath, null);
 	}
 
+	protected String mimeTypeFromFilename(String filename) {
+		String ext = filename.substring(filename.lastIndexOf(".")+1).toLowerCase();
+		switch(ext) {
+			case "png":
+				return "image/png";
+			case "jpg":
+				return "image/jpeg";
+			case "jpeg":
+				return "image/jpeg";
+			case "pdf":
+				return "application/pdf";
+		}
+		return "text/plain";
+	} 
+
 	/**
 	 * Uploads an image into the document
 	 * @param id: short name for the image
@@ -114,9 +129,10 @@ public class Document extends Folder {
 	 * @param description
 	 * @param data: binary data of the image
 	 * @param filename
+	 * @param MIME-Type of the Image (e.g. image/png)
 	 * @return the Image object representing the image on the server
 	 */
-	public Image uploadImage(final String id, final String title, final String description, final byte[] data, final String filename) {
+	public Image uploadImage(final String id, final String title, final String description, final byte[] data, final String filename, String mimeType) {
 		try {
 			JSON.Node createJS = new JSON.Node("{}")
 				.set("@type","Image")
@@ -125,7 +141,7 @@ public class Document extends Folder {
 				.set("description", description)
 				.set("image", new JSON.Node("{}")
 					.set("encoding", "base64")
-					.set("content-type", "image/png")
+					.set("content-type", mimeType)
 					.set("data", new String(Base64.getEncoder().encode(data)))
 					.set("filename", filename)
 				)
@@ -142,6 +158,19 @@ public class Document extends Folder {
 			log.error(exeptionToString(ex));
 			return null;
 		}
+	}
+
+	/**
+	 * Uploads an image into the document
+	 * @param id: short name for the image
+	 * @param title
+	 * @param description
+	 * @param data: binary data of the image
+	 * @param filename The image type must be deducible from the file name extension (.jpeg/.jpg/.png)
+	 * @return the Image object representing the image on the server
+	 */
+	public Image uploadImage(final String id, final String title, final String description, final byte[] data, final String filename) {
+		return uploadImage(id, title, description, data, filename, mimeTypeFromFilename(filename));
 	}
 
 	/*
