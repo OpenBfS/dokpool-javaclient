@@ -13,7 +13,6 @@ import de.bfs.dokpool.client.base.BaseObject;
 import de.bfs.dokpool.client.base.DocpoolBaseService;
 import de.bfs.dokpool.client.base.HttpClient;
 import de.bfs.dokpool.client.base.JSON;
-import de.bfs.dokpool.client.utils.Utils;
 
 /**
  * Wraps all Folder types and functions as a base class for all folderish types.

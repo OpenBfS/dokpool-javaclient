@@ -144,96 +144,90 @@ public class Document extends Folder {
 		}
 	}
 
-	public String autocreateSubdocumentsX() {
-		Vector<Object> params = new Vector<Object>();
-		params.add(fullpath());
-		String msg = (String)executeX("autocreate_subdocuments", params);
-		return msg;
-	 }
-
-	 /*
-	  * This is the current python implememtation:
-	      def autocreateSubdocuments(self):
-        """
-        TODO: specifically for XMLRPC usage
-        """
-        # * Von den allowed Types alle autocreatable Types durchgehen und ihre Muster "ausprobieren"
-        # * Wenn Files oder Images gefunden zu einem Muster: entsprechendes DPDocument erzeugen und Files/Images verschieben
-        return "ok"
-	  */
-	 /**
-	  * NOT IMPLEMENTED for REST-API.
-	  * @deprecated
-	  * @return null
-	  */
+	/*
+	 * This is the current python implememtation:
+		def autocreateSubdocuments(self):
+	   """
+	   TODO: specifically for XMLRPC usage
+	   """
+	   # * Von den allowed Types alle autocreatable Types durchgehen und ihre Muster "ausprobieren"
+	   # * Wenn Files oder Images gefunden zu einem Muster: entsprechendes DPDocument erzeugen und Files/Images verschieben
+	   return "ok"
+	 */
+	/**
+	 * NOT IMPLEMENTED for REST-API (and was not for XMLRPC either).
+	 * @deprecated
+	 * @return null
+	 */
 	@Deprecated public String autocreateSubdocuments() {
 		return null;
 	}
 	 
-	 public String readPropertiesFromFileX() {
+	public String readPropertiesFromFileX() {
 		Vector<Object> params = new Vector<Object>();
 		params.add(fullpath());
 		String msg = (String)executeX("read_properties_from_file", params);
 		return msg;
-	 }
+	}
 
 	/**
 	  * NOT IMPLEMENTED for REST-API
-	  * @deprecated
+	  * @deprecated If you need this functionality, fetch the file "properties.txt" within the document and set each property using setAttribute(name, value) yourself.
 	  * @return null
 	  */
 	@Deprecated public String readPropertiesFromFile() {
 		return null;
 	}
 
-	public String setPropertyX(final String name, final String value, final String type) {
-		Vector<Object> params = new Vector<Object>();
-		params.add(fullpath());
-		params.add(name);
-		params.add(value);
-		params.add(type);
-		String msg = (String)executeX("set_property", params);
-		return msg;
-	}
-
 	/**
 	 * Sets property name to the given value.
 	 * This Method can no longer create a new property with the REST-API,
-	 * wich was the only use of the argument type.
+	 * wich was the only use of the argument `type`.
+	 * @deprecated Use BaseObject.setAttribute(name, value) instead
 	 * @param name
 	 * @param value
 	 * @param type ignored
 	 * @return
 	 */
-	public String setProperty(final String name, final String value, final String type) {
-		Map<String,Object> property = new HashMap<String,Object>();
-		property.put(name,value);
-		update(property);
-		return null;
+	@Deprecated public String setProperty(final String name, final String value, final String type) {
+		return setAttribute(name, value) ? "ok" : "error";
 	}
 
-	public String deleteProperty(final String name) {
-		Vector<Object> params = new Vector<Object>();
-		params.add(fullpath());
-		params.add(name);
-		String msg = (String)executeX("delete_property", params);
-		return msg;
+	/**
+	 * Unsets property `name` (does not delete it).
+	 * This Method can no longer delete a property with the REST-API
+	 * @deprecated Use BaseObject.setAttribute(name, null) instead
+	 * @param name
+	 * @return
+	 */
+	@Deprecated public String deleteProperty(final String name) {
+		return setAttribute(name, null) ? "ok" : "error";
 	}
 
-	public String getProperty(final String name) {
-		Vector<Object> params = new Vector<Object>();
-		params.add(fullpath());
-		params.add(name);
-		String msg = (String)executeX("get_property", params);
-		return msg;
+	/**
+	 * Returns property `name`.
+	 * @deprecated Use BaseObject.getStringAttribute(name) instead
+	 * @param name
+	 * @return
+	 */
+	@Deprecated public String getProperty(final String name) {
+		return getStringAttribute(name);
 	}
 
-	public Map<String,String> getProperties() {
-        Vector<Object> params = new Vector<Object>();
-        params.add(fullpath());
-        Map<String,String> msg = (Map<String,String>)executeX("get_properties", params);
-        return msg;
-
+	/**
+	 * Returns all propties as a map.
+	 * @deprecated Use BaseObject.getAllAttributes() instead
+	 * @return map of all attributes (values are casted to (String))
+	 */
+	@Deprecated public Map<String,String> getProperties() {
+        Map<String,Object> soMap = getAllAttributes();
+		Map<String,String> sMap = new HashMap<String,String>();
+		for (Map.Entry<String,Object> entry: soMap.entrySet()) {
+			sMap.put(entry.getKey(), (String) entry.getValue());
+		}
+		return sMap;
     }
+
+	
 
 }

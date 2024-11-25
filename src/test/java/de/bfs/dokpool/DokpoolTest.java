@@ -219,7 +219,7 @@ public class DokpoolTest {
 		d.uploadImageX("image", "Look at me!", "An image you should look at.", imageData, "image.png");
 
 		//This does nothing, the server just returns "ok".
-		d.autocreateSubdocumentsX();
+		d.autocreateSubdocuments();
 
 		d.setWorkflowStatusX("publish");
 

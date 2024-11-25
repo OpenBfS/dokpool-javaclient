@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -133,6 +134,20 @@ public class BaseObject {
 		} else {
 			return null;
 		}
+	}
+
+	/**
+	 * Helper to get value of an attribute.
+	 * @param name: the name of the attribute
+	 * @return the value
+	 */
+	public Map<String,Object> getAllAttributes() {
+		//we fetch data if and only if we have no data or
+		//(incomplete data with the requesting string missing)
+		if (data == null || !dataComplete) {
+			getData();
+		}
+		return data;
 	}
 	
 	/**
@@ -271,15 +286,34 @@ public class BaseObject {
 	}
 
 	/**
-	 * Update the object with the given properties.
+	 * Update the object's attributes with the given properties.
+	 * Any attribute that is not explicitly set will keep its value;
 	 * @param properties
 	 */
-	public void update(Map<String, Object> properties) {
+	public boolean update(Map<String, Object> properties) {
+		/* we reset the data, as setting some attribute to a new value
+		 * might trigger changes in other attributes
+		 */
+		data = null;
+		dataComplete = false;
 		try {
 			service.patchRequestWithMap(pathAfterPlonesite, properties);
+			return true;
 		} catch(Exception ex) {
 			log.error(exeptionToString(ex));
+			return false;
 		}
+	}
+
+	/**
+	 * Update a single attribute with a given value.
+	 * To unset a value set, set it to null.
+	 * @param properties
+	 */
+	public boolean setAttribute(String name, Object value) {
+		Map<String,Object> attribute = new HashMap<String,Object>();
+		attribute.put(name,value);
+		return update(attribute);
 	}
 
 	public static String exeptionToString(Exception ex) {
