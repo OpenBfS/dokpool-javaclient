@@ -316,6 +316,25 @@ public class BaseObject {
 		return update(attribute);
 	}
 
+	/**
+	 * Deletes this BaseObject.
+	 * @return true if deletion succeeds, false otherwise
+	 */
+	public boolean delete() {
+		try {
+			HttpClient.Response rsp = service.deleteRequest(pathAfterPlonesite);
+			JSON.Node rspNode = new JSON.Node(rsp.content);
+			if (rspNode.get("type") != null && rspNode.get("type").toString().equals("NotFound")){
+				log.info(rspNode.get("message"));
+				return false;
+			}
+			return true;
+		} catch (Exception ex) {
+			log.error(exeptionToString(ex));
+			return false;
+		}
+	}
+
 	public static String exeptionToString(Exception ex) {
 		return DocpoolBaseService.exeptionToString(ex);
 	}

@@ -310,4 +310,12 @@ public class Folder extends BaseObject {
 		return document;
 	}
 
+	/**
+	 * Deletes the BaseObject with id in this Folder.
+	 * @return true if deletion succeeds, false otherwise
+	 */
+	public boolean deleteObject(String id) {
+		return (new BaseObject(service, pathAfterPlonesite + "/" + id, (Object[]) null)).delete();
+	}
+
 }
