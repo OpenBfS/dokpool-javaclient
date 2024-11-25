@@ -15,13 +15,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Vector;
 
+import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 
 import de.bfs.dokpool.client.base.HttpClient.Headers;
 import de.bfs.dokpool.client.content.DocumentPool;
-import de.bfs.dokpool.client.utils.Utils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -162,8 +162,6 @@ public class DocpoolBaseService {
 		JSON.Node node = new JSON.Node(rsp.content);
 		if (node != null && node.get("batching") != null){
 			long itemsTotal = node.get("items_total").toLong();
-			//TODO: we should check for an already existing query string in a better way
-			//or even better: separate endpoint and query
 			if (queryString.equals("")){
 				queryString = "?b_size=" + itemsTotal;
 			} else {
@@ -213,7 +211,7 @@ public class DocpoolBaseService {
 	 * @return
 	 */
 	public List<DocumentPool> getDocumentPoolsX() {
-		Map<String, Object> esds = Utils.queryObjects(this.client, "/", "DocumentPool");
+		Map<String, Object> esds = DocpoolBaseService.queryObjects(this.client, "/", "DocumentPool");
 		if (esds != null) {
 			ArrayList<DocumentPool> res = new ArrayList<DocumentPool>();
 			for (String path : esds.keySet()) {
@@ -264,7 +262,7 @@ public class DocpoolBaseService {
 	 *         for global users
 	 */
 	public DocumentPool getPrimaryDocumentPoolX() {
-		Object[] res = (Object[]) Utils.execute(client, "get_primary_documentpool", new Vector());
+		Object[] res = (Object[]) DocpoolBaseService.execute(client, "get_primary_documentpool", new Vector());
 		log.info(res.length);
 		return new DocumentPool(client, (String) res[0], (Object[]) res[1]);
 	}
@@ -310,6 +308,62 @@ public class DocpoolBaseService {
 	private Optional<DocumentPool> getDocumentPool(String name) {
 		List<DocumentPool> documentPools = getDocumentPools();
 		return documentPools.stream().filter(pool -> pool.getId().equals(name)).findFirst();
+	}
+
+	/**
+	 * Helper method for querying objects.
+	 * @param client: the XMLRPC client
+	 * @param path: path in Plone
+	 * @param type: Plone type to search for
+	 * @return
+	 */
+	@Deprecated public static Map queryObjects(XmlRpcClient client, String path, String type) {
+		Vector<Object> params = new Vector<Object>();
+		HashMap<String, Object> query = new HashMap<String, Object>();
+		query.put("path", path);
+		query.put("portal_type", type);
+		params.add(query);
+		Map res = (Map)execute(client, "query", params);
+		return res;
+	}
+
+	/**
+	 * Helper method for querying objects.
+	 * @param client: the XMLRPC client
+	 * @param path: path in Plone
+	 * @param type: Plone type to search for
+	 * @param filterparams: Plne params to search for
+	 * @return
+	 */
+	@Deprecated public static Map queryObjects(XmlRpcClient client, String path, String type, HashMap<String, String> filterparams) {
+		Vector<Object> params = new Vector<Object>();
+		HashMap<String, Object> query = new HashMap<String, Object>();
+		query.put("path", path);
+		query.put("portal_type", type);
+		for (Map.Entry<String, String> filterparam : filterparams.entrySet()) {
+			query.put(filterparam.getKey(), filterparam.getValue());
+		}
+		params.add(query);
+		Map res = (Map)execute(client, "query", params);
+		return res;
+	}
+
+	/**
+	 * Helper method to execute XMLRPC calls
+	 * 
+	 * @param client: the XMLRPC client
+	 * @param command: the command (i.e. method of the WSAPI module)
+	 * @param params: the parameters for the call
+	 * @return
+	 */
+	@Deprecated public static Object execute(XmlRpcClient client, String command, Vector params) {
+		Log log = LogFactory.getLog(DocpoolBaseService.class);
+		try {
+			return client.execute(command, params);
+		} catch (XmlRpcException e) {
+			log.error(e);
+			return null;
+		}
 	}
 
 }

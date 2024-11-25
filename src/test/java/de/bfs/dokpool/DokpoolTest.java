@@ -8,7 +8,6 @@ import java.util.*;
 import org.junit.*;
 import de.bfs.dokpool.client.base.*;
 import de.bfs.dokpool.client.content.*;
-import de.bfs.dokpool.client.utils.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -106,7 +105,7 @@ public class DokpoolTest {
 		XmlRpcClient client = (XmlRpcClient) clientField.get(folder);
 		Vector<String[]> delParams = new Vector<String[]>();
 		delParams.add(new String[]{folder.getFolderPath() + "/" + objId});
-		Utils.execute(client, "delete_object", delParams);
+		DocpoolBaseService.execute(client, "delete_object", delParams);
 	}
 
 	public static String extractPath(BaseObject bo) throws Exception {
@@ -219,7 +218,7 @@ public class DokpoolTest {
 		byte[] imageData = Files.readAllBytes(Paths.get("src/test/resources/image.png"));
 		d.uploadImageX("image", "Look at me!", "An image you should look at.", imageData, "image.png");
 
-		//This does nothing.
+		//This does nothing, the server just returns "ok".
 		d.autocreateSubdocumentsX();
 
 		d.setWorkflowStatusX("publish");

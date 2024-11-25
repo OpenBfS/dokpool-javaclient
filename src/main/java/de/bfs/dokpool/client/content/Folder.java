@@ -81,7 +81,7 @@ public class Folder extends BaseObject {
 		Vector<String> params = new Vector<String>();
 		params.add(fullpath());
 		params.add(subpath);
-		Object[] res = (Object[]) Utils.execute(client, "get_plone_object", params);
+		Object[] res = (Object[]) DocpoolBaseService.execute(client, "get_plone_object", params);
 		return new Folder(client, (String) res[0], (Object[]) res[1]);
 	}
 

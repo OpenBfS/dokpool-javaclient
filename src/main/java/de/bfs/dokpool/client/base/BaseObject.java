@@ -11,8 +11,6 @@ import java.util.Vector;
 
 import org.apache.xmlrpc.client.XmlRpcClient;
 
-import de.bfs.dokpool.client.utils.Utils;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -115,7 +113,7 @@ public class BaseObject {
 	
 	
 	protected Object executeX(String command, Vector params) {
-		return Utils.execute(this.client, command, params);
+		return DocpoolBaseService.execute(this.client, command, params);
 	}
 
 	/**

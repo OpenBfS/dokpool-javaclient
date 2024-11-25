@@ -7,7 +7,6 @@ import org.apache.xmlrpc.client.XmlRpcClient;
 import de.bfs.dokpool.client.base.DocpoolBaseService;
 import de.bfs.dokpool.client.base.HttpClient;
 import de.bfs.dokpool.client.base.JSON;
-import de.bfs.dokpool.client.utils.Utils;
 
 /**
  * Wraps the ELANESD type
@@ -32,7 +31,7 @@ public class DocumentPool extends Folder {
 	 * @return all DocTypes within this ESD
 	 */
 	public List<DocType> getTypesX() {
-		Map<String, Object> types = Utils.queryObjects(client, fullpath(), "DocType");
+		Map<String, Object> types = DocpoolBaseService.queryObjects(client, fullpath(), "DocType");
 		if (types != null) {
 			ArrayList<DocType> res = new ArrayList<DocType>();
 			for (String path: types.keySet()) {
@@ -71,7 +70,7 @@ public class DocumentPool extends Folder {
 	 * @deprecated
 	 */
 	@Deprecated public List<Scenario> getScenariosX() {
-		Map<String, Object> scen = Utils.queryObjects(client, fullpath(), "ELANScenario");
+		Map<String, Object> scen = DocpoolBaseService.queryObjects(client, fullpath(), "ELANScenario");
 		if (scen != null) {
 			ArrayList<Scenario> res = new ArrayList<Scenario>();
 			for (String path: scen.keySet()) {
@@ -114,7 +113,7 @@ public class DocumentPool extends Folder {
 	@Deprecated public List<Scenario> getActiveScenariosX() {
 		HashMap<String, String> filterparams = new HashMap<String, String>();
 		filterparams.put("dp_type", "active");
-		Map<String, Object> scen = Utils.queryObjects(client, fullpath(), "ELANScenario", filterparams);
+		Map<String, Object> scen = DocpoolBaseService.queryObjects(client, fullpath(), "ELANScenario", filterparams);
 		if (scen != null) {
 			ArrayList<Scenario> res = new ArrayList<Scenario>();
 			for (String path: scen.keySet()) {
@@ -154,7 +153,7 @@ public class DocumentPool extends Folder {
 	 * @return all Events within this ESD
 	 */
 	public List<Event> getEventsX() {
-		Map<String, Object> events = Utils.queryObjects(client, fullpath(), "DPEvent");
+		Map<String, Object> events = DocpoolBaseService.queryObjects(client, fullpath(), "DPEvent");
 		if (events != null) {
 			ArrayList<Event> res = new ArrayList<Event>();
 			for (String path: events.keySet()) {
@@ -194,7 +193,7 @@ public class DocumentPool extends Folder {
 	public List<Event> getActiveEventsX() {
 		HashMap<String, String> filterparams = new HashMap<String, String>();
 		filterparams.put("dp_type", "active");
-		Map<String, Object> events = Utils.queryObjects(client, fullpath(), "DPEvent", filterparams);
+		Map<String, Object> events = DocpoolBaseService.queryObjects(client, fullpath(), "DPEvent", filterparams);
 		if (events != null) {
 			ArrayList<Event> res = new ArrayList<Event>();
 			for (String path: events.keySet()) {
