@@ -406,18 +406,24 @@ public class DocumentPool extends Folder {
 	}
 
 	/**
-	 * Creates a new user. Currently the dokpool dp cannot be set and is silently ignored.
+	 * Creates a new user.
+	 * @param dp the primary dokpool for the new user (e.g. "hessen")
 	 * @return the created User.
 	 */
 	public User createUser(String userId, String password, String fullname, String dp, String email) {
 		try {
+			String dpUid = null;
+			if (dp != null && !dp.equals("")) {
+				dp = dp.startsWith("/") ? dp : "/"+dp;
+				DocumentPool docPool = new DocumentPool(service, dp, (Object[]) null);
+				dpUid = docPool.getStringAttribute("UID");
+			}
 			JSON.Node createJS = new JSON.Node("{}")
 				.set("username", userId)
 				.set("email", email)
 				.set("password", password)
 				.set("fullname", fullname)
-				//TODO: cannot set dp from REST?
-				//.set("unknown", dp)
+				.set("dp", dpUid)
 			;
 			HttpClient.Response rsp = service.postRequestWithNode("/@users", createJS);
 			JSON.Node rspNode = new JSON.Node(rsp.content);
@@ -433,9 +439,10 @@ public class DocumentPool extends Folder {
 	}
 
 	/**
-	 * Creates a new user. Currently the dokpool dp cannot be set and is silently ignored.
+	 * Creates a new user.
 	 * 
 	 * This version sets the email address to "ihotline@bfs.de".
+	 * @param dp the primary dokpool for the new user (e.g. "hessen").
 	 * @deprecated Please also provide an actual email adress if you can.
 	 * @return the created User.
 	 */
@@ -485,12 +492,19 @@ public class DocumentPool extends Folder {
 	 */
 	public Group createGroup(String groupId, String title, String description, String dp) {
 		try {
+			String dpUid = null;
+			if (dp != null && !dp.equals("")) {
+				dp = dp.startsWith("/") ? dp : "/"+dp;
+				DocumentPool docPool = new DocumentPool(service, dp, (Object[]) null);
+				dpUid = docPool.getStringAttribute("UID");
+			}
 			JSON.Node createJS = new JSON.Node("{}")
 				.set("groupname", groupId)
 				.set("title", title)
 				.set("description", description)
-				//TODO: cannot set dp from REST?
-				//.set("unknown", dp)
+				//TODO: can wie set dp from REST? Is it used?
+				//the following line has to visible effect
+				// .set("dp", dpUid)
 			;
 			HttpClient.Response rsp = service.postRequestWithNode("/@groups", createJS);
 			JSON.Node rspNode = new JSON.Node(rsp.content);
