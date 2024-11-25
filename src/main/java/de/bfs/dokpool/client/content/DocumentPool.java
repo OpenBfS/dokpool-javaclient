@@ -90,7 +90,7 @@ public class DocumentPool extends Folder {
 		JSON.Node itemsNode = null;
 		try {
 			//TODO: only search /contentconfig/scen/?
-			itemsNode = service.nodeFromGetRequest(pathAfterPlonesite + "/@search", "portal_type=ELANScenario").get("items");
+			itemsNode = service.nodeFromGetRequest(pathAfterPlonesite + "/@search", "portal_type=ELANScenario&metadata_fields=id").get("items");
 		} catch (Exception ex){
 			log.error(exeptionToString(ex));
 			return null;
@@ -133,7 +133,7 @@ public class DocumentPool extends Folder {
 		JSON.Node itemsNode = null;
 		try {
 			//TODO: only search /contentconfig/scen/?
-			itemsNode = service.nodeFromGetRequest(pathAfterPlonesite + "/@search", "portal_type=ELANScenario&dp_type=active").get("items");
+			itemsNode = service.nodeFromGetRequest(pathAfterPlonesite + "/@search", "portal_type=ELANScenario&dp_type=active&metadata_fields=id").get("items");
 		} catch (Exception ex){
 			log.error(exeptionToString(ex));
 			return null;
@@ -171,7 +171,7 @@ public class DocumentPool extends Folder {
 	public List<Event> getEvents() {
 		JSON.Node itemsNode = null;
 		try {
-			itemsNode = service.nodeFromGetRequest(pathAfterPlonesite + "/contentconfig/scen/@search", "portal_type=DPEvent").get("items");
+			itemsNode = service.nodeFromGetRequest(pathAfterPlonesite + "/contentconfig/scen/@search", "portal_type=DPEvent&metadata_fields=id").get("items");
 		} catch (Exception ex){
 			log.error(exeptionToString(ex));
 			return null;
@@ -211,7 +211,7 @@ public class DocumentPool extends Folder {
 	public List<Event> getActiveEvents() {
 		JSON.Node itemsNode = null;
 		try {
-			itemsNode = service.nodeFromGetRequest(pathAfterPlonesite + "/contentconfig/scen/@search", "portal_type=DPEvent&dp_type=active").get("items");
+			itemsNode = service.nodeFromGetRequest(pathAfterPlonesite + "/contentconfig/scen/@search", "portal_type=DPEvent&dp_type=active&metadata_fields=id").get("items");
 		} catch (Exception ex){
 			log.error(exeptionToString(ex));
 			return null;
@@ -312,7 +312,7 @@ public class DocumentPool extends Folder {
 	public List<Folder> getGroupFolders() {
 		try {
 			//the Dokpool is an argument to the endpoint, so we append ist
-			JSON.Node gfListNode = service.nodeFromGetRequest("/@get_group_folders" + pathAfterPlonesite);
+			JSON.Node gfListNode = service.nodeFromGetRequest("/@get_group_folders" + pathAfterPlonesite, "metadata_fields=id");
 			if (gfListNode.get("type") != null && gfListNode.get("type").toString().equals("NotFound")){
 				log.info(gfListNode.get("message"));
 				return null;
@@ -335,7 +335,7 @@ public class DocumentPool extends Folder {
 	 */
 	public List<Folder> getAllGroupFolders() {
 		try {
-			JSON.Node gfListNode = service.nodeFromGetRequest(pathAfterPlonesite + "/content/Groups/");
+			JSON.Node gfListNode = service.nodeFromGetRequest(pathAfterPlonesite + "/content/Groups/", "metadata_fields=id");
 			if (gfListNode.get("type") != null && gfListNode.get("type").toString().equals("NotFound")){
 				log.info(gfListNode.get("message"));
 				return null;
@@ -375,7 +375,7 @@ public class DocumentPool extends Folder {
 	public List<Folder> getTransferFolders() {
 		try {
 			//the Dokpool is an argument to the endpoint, so we append ist
-			JSON.Node gfListNode = service.nodeFromGetRequest("/@get_transfer_folders" + pathAfterPlonesite);
+			JSON.Node gfListNode = service.nodeFromGetRequest("/@get_transfer_folders" + pathAfterPlonesite, "metadata_fields=id");
 			if (gfListNode.get("type") != null && gfListNode.get("type").toString().equals("NotFound")){
 				log.info(gfListNode.get("message"));
 				return null;

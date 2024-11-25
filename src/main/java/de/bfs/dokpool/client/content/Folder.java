@@ -61,8 +61,8 @@ public class Folder extends BaseObject {
 	private JSON.Node getContentsNode() {
 		if (contentsNode == null) {
 			try {
-				contentsNode = service.nodeFromGetRequest(pathAfterPlonesite);
-			} catch (Exception ex){
+				contentsNode = service.nodeFromGetRequest(pathAfterPlonesite,"metadata_fields=id");
+			} catch (Exception ex) {
 				log.error(exeptionToString(ex));
 			}
 		}

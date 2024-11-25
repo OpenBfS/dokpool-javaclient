@@ -54,7 +54,6 @@ public class BaseObject {
 		this.service = service;
 		this.pathAfterPlonesite = path;
 		this.data = data;
-		idFromAtIdIfMissing();
 	}
 
 	protected String fullpath(){
@@ -196,7 +195,6 @@ public class BaseObject {
 	}
 	
 	public String getId() {
-		idFromAtIdIfMissing();
 		return getStringAttribute("id");
 	}
 		
@@ -346,15 +344,6 @@ public class BaseObject {
 			log.error(exeptionToString(ex));
 			return null;
 		}
-	}
-
-	private void idFromAtIdIfMissing() {
-		if (data == null || data.get("id") != null || data.get("id") != null) {
-			return;
-		}
-		String atid = (String) data.get("@id");
-		String id = atid.substring(atid.lastIndexOf("/")+1);
-		data.put("id",id);
 	}
 	
 	
