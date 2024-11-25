@@ -409,11 +409,11 @@ public class DocumentPool extends Folder {
 	 * Creates a new user. Currently the dokpool dp cannot be set and is silently ignored.
 	 * @return the created User.
 	 */
-	public User createUser(String userId, String password, String fullname, String dp) {
+	public User createUser(String userId, String password, String fullname, String dp, String email) {
 		try {
 			JSON.Node createJS = new JSON.Node("{}")
 				.set("username", userId)
-				.set("email", "none@none.none")
+				.set("email", email)
 				.set("password", password)
 				.set("fullname", fullname)
 				//TODO: cannot set dp from REST?
@@ -430,6 +430,18 @@ public class DocumentPool extends Folder {
 			log.error(exeptionToString(ex));
 			return null;
 		}
+	}
+
+	/**
+	 * Creates a new user. Currently the dokpool dp cannot be set and is silently ignored.
+	 * 
+	 * This version sets the email address to "ihotline@bfs.de".
+	 * @deprecated Please also provide an actual email adress if you can.
+	 * @return the created User.
+	 */
+	@Deprecated
+	public User createUser(String userId, String password, String fullname, String dp) {
+		return createUser(userId, password, fullname, dp, "ihotline@bfs.de");
 	}
 
 	/**
