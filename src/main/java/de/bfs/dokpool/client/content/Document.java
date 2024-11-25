@@ -110,17 +110,29 @@ public class Document extends Folder {
 	protected String mimeTypeFromFilename(String filename) {
 		String ext = filename.substring(filename.lastIndexOf(".")+1).toLowerCase();
 		switch(ext) {
-			case "png":
-				return "image/png";
-			case "jpg":
-				return "image/jpeg";
+			case "bmp":
+				return "image/bmp";
+			case "eps":
+				return "image/x-eps";
+			case "gif":
+				return "image/gif";
 			case "jpeg":
+			case "jpg":
 				return "image/jpeg";
 			case "pdf":
 				return "application/pdf";
+			case "png":
+				return "image/png";
+			case "svg":
+				return "image/svg+xml";
+			case "svgz":
+				return "image/svg+xml-compressed";
+			case "tif":
+			case "tiff":
+				return "image/tiff";
 		}
 		return "text/plain";
-	} 
+	}
 
 	/**
 	 * Uploads an image into the document
