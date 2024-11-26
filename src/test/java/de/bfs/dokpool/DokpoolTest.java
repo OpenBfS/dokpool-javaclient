@@ -520,7 +520,41 @@ public class DokpoolTest {
 		} else {
 			log.error("Error while setting group properties.");
 		}
-// 		Assert.assertEquals(5,5);
+	}
+
+	/**
+	 * Test user and group  handling.
+	 *
+	 */
+	@Test
+	public void userManagementTestREST() throws Exception {
+		log.info("=== TEST: userManagementTest REST ======");
+		ObtainDPReturn ret = obtainDocumentPoolREST();
+		DocumentPool myDocumentPool = ret.dp;
+		User user = myDocumentPool.createUser("testuserId3", "testuserPW", "Test User Full Name", myDocumentPool.getPathAfterPlonesite());
+		if (user == null) {
+			log.error("No User created!");
+		} else {
+			log.info("User " + user.getUserId() + " created.");
+		}
+		Group group = myDocumentPool.createGroup("testgroupId3", "Test Group Full Name","for java tests", myDocumentPool.getPathAfterPlonesite());
+		if (group == null) {
+			log.error("No group created.");
+		} else {
+			log.info("Group " + group.getGroupId() + " created.");
+		}
+		group.addUser(user, myDocumentPool.getPathAfterPlonesite());
+		String[] docTypes = {"airactivity", "ifinprojection", "protectiveactions"};
+		//not implemented for REST:
+		group.setAllowedDocTypes(docTypes);
+		List<String> gDoctypes = group.getAllowedDocTypes();
+		log.info("docTypes " + docTypes);
+		log.info("gDocTypes " + gDoctypes);
+		if (gDoctypes != null && gDoctypes.equals(Arrays.asList(docTypes))) {
+			log.info("Group properties were successfully set.");
+		} else {
+			log.error("Error while setting group properties.");
+		}
 	}
 
 	/**

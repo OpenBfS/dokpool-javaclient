@@ -264,7 +264,7 @@ public class Document extends Folder {
         Map<String,Object> soMap = getAllAttributes();
 		Map<String,String> sMap = new HashMap<String,String>();
 		for (Map.Entry<String,Object> entry: soMap.entrySet()) {
-			sMap.put(entry.getKey(), (String) entry.getValue());
+			sMap.put(entry.getKey(), entry.getValue() != null ? entry.getValue().toString(): null);
 		}
 		return sMap;
     }
