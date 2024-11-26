@@ -142,12 +142,6 @@ public class Folder extends BaseObject {
 
 	}
 
-	// JSON.Node folderNode = service.nodeFromGetRequest(pathAfterPlonesite);
-	// log.info(folderNode.toJSON());
-	// for (JSON.Node itemNode : folderNode.get("items")) {
-	// 	log.info(itemNode.toJSON());
-	// }
-
 	/**
 	 * Return all folder contents, can be filtered by type.
 	 * 
@@ -181,6 +175,45 @@ public class Folder extends BaseObject {
 	}
 
 	/**
+	 * Return the content item with ID `id`.
+	 * The return value can be casted to a descendant of
+	 * BaseObject based on the `@type` value.
+	 * 
+	 * @param id the id of the requested item
+	 * @return object representing the contentsItem with id `id`.
+	 */
+	public BaseObject getContentItem(String id) {
+		if (getContentsNode() != null) {
+			try {
+				for (JSON.Node itemNode : contentsNode.get("items")) {
+					if (id.equals(itemNode.get("id").toString())) {
+						String portal_type = itemNode.get("@type").toString();
+						portal_type = portal_type == null ? "" : portal_type;
+						String path = service.pathWithoutPrefix(itemNode);
+						switch(portal_type){
+							case "SimpleFolder":
+							case "ELANTransferFolder":
+								return new Folder(service, path, itemNode.toMap());
+							case "DPDocument":
+							case "InfoDocument":
+								return new Document(service, path, itemNode.toMap());
+							case "File":
+								return new File(service, path, itemNode.toMap());
+							case "Image":
+								return new Image(service, path, itemNode.toMap());
+							default:
+								return new BaseObject(service, path, itemNode.toMap());
+						}
+					}
+				}
+			} catch (Exception ex) {
+				log.error(exeptionToString(ex));
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * @return only subfolders of type ELANFolder
 	 */
 	public List<Object> getSubFolders() {
@@ -189,9 +222,14 @@ public class Folder extends BaseObject {
 	}
 
 	/**
-	 * @return path of Folder
+	 * Return this folders full path (http://mydokppol.example.com:8080/dokpool/content -> /dokpool/content).
+	 * @deprecated Use BaseObject.getPathAfterPlonesite() or BaseObject.getPathWithPlonesite() instead.
+	 * The constructor of all BaseObject descendants expects a path WITHOUT the plonesite.
+	 * This method will not be removed, it is only marked as deprecated to stop users
+	 * from using the returned path in constructors.
+	 * @return path of Folder INCLUDING the plonesite.
 	 */
-	public String getFolderPath() {
+	@Deprecated public String getFolderPath() {
 		return this.fullpath();
 	}
 
@@ -274,6 +312,41 @@ public class Folder extends BaseObject {
 			String newpath = service.pathWithoutPrefix(rspNode);
 			return new BaseObject(service, newpath, (Object[]) null);
 		} catch (Exception ex){
+			log.error(exeptionToString(ex));
+			return null;
+		}
+	}
+
+	/**
+	 * Create a copy of the object found und the given path in this Folfer.
+	 * @param srcPath the path (after plonesite) of the source object.
+	 * @return a BaseObject representing the copy, the result can ce casted to the
+	 * same subclass (e.g. Document, Event, Image) as the argument bo.
+	 */
+	public BaseObject createCopyOf(String srcPath) {
+		return createCopyOf(new BaseObject(service, srcPath,  (Object[]) null));
+	}
+
+	/**
+	 * Create a copy of the referenced object in this Folfer.
+	 * @param bo
+	 * @return a BaseObject representing the copy, the result can ce casted to the
+	 * same subclass (e.g. Document, Event, Image) as the argument bo.
+	 */
+	public BaseObject createCopyOf(BaseObject bo) {
+		try {
+			String srcPath = bo.getPathAfterPlonesite();
+			JSON.Node copyJS = new JSON.Node("{}")
+				.set("source", srcPath)
+			;
+			HttpClient.Response rsp = service.postRequestWithNode(pathAfterPlonesite + "/@copy", copyJS);
+			log.info(bo.getPathAfterPlonesite());
+			log.info(rsp.content);
+			JSON.Node rspNode = new JSON.Node(rsp.content);
+			return bo.getClass().getConstructor(DocpoolBaseService.class, String.class, Object[].class).newInstance(
+				service, service.pathWithoutPrefix(rspNode.get(0).get("target").toString()), (Object[]) null
+			);
+		} catch (Exception ex) {
 			log.error(exeptionToString(ex));
 			return null;
 		}

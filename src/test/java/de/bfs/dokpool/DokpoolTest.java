@@ -54,12 +54,12 @@ public class DokpoolTest {
 		DocumentPool mainDocpool = docpoolBaseService.getPrimaryDocumentPoolX();
 
 		log.info("Number of Dokppols: " + myDocpools.size());
-		log.info("Main Dokpool: " + mainDocpool.getFolderPath());
+		log.info("Main Dokpool: " + mainDocpool.getPathWithPlonesite());
 
 		for (DocumentPool sDocpool : myDocpools) {
-			if (sDocpool.getFolderPath().matches("/" + PLONESITE + "/" + DOKPOOL)) {
+			if (sDocpool.getPathWithPlonesite().matches("/" + PLONESITE + "/" + DOKPOOL)) {
 				mainDocpool = sDocpool;
-				log.info("Main Dokpool is now: " + mainDocpool.getFolderPath());
+				log.info("Main Dokpool is now: " + mainDocpool.getPathWithPlonesite());
 				break;
 			}
 		}
@@ -83,12 +83,12 @@ public class DokpoolTest {
 		DocumentPool mainDocpool = docpoolBaseService.getPrimaryDocumentPool();
 
 		log.info("Number of Dokppols: " + myDocpools.size());
-		log.info("Main Dokpool: " + mainDocpool.getFolderPath());
+		log.info("Main Dokpool: " + mainDocpool.getPathWithPlonesite());
 
 		for (DocumentPool sDocpool : myDocpools) {
-			if (sDocpool.getFolderPath().matches("/" + PLONESITE + "/" + DOKPOOL)) {
+			if (sDocpool.getPathWithPlonesite().matches("/" + PLONESITE + "/" + DOKPOOL)) {
 				mainDocpool = sDocpool;
-				log.info("Main Dokpool is now: " + mainDocpool.getFolderPath());
+				log.info("Main Dokpool is now: " + mainDocpool.getPathWithPlonesite());
 				break;
 			}
 		}
@@ -99,12 +99,12 @@ public class DokpoolTest {
 	}
 
 	public static void deleteObjectXMLRPC(Folder folder, String objId) throws Exception {
-		log.info("Trying to delete "+folder.getFolderPath() + "/" + objId);
+		log.info("Trying to delete "+folder.getPathWithPlonesite() + "/" + objId);
 		Field clientField = Class.forName("de.bfs.dokpool.client.base.BaseObject").getDeclaredField("client");
 		clientField.setAccessible(true);
 		XmlRpcClient client = (XmlRpcClient) clientField.get(folder);
 		Vector<String[]> delParams = new Vector<String[]>();
-		delParams.add(new String[]{folder.getFolderPath() + "/" + objId});
+		delParams.add(new String[]{folder.getPathWithPlonesite() + "/" + objId});
 		DocpoolBaseService.execute(client, "delete_object", delParams);
 	}
 
@@ -130,7 +130,7 @@ public class DokpoolTest {
 			Event ev = events.get(0);
 			log.info("First event from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
 		} catch (NullPointerException e) {
-			log.info("Could not find any events for " + mainDocpool.getFolderPath());
+			log.info("Could not find any events for " + mainDocpool.getPathWithPlonesite());
 		}
 
 		events = mainDocpool.getActiveEventsX();
@@ -138,7 +138,7 @@ public class DokpoolTest {
 			Event ev = events.get(0);
 			log.info("First active event from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
 		} catch (NullPointerException e) {
-			log.info("Could not find any active events for " + mainDocpool.getFolderPath());
+			log.info("Could not find any active events for " + mainDocpool.getPathWithPlonesite());
 		}
 
 		List<Scenario> scenarios = mainDocpool.getScenariosX();
@@ -146,7 +146,7 @@ public class DokpoolTest {
 			Scenario ev = scenarios.get(0);
 			log.info("First scenario from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
 		} catch (NullPointerException | IndexOutOfBoundsException e) {
-			log.info("Could not find any scenarios for " + mainDocpool.getFolderPath());
+			log.info("Could not find any scenarios for " + mainDocpool.getPathWithPlonesite());
 		}
 
 		scenarios = mainDocpool.getActiveScenariosX();
@@ -154,7 +154,7 @@ public class DokpoolTest {
 			Scenario ev = scenarios.get(0);
 			log.info("First active scenario from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
 		} catch (NullPointerException | IndexOutOfBoundsException e) {
-			log.info("Could not find any active scenarios for " + mainDocpool.getFolderPath());
+			log.info("Could not find any active scenarios for " + mainDocpool.getPathWithPlonesite());
 		}
 
 		log.info("My very own user folder: " + mainDocpool.getUserFolderX());
@@ -163,19 +163,19 @@ public class DokpoolTest {
 		try {
 			myGroupFolder = mainDocpool.getGroupFoldersX().get(0);
 		} catch (NullPointerException e) {
-			throw new NullPointerException("Could not find any valid GroupFolder for Dokpool " + mainDocpool.getFolderPath());
+			throw new NullPointerException("Could not find any valid GroupFolder for Dokpool " + mainDocpool.getPathWithPlonesite());
 		}
 
-		log.info("Group folder path (first from Dokpool): " + myGroupFolder.getFolderPath());
+		log.info("Group folder path (first from Dokpool): " + myGroupFolder.getPathWithPlonesite());
 
 		try {
 			myGroupFolder = mainDocpool.getFolderX(/*mainDocpool.getFolderPath() + "/*/"content/Groups/" + GROUPFOLDER);
-			log.info("Group folder now set from from env: " +  myGroupFolder.getFolderPath());
+			log.info("Group folder now set from from env: " +  myGroupFolder.getPathWithPlonesite());
 			myGroupFolder = mainDocpool.getGroupFolder(GROUPFOLDER).get();
-			log.info("Group folder set from from env again: " +  myGroupFolder.getFolderPath());
+			log.info("Group folder set from from env again: " +  myGroupFolder.getPathWithPlonesite());
 		} catch (NullPointerException e) {
-			log.warn("Could not find DOKPOOL_GROUPFOLDER: " + mainDocpool.getFolderPath() + "/content/Groups/" + GROUPFOLDER);
-			log.info("Group folder remains: " +  myGroupFolder.getFolderPath());
+			log.warn("Could not find DOKPOOL_GROUPFOLDER: " + mainDocpool.getPathWithPlonesite() + "/content/Groups/" + GROUPFOLDER);
+			log.info("Group folder remains: " +  myGroupFolder.getPathWithPlonesite());
 		}
 
 		Folder myTransferFolder = null;
@@ -183,18 +183,18 @@ public class DokpoolTest {
 			List<Folder> tfFolders = mainDocpool.getTransferFoldersX();
 			log.info("number of transfer folders: " + tfFolders.size());
 			myTransferFolder = tfFolders.get(0);
-			log.info("Transfer folder path (first from Dokpool): " + myTransferFolder.getFolderPath());
+			log.info("Transfer folder path (first from Dokpool): " + myTransferFolder.getPathWithPlonesite());
 		} catch (NullPointerException e) {
-			log.info("Could not find any valid TransferFolder for Dokpool " + mainDocpool.getFolderPath());
+			log.info("Could not find any valid TransferFolder for Dokpool " + mainDocpool.getPathWithPlonesite());
 		}
 
 		boolean docExists = false;
 		try {
 			myGroupFolder.getFolderX(DOCID);
-			log.info("Object exists: " +   myGroupFolder.getFolderPath() + "/" + DOCID);
+			log.info("Object exists: " +   myGroupFolder.getPathWithPlonesite() + "/" + DOCID);
 			docExists = true;
 		} catch (NullPointerException e) {
-			log.info("Object does not exist: " +  myGroupFolder.getFolderPath() + "/" + DOCID);
+			log.info("Object does not exist: " +  myGroupFolder.getPathWithPlonesite() + "/" + DOCID);
 		}
 		if (docExists) {
 			deleteObjectXMLRPC(myGroupFolder, DOCID);
@@ -210,7 +210,7 @@ public class DokpoolTest {
 		creatorsList.add(USER);
 		docProperties.put("creators", creatorsList);
 
-		log.info("Creating new document at " + myGroupFolder.getFolderPath() + "/" + DOCID);
+		log.info("Creating new document at " + myGroupFolder.getPathWithPlonesite() + "/" + DOCID);
 		Document d = myGroupFolder.createDPDocumentX(DOCID, docProperties);
 
 		byte[] fileData = Files.readAllBytes(Paths.get("README.md"));
@@ -250,7 +250,7 @@ public class DokpoolTest {
 			Event ev = events.get(0);
 			log.info("First event from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
 		} catch (NullPointerException e) {
-			log.info("Could not find any events for " + mainDocpool.getFolderPath());
+			log.info("Could not find any events for " + mainDocpool.getPathWithPlonesite());
 		}
 
 		events = mainDocpool.getActiveEvents();
@@ -258,7 +258,7 @@ public class DokpoolTest {
 			Event ev = events.get(0);
 			log.info("First active event from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
 		} catch (NullPointerException e) {
-			log.info("Could not find any active events for " + mainDocpool.getFolderPath());
+			log.info("Could not find any active events for " + mainDocpool.getPathWithPlonesite());
 		}
 
 		List<Scenario> scenarios = mainDocpool.getScenarios();
@@ -266,7 +266,7 @@ public class DokpoolTest {
 			Scenario ev = scenarios.get(0);
 			log.info("First scenario from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
 		} catch (NullPointerException | IndexOutOfBoundsException e) {
-			log.info("Could not find any scenarios for " + mainDocpool.getFolderPath());
+			log.info("Could not find any scenarios for " + mainDocpool.getPathWithPlonesite());
 		}
 
 		scenarios = mainDocpool.getActiveScenarios();
@@ -274,7 +274,7 @@ public class DokpoolTest {
 			Scenario ev = scenarios.get(0);
 			log.info("First active scenario from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
 		} catch (NullPointerException | IndexOutOfBoundsException e) {
-			log.info("Could not find any active scenarios for " + mainDocpool.getFolderPath());
+			log.info("Could not find any active scenarios for " + mainDocpool.getPathWithPlonesite());
 		}
 
 		log.info("My very own user folder: " + mainDocpool.getUserFolder());
@@ -285,19 +285,19 @@ public class DokpoolTest {
 		try {
 			myGroupFolder = mainDocpool.getGroupFolders().get(0);
 		} catch (NullPointerException e) {
-			throw new NullPointerException("Could not find any valid GroupFolder for Dokpool " + mainDocpool.getFolderPath());
+			throw new NullPointerException("Could not find any valid GroupFolder for Dokpool " + mainDocpool.getPathWithPlonesite());
 		}
 
-		log.info("Group folder path (first from Dokpool): " + myGroupFolder.getFolderPath());
+		log.info("Group folder path (first from Dokpool): " + myGroupFolder.getPathWithPlonesite());
 
 		try {
 			myGroupFolder = mainDocpool.getFolder("content/Groups/" + GROUPFOLDER);
-			log.info("Group folder now set from from env: " +  myGroupFolder.getFolderPath());
+			log.info("Group folder now set from from env: " +  myGroupFolder.getPathWithPlonesite());
 			myGroupFolder = mainDocpool.getGroupFolder(GROUPFOLDER).get();
-			log.info("Group folder set from from env again: " +  myGroupFolder.getFolderPath());
+			log.info("Group folder set from from env again: " +  myGroupFolder.getPathWithPlonesite());
 		} catch (NullPointerException e) {
-			log.warn("Could not find DOKPOOL_GROUPFOLDER: " + mainDocpool.getFolderPath() + "/content/Groups/" + GROUPFOLDER);
-			log.info("Group folder remains: " +  myGroupFolder.getFolderPath());
+			log.warn("Could not find DOKPOOL_GROUPFOLDER: " + mainDocpool.getPathWithPlonesite() + "/content/Groups/" + GROUPFOLDER);
+			log.info("Group folder remains: " +  myGroupFolder.getPathWithPlonesite());
 		}
 
 		Folder myTransferFolder = null;
@@ -305,50 +305,49 @@ public class DokpoolTest {
 			List<Folder> tfFolders = mainDocpool.getTransferFolders();
 			log.info("number of transfer folders: " + tfFolders.size());
 			myTransferFolder = tfFolders.get(0);
-			log.info("Transfer folder path (first from Dokpool): " + myTransferFolder.getFolderPath());
+			log.info("Transfer folder path (first from Dokpool): " + myTransferFolder.getPathWithPlonesite());
 		} catch (NullPointerException e) {
-			log.info("Could not find any valid TransferFolder for Dokpool " + mainDocpool.getFolderPath());
+			log.info("Could not find any valid TransferFolder for Dokpool " + mainDocpool.getPathWithPlonesite());
 		}
 		
 
-		// boolean docExists = false;
-		// try {
-		// 	myGroupFolder.getFolder(DOCID);
-		// 	log.info("Object exists: " +   myGroupFolder.getFolderPath() + "/" + DOCID);
-		// 	docExists = true;
-		// } catch (NullPointerException e) {
-		// 	log.info("Object does not exist: " +  myGroupFolder.getFolderPath() + "/" + DOCID);
-		// }
-		// if (docExists) {
-		// 	deleteObjectXMLRPC(myGroupFolder, DOCID);
-		// }
+		boolean docExists = false;
+		Document myCopy = null;
+		try {
+			myCopy = (Document) myGroupFolder.getContentItem("copy_of_"+DOCID);
+			log.info("Object exists: " +  myCopy.getPathWithPlonesite());
+			docExists = true;
+		} catch (NullPointerException e) {
+			log.info("Object does not exist: " +  myGroupFolder.getPathWithPlonesite() + "/" + "copy_of_"+DOCID);
+		}
+		if (docExists) {
+			myCopy.delete();
+		}
 
-		// Map<String, Object> docProperties = new HashMap<String, Object>();
-		// docProperties.put("title", "JavaDocpoolTestDocument");
-		// docProperties.put("description", "Created by mvn test.");
-		// docProperties.put("text", "This is just a Test and can be deleted.");
+		Document d = (Document) myGroupFolder.createCopyOf(myGroupFolder.getContentItem(DOCID));
+		log.info(d.getPathAfterPlonesite());
 
-		// List<String> creatorsList = new ArrayList<String>();
-		// creatorsList.add(DOCUMENTOWNER);
-		// creatorsList.add(USER);
-		// docProperties.put("creators", creatorsList);
+		Map<String, Object> docProperties = new HashMap<String, Object>();
+		docProperties.put("title", "JavaDocpoolTestDocument");
+		docProperties.put("description", "Created by mvn test.");
+		docProperties.put("text", "This is just a Test and can be deleted.");
 
+		List<String> creatorsList = new ArrayList<String>();
+		creatorsList.add(DOCUMENTOWNER);
+		creatorsList.add(USER);
+		docProperties.put("creators", creatorsList);
+		d.update(docProperties);
+
+		// TODO: use the lines instead of copying when document creation is fixed.
 		// log.info("Creating new document at " + myGroupFolder.getFolderPath() + "/" + DOCID);
 		// Document d = myGroupFolder.createDPDocument(DOCID, docProperties);
 
-		Document d = new Document(service, myGroupFolder.getFolderPath().substring(8) + "/" + DOCID, (Object[])null);
-		log.info(d.getId());
-
 		byte[] fileData = Files.readAllBytes(Paths.get("README.md"));
-		d.uploadFile("readme3", "Read me!", "A file you should read.", fileData, "README.txt");
+		d.uploadFile("readme", "Read me!", "A file you should read.", fileData, "README.txt");
 		byte[] imageData = Files.readAllBytes(Paths.get("src/test/resources/image.png"));
-		d.uploadImage("image3", "Look at me!", "An image you should look at.", imageData, "image.png");
+		d.uploadImage("image", "Look at me!", "An image you should look at.", imageData, "image.png");
 
-		// //TODO: needed? What does this do?
-		// d.autocreateSubdocuments();
-
-		// d.setWorkflowStatus("publish");
-
+		d.setWorkflowStatus("publish");
 	}
 
 
@@ -368,7 +367,7 @@ public class DokpoolTest {
 			log.warn("No DocumentPools found!");
 		}
 
-		Method gdPField = Class.forName("de.bfs.dokpool.client.base.DocpoolBaseService").getDeclaredMethod("getDocumentPool",Class.forName("java.lang.String"));
+		Method gdPField = Class.forName("de.bfs.dokpool.client.base.DocpoolBaseService").getDeclaredMethod("getDocumentPoolX",Class.forName("java.lang.String"));
 		gdPField.setAccessible(true);
 		DocumentPool myDocumentPool = ((Optional<DocumentPool>) gdPField.invoke(docpoolBaseService,DOKPOOL)).get();
 		log.info(myDocumentPool.getTitle());
@@ -398,7 +397,7 @@ public class DokpoolTest {
 		properties.put("scenarios", new String[] { "scenario1", "scenario2" });
 		bo.updateX(properties);
 		log.info(bo.getStringAttribute("created_by"));
-		log.info(bo.getDateAttributeX("effective"));
+		log.info(bo.getDateAttribute("effective"));
 		deleteObjectXMLRPC(groupFolder,randId);
 
 		Map<String, Object> elanProperties = new HashMap<String, Object>();

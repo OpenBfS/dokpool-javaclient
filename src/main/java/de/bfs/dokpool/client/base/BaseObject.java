@@ -57,11 +57,31 @@ public class BaseObject {
 	}
 
 	protected String fullpath(){
-		if (pathAfterPlonesite != null){
+		if (pathAfterPlonesite != null) {
 			return "/" + service.plonesite + pathAfterPlonesite;
 		} else {
 			return pathWithPlonesite;
 		}
+	}
+
+	/**
+	 * Get the path within the dokpool plone instance.
+	 * @return the path after the plonesite including the first /,
+	 * e.g. http://dokpool.example.com:8080/dokpool/bund/content -> /bund/content
+	 */
+	public String getPathAfterPlonesite(){
+		return pathAfterPlonesite;
+	}
+
+	/**
+	 * Get path on the server including the name of the ploneite (e.g. /dokpool).
+	 * DO NOT USE this function to construct a path for the cosntructors of
+	 * BaseObject and its descendant.
+	 * @return the path after domain (and port) including the first /,
+	 * e.g. http://dokpool.example.com:8080/dokpool/bund/content -> /dokpool/bund/content
+	 */
+	public String getPathWithPlonesite(){
+		return fullpath();
 	}
 	
 
@@ -159,7 +179,7 @@ public class BaseObject {
 	}
 	
 	//TODO: Dates will be likely be Strings, so we can simplify this in a REST-only world.
-	public Date getDateAttributeX(String name) {
+	public Date getDateAttribute(String name) {
 		if (getAttribute(name) != null) {
 			Object dateObject = getAttribute(name);
 			if (dateObject instanceof Date){
