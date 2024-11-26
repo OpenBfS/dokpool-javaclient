@@ -419,6 +419,77 @@ public class DokpoolTest {
 	}
 
 	/**
+	 * Document handling parts of old main Test method.
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void miscObjectTestREST() throws Exception {
+		log.info("=== TEST: miscObjectTest REST ======");
+		log.info("URL: " + PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE + " User:" + USER + " Password:" + PW);
+		DocpoolBaseService docpoolBaseService = new DocpoolBaseService(PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE, USER, PW);
+
+		List<DocumentPool> documentpools = docpoolBaseService.getDocumentPools();
+		if (documentpools.isEmpty()) {
+			log.warn("No DocumentPools found!");
+		}
+
+		Method gdPField = Class.forName("de.bfs.dokpool.client.base.DocpoolBaseService").getDeclaredMethod("getDocumentPool",Class.forName("java.lang.String"));
+		gdPField.setAccessible(true);
+		DocumentPool myDocumentPool = ((Optional<DocumentPool>) gdPField.invoke(docpoolBaseService,DOKPOOL)).get();
+		log.info(myDocumentPool.getTitle());
+		log.info(myDocumentPool.getDescription());
+		List<DocType> types = myDocumentPool.getTypes();
+		for (DocType t : types) {
+			log.info(t.getId());
+			log.info(t.getTitle());
+		}
+
+		Folder groupFolder = myDocumentPool.getGroupFolder(GROUPFOLDER).get();
+		Random r = new Random();
+		log.info(groupFolder);
+		log.info(groupFolder.getTitle());
+		List<Object> documents = groupFolder.getContents(null);
+		List<Folder> tf = myDocumentPool.getTransferFolders();
+		Map<String, Object> properties = new HashMap<String, Object>();
+		properties.put("title", "Generic Title");
+		properties.put("description", "Generic Description");
+		properties.put("text", "<b>Text</b>");
+		properties.put("docType", "ifinprojection");
+		properties.put("subjects", new String[] { "Tag1", "Tag2" });
+		properties.put("local_behaviors", new String[] { "elan" });
+		String randId = "generic" + r.nextInt();
+		// TODO: Use this line instead of the following when document creation works via REST.
+		// BaseObject bo = groupFolder.createObject(randId, properties, "DPDocument");
+		BaseObject bo = groupFolder.createCopyOf(groupFolder.getContentItem(DOCID));
+		properties.clear();
+		properties.put("scenarios", new String[] { "scenario1", "scenario2" });
+		bo.update(properties);
+		log.info(bo.getStringAttribute("created_by"));
+		log.info(bo.getDateAttribute("effective"));
+		bo.delete();
+
+		Map<String, Object> elanProperties = new HashMap<String, Object>();
+		elanProperties.put("scenarios", new String[] { "demo-on-2024-04-01" });
+		Map<String, Object> rodosProperties = new HashMap<String, Object>();
+		rodosProperties.put("reportId", "REPORT");
+		randId = "fromjava" + r.nextInt();
+		Document d = (Document) groupFolder.createCopyOf(groupFolder.getContentItem(DOCID));
+		// TODO: Use this line instead of the line above when document creation works via REST.
+		// Document d = groupFolder.createAppSpecificDocument(randId, "New from Java",
+		// 		"Description from Java", "<p>Text from Java!</p>", "ifinprojection", new String[] { "elan", "rodos" },
+		// 		elanProperties,
+		// 		null,
+		// 		rodosProperties,
+		// 		null
+		// 		);
+		log.info(d.getTitle());
+		log.info(d.getWorkflowStatus());
+		log.info(d.getStringsAttribute("local_behaviors"));
+		d.delete();
+	}
+
+	/**
 	 * Test user and group  handling.
 	 *
 	 */
