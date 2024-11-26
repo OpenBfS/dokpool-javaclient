@@ -203,15 +203,34 @@ public class BaseObject {
 	public List<String> getStringsAttribute(String name) {
 		if (getAttribute(name) != null) {
 			List<String> values = new ArrayList<>();
-			Object[] results = (Object[]) getAttribute(name);
-			for (Object result: results) {
-				values.add((String)result);
+			Object resultsObj = getAttribute(name);
+			if (resultsObj instanceof Object[]) {
+				Object[] results = (Object[]) resultsObj;
+				for (Object result: results) {
+					if (result instanceof String) {
+						values.add((String)result);
+					} else {
+						//add a String representation as a last resort
+						values.add(result.toString());
+					}
+				}
+			} else if (resultsObj instanceof List) {
+				@SuppressWarnings("unchecked")
+				List<Object> results = (List<Object>) resultsObj;
+				for (Object result: results) {
+					if (result instanceof String) {
+						values.add((String)result);
+					} else {
+						//add a String representation as a last resort
+						values.add(result.toString());
+					}
+				}
 			}
 			return values;		
 		}
 		else {
 			return new ArrayList<>();
-		}		
+		}
 	}
 	
 	public String getId() {
