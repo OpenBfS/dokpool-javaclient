@@ -1,7 +1,8 @@
 package de.bfs.dokpool.client.base;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -185,12 +186,13 @@ public class BaseObject {
 			if (dateObject instanceof Date){
 				return (Date)dateObject;
 			} else {
-				//TODO:This assumes ISO-Format, check date format(s) actually used.
-				SimpleDateFormat iso = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH);
 				try {
-					return iso.parse((String) dateObject);
-				} catch (ParseException pe) {
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("[yyyy-MM-dd'T'HH:mm:ss[.SSS][XXX]]", Locale.ENGLISH).withZone(ZoneOffset.UTC);
+					ZonedDateTime zdt = formatter.parse((String) dateObject, ZonedDateTime ::from);
+					return Date.from(zdt.toInstant());
+				} catch (java.time.format.DateTimeParseException pe) {
 					log.error("Malformed Date: "+ (String) dateObject);
+					log.error(exeptionToString(pe));
 					return null;
 				}
 			}

@@ -326,6 +326,8 @@ public class DokpoolTest {
 
 		Document d = (Document) myGroupFolder.createCopyOf(myGroupFolder.getContentItem(DOCID));
 		log.info(d.getPathAfterPlonesite());
+		log.info("modified: " + d.getDateAttribute("modified"));
+		log.info("mdate: " + d.getDateAttribute("mdate"));
 
 		Map<String, Object> docProperties = new HashMap<String, Object>();
 		docProperties.put("title", "JavaDocpoolTestDocument");
