@@ -41,7 +41,7 @@ public class DocpoolBaseService {
 	/*package-private*/ String plonesite;
 	private String username;
 	private String password;
-	public final String urlPrefix;
+	private final String urlPrefix;
 	private final int urlPrefixLength;
 
 	/**
@@ -69,7 +69,7 @@ public class DocpoolBaseService {
 		this.urlPrefix = HttpClient.composeUrl(this.proto,this.host,this.port,"/"+ this.plonesite);
 		this.urlPrefixLength = urlPrefix.length();
 
-		//old XMLRPC-Code:
+		//TODO: old XMLRPC-Code:
 		XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
 		// you can now do authenticated XML-RPC calls with the proxy
 		try {
@@ -125,7 +125,7 @@ public class DocpoolBaseService {
 		return username;
 	}
 
-	public static String exeptionToString(Exception ex) {
+	/*package-private*/ static String exeptionToString(Exception ex) {
 		Writer stBuffer = new StringWriter();
 		PrintWriter stPrintWriter = new PrintWriter(stBuffer);
 		ex.printStackTrace(stPrintWriter);
@@ -136,21 +136,11 @@ public class DocpoolBaseService {
 	 * 
 	 * @return A Map with authentication and accept (JSON) headers.
 	 */
-	public Map<String,String> defaultHeaders(){
+	private Map<String,String> defaultHeaders(){
 		Map<String,String> headers = new HashMap<String,String>();
 		headers.put(HttpClient.Headers.ACCEPT,HttpClient.MimeTypes.JSON);
 		HttpClient.addBasicAuthToHeaders(headers,username,password);
 		return headers;
-	}
-
-	//TODO: check if some Map requests need pagination support, too.
-	public Map<String,Object> mapFromGetRequest(String endpoint) throws Exception {
-		String path = urlPrefix + endpoint;
-		HttpClient.Response	rsp;
-		rsp = HttpClient.doGetRequest(proto,host,port,path,defaultHeaders());
-		log.info("response content length: " + rsp.content.length());
-		JSON.Node resJs = new JSON.Node(rsp.content);
-		return resJs.toMap();
 	}
 
 	public JSON.Node nodeFromGetRequest(String endpoint, String queryString) throws Exception {
@@ -174,15 +164,11 @@ public class DocpoolBaseService {
 		return node;
 	}
 
+
+	// TODO: we do not actually want these methods to be part of the public api
+	// -> make them package-private and add references to them to the base object
 	public JSON.Node nodeFromGetRequest(String endpoint) throws Exception {
 		return nodeFromGetRequest(endpoint, null);
-	}
-
-	public HttpClient.Response patchRequestWithMap(String endpoint, Map<String,Object> patchMap) throws Exception {
-		String patchUrl = urlPrefix + endpoint;
-		JSON.Node patchJS = new JSON.Node(patchMap);
-		byte[] patchData = patchJS.toJSON().getBytes();
-		return HttpClient.doPatchRequest(proto,host,port,patchUrl,defaultHeaders(),HttpClient.MimeTypes.JSON,patchData);
 	}
 
 	public HttpClient.Response patchRequestWithNode(String endpoint, JSON.Node patchNode) throws Exception {
@@ -292,7 +278,7 @@ public class DocpoolBaseService {
 		String ep = "/@get_primary_documentpool" + user;
 		Map<String,Object> map;
 		try {//TODO: current API does not throw exceptions, change?
-			map = mapFromGetRequest(ep);
+			map = nodeFromGetRequest(ep).toMap();
 		} catch (Exception ex){
 			log.error(exeptionToString(ex));
 			return null;

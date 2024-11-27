@@ -123,7 +123,7 @@ public class BaseObject {
 				return getDataX();
 			}
 			try {
-				data = service.mapFromGetRequest(pathAfterPlonesite);
+				data = service.nodeFromGetRequest(pathAfterPlonesite).toMap();
 			} catch (Exception ex) {
 				log.error(exeptionToString(ex));
 			}
@@ -336,7 +336,7 @@ public class BaseObject {
 		data = null;
 		dataComplete = false;
 		try {
-			service.patchRequestWithMap(pathAfterPlonesite, properties);
+			service.patchRequestWithNode(pathAfterPlonesite, new JSON.Node(properties));
 			return true;
 		} catch(Exception ex) {
 			log.error(exeptionToString(ex));
@@ -374,7 +374,7 @@ public class BaseObject {
 		}
 	}
 
-	public static String exeptionToString(Exception ex) {
+	protected static String exeptionToString(Exception ex) {
 		return DocpoolBaseService.exeptionToString(ex);
 	}
 
