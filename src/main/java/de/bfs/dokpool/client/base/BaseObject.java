@@ -123,7 +123,13 @@ public class BaseObject {
 				return getDataX();
 			}
 			try {
-				data = service.nodeFromGetRequest(pathAfterPlonesite).toMap();
+				JSON.Node rspNode = service.nodeFromGetRequest(pathAfterPlonesite);
+				if (rspNode.errorInfo != null) {
+					log.info(rspNode.errorInfo.toString());
+					data = new HashMap<String,Object> ();
+				} else {
+					data = rspNode.toMap();
+				}
 			} catch (Exception ex) {
 				log.error(exeptionToString(ex));
 			}
@@ -263,8 +269,12 @@ public class BaseObject {
 	 */
 	public String getWorkflowStatus() {
 		try {
-			JSON.Node node = service.nodeFromGetRequest(pathAfterPlonesite+"/@workflow").get("state").get("id");
-			return node.toString();
+			JSON.Node rspNode = service.nodeFromGetRequest(pathAfterPlonesite+"/@workflow");
+			if (rspNode.errorInfo != null) {
+				log.info(rspNode.errorInfo.toString());
+				return null;
+			}
+			return rspNode.get("state").get("id").toString();
 		} catch (Exception ex){
 			log.error(exeptionToString(ex));
 			return null;
@@ -363,8 +373,8 @@ public class BaseObject {
 		try {
 			HttpClient.Response rsp = service.deleteRequest(pathAfterPlonesite);
 			JSON.Node rspNode = new JSON.Node(rsp.content);
-			if (rspNode.get("type") != null && rspNode.get("type").toString().equals("NotFound")){
-				log.info(rspNode.get("message"));
+			if (rspNode.errorInfo != null) {
+				log.info(rspNode.errorInfo.toString());
 				return false;
 			}
 			return true;

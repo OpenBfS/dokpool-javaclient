@@ -74,8 +74,8 @@ public class Document extends Folder {
 			;
 			HttpClient.Response rsp = service.postRequestWithNode(pathAfterPlonesite, createJS);
 			JSON.Node rspNode = new JSON.Node(rsp.content);
-			if (rspNode.get("type") != null){
-				log.info(rspNode.get("message"));
+			if (rspNode.errorInfo != null) {
+				log.info(rspNode.errorInfo.toString());
 				return null;
 			}
 			String newpath = service.pathWithoutPrefix(rspNode);
@@ -160,8 +160,8 @@ public class Document extends Folder {
 			;
 			HttpClient.Response rsp = service.postRequestWithNode(pathAfterPlonesite, createJS);
 			JSON.Node rspNode = new JSON.Node(rsp.content);
-			if (rspNode.get("type") != null){
-				log.info(rspNode.get("message"));
+			if (rspNode.errorInfo != null) {
+				log.info(rspNode.errorInfo.toString());
 				return null;
 			}
 			String newpath = service.pathWithoutPrefix(rspNode);

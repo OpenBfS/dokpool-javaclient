@@ -90,8 +90,8 @@ public class Group extends BaseObject {
 			);
 			HttpClient.Response rsp = service.patchRequestWithNode("/@groups/"+groupId, patchJS);
 			JSON.Node rspNode = new JSON.Node(rsp.content);
-			if (rspNode != null && rspNode.get("message") != null) {
-				log.info(rspNode.toJSON());
+			if (rspNode.errorInfo != null) {
+				log.info(rspNode.errorInfo.toString());
 				return;
 			}
 			members.add(user);
@@ -111,8 +111,8 @@ public class Group extends BaseObject {
 			);
 			HttpClient.Response rsp = service.patchRequestWithNode("/@groups/"+groupId, patchJS);
 			JSON.Node rspNode = new JSON.Node(rsp.content);
-			if (rspNode != null && rspNode.get("message") != null) {
-				log.info(rspNode.toJSON());
+			if (rspNode.errorInfo != null) {
+				log.info(rspNode.errorInfo.toString());
 				return;
 			}
 			members.remove(user);

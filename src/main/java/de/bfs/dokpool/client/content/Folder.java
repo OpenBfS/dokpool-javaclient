@@ -62,6 +62,10 @@ public class Folder extends BaseObject {
 		if (contentsNode == null) {
 			try {
 				contentsNode = service.nodeFromGetRequest(pathAfterPlonesite,"metadata_fields=id");
+				if (contentsNode.errorInfo != null) {
+					log.info(contentsNode.errorInfo.toString());
+					return null;
+				}
 			} catch (Exception ex) {
 				log.error(exeptionToString(ex));
 			}
@@ -95,8 +99,8 @@ public class Folder extends BaseObject {
 		subpath = subpath.startsWith("/") ? subpath: ("/" + subpath);
 		try {
 			JSON.Node subpathNode = service.nodeFromGetRequest(pathAfterPlonesite + subpath);
-			if (subpathNode.get("type") != null && subpathNode.get("type").toString().equals("NotFound")){
-				log.info(subpathNode.get("message"));
+			if (subpathNode.errorInfo != null) {
+				log.info(subpathNode.errorInfo.toString());
 				return null;
 			}
 			return new Folder(service, service.pathWithoutPrefix(subpathNode), subpathNode.toMap());

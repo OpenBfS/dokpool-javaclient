@@ -8,6 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
@@ -158,6 +159,30 @@ public class DocpoolBaseService {
 		return ex.toString() + ": " + ex.getLocalizedMessage() + "\n" + stBuffer.toString();
 	}
 
+	public JSON.Node addErrorInfo(JSON.Node baseNode, HttpClient.Response rsp) throws Exception {
+		if (baseNode == null || baseNode.type().equals("null")) {
+			baseNode = new JSON.Node("null");
+			baseNode.errorInfo = "REST response error: No content or null content";
+			return baseNode;
+		}
+		if (baseNode.get("error") != null) {
+			baseNode.errorInfo = baseNode.get("error").get("message");
+			baseNode.errorInfo = "REST response error: " + (baseNode.errorInfo != null ? baseNode.errorInfo : "error");
+			return baseNode;
+		}
+		final List<Integer> errorCodes = Arrays.asList(400, 401, 403, 404, 405, 409, 500);
+		if (errorCodes.contains(rsp.status)) {
+			String message = baseNode.get("message") != null ? "; " + baseNode.get("message").toString() : "";
+			baseNode.errorInfo = "REST response error: HTTP " + rsp.status + message;
+			return baseNode;
+		}
+		if (baseNode.get("type") != null &&  baseNode.get("message") != null) {
+			baseNode.errorInfo = "REST response error: " + baseNode.get("message");
+			return baseNode;
+		}
+		return baseNode;
+	}
+
 	/**
 	 * 
 	 * @return A Map with authentication and accept (JSON) headers.
@@ -187,7 +212,7 @@ public class DocpoolBaseService {
 			log.info("response content length: " + rsp.content.length());
 			node = new JSON.Node(rsp.content);
 		}
-		return node;
+		return addErrorInfo(node,rsp);
 	}
 
 
@@ -256,8 +281,12 @@ public class DocpoolBaseService {
 		user = (user == null || user == "") ? "" : ("/"+user);
 		String ep = "/@get_documentpools" + user;
 		JSON.Node node;
-		try {//TODO: current API does not throw exceptions, change?
+		try {
 			node = nodeFromGetRequest(ep);
+			if (node.errorInfo != null) {
+				log.info(node.errorInfo.toString());
+				return null;
+			}
 		} catch (Exception ex){
 			log.error(exeptionToString(ex));
 			return null;
@@ -305,6 +334,10 @@ public class DocpoolBaseService {
 		JSON.Node rspNode = null;
 		try {
 			rspNode = nodeFromGetRequest(ep);
+			if (rspNode.errorInfo != null) {
+				log.info(rspNode.errorInfo.toString());
+				return null;
+			}
 			return new DocumentPool(this, pathWithoutPrefix(rspNode), rspNode.toMap());
 		} catch (Exception ex) {
 			log.error(exeptionToString(ex));

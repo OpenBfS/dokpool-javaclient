@@ -50,6 +50,10 @@ public class DocumentPool extends Folder {
 		JSON.Node typeListNode = null;
 		try {
 			typeListNode = service.nodeFromGetRequest(pathAfterPlonesite + "/@types");
+			if (typeListNode.errorInfo != null) {
+				log.info(typeListNode.errorInfo.toString());
+				return null;
+			}
 		} catch (Exception ex){
 			log.error(exeptionToString(ex));
 			return null;
@@ -90,7 +94,12 @@ public class DocumentPool extends Folder {
 		JSON.Node itemsNode = null;
 		try {
 			//TODO: only search /contentconfig/scen/?
-			itemsNode = service.nodeFromGetRequest(pathAfterPlonesite + "/@search", "portal_type=ELANScenario&metadata_fields=id").get("items");
+			JSON.Node rspNode = service.nodeFromGetRequest(pathAfterPlonesite + "/@search", "portal_type=ELANScenario&metadata_fields=id");
+			if (rspNode.errorInfo != null) {
+				log.info(rspNode.errorInfo.toString());
+				return null;
+			}
+			itemsNode = rspNode.get("items");
 		} catch (Exception ex){
 			log.error(exeptionToString(ex));
 			return null;
@@ -133,7 +142,12 @@ public class DocumentPool extends Folder {
 		JSON.Node itemsNode = null;
 		try {
 			//TODO: only search /contentconfig/scen/?
-			itemsNode = service.nodeFromGetRequest(pathAfterPlonesite + "/@search", "portal_type=ELANScenario&dp_type=active&metadata_fields=id").get("items");
+			JSON.Node rspNode = service.nodeFromGetRequest(pathAfterPlonesite + "/@search", "portal_type=ELANScenario&dp_type=active&metadata_fields=id");
+			if (rspNode.errorInfo != null) {
+				log.info(rspNode.errorInfo.toString());
+				return null;
+			}
+			itemsNode = rspNode.get("items");
 		} catch (Exception ex){
 			log.error(exeptionToString(ex));
 			return null;
@@ -171,7 +185,12 @@ public class DocumentPool extends Folder {
 	public List<Event> getEvents() {
 		JSON.Node itemsNode = null;
 		try {
-			itemsNode = service.nodeFromGetRequest(pathAfterPlonesite + "/contentconfig/scen/@search", "portal_type=DPEvent&metadata_fields=id").get("items");
+			JSON.Node rspNode = service.nodeFromGetRequest(pathAfterPlonesite + "/contentconfig/scen/@search", "portal_type=DPEvent&metadata_fields=id");
+			if (rspNode.errorInfo != null) {
+				log.info(rspNode.errorInfo.toString());
+				return null;
+			}
+			itemsNode = rspNode.get("items");
 		} catch (Exception ex){
 			log.error(exeptionToString(ex));
 			return null;
@@ -211,7 +230,12 @@ public class DocumentPool extends Folder {
 	public List<Event> getActiveEvents() {
 		JSON.Node itemsNode = null;
 		try {
-			itemsNode = service.nodeFromGetRequest(pathAfterPlonesite + "/contentconfig/scen/@search", "portal_type=DPEvent&dp_type=active&metadata_fields=id").get("items");
+			JSON.Node rspNode = service.nodeFromGetRequest(pathAfterPlonesite + "/contentconfig/scen/@search", "portal_type=DPEvent&dp_type=active&metadata_fields=id");
+			if (rspNode.errorInfo != null) {
+				log.info(rspNode.errorInfo.toString());
+				return null;
+			}
+			itemsNode = rspNode.get("items");
 		} catch (Exception ex){
 			log.error(exeptionToString(ex));
 			return null;
@@ -244,8 +268,8 @@ public class DocumentPool extends Folder {
 		try {
 			//the Dokpool is an argument to the endpoint, so we append ist
 			JSON.Node folderNode = service.nodeFromGetRequest("/@get_user_folder" + pathAfterPlonesite);
-			if (folderNode.get("error") != null) {
-				log.info(folderNode.get("error").get("message"));
+			if (folderNode.errorInfo != null) {
+				log.info(folderNode.errorInfo.toString());
 				return null;
 			}
 			return new Folder(service, service.pathWithoutPrefix(folderNode), folderNode.toMap());
@@ -267,8 +291,8 @@ public class DocumentPool extends Folder {
 		}
 		try {
 			JSON.Node folderNode = service.nodeFromGetRequest(pathAfterPlonesite + "/content/Members/" + user);
-			if (folderNode.get("type") != null && folderNode.get("type").toString().equals("NotFound")){
-				log.info(folderNode.get("message"));
+			if (folderNode.errorInfo != null) {
+				log.info(folderNode.errorInfo.toString());
 				return null;
 			}
 			return new Folder(service, service.pathWithoutPrefix(folderNode), folderNode.toMap());
@@ -308,8 +332,8 @@ public class DocumentPool extends Folder {
 		try {
 			//the Dokpool is an argument to the endpoint, so we append ist
 			JSON.Node gfListNode = service.nodeFromGetRequest("/@get_group_folders" + pathAfterPlonesite, "metadata_fields=id");
-			if (gfListNode.get("type") != null && gfListNode.get("type").toString().equals("NotFound")){
-				log.info(gfListNode.get("message"));
+			if (gfListNode.errorInfo != null) {
+				log.info(gfListNode.errorInfo.toString());
 				return null;
 			}
 			ArrayList<Folder> res = new ArrayList<Folder>();
@@ -331,8 +355,8 @@ public class DocumentPool extends Folder {
 	public List<Folder> getAllGroupFolders() {
 		try {
 			JSON.Node gfListNode = service.nodeFromGetRequest(pathAfterPlonesite + "/content/Groups/", "metadata_fields=id");
-			if (gfListNode.get("type") != null && gfListNode.get("type").toString().equals("NotFound")){
-				log.info(gfListNode.get("message"));
+			if (gfListNode.errorInfo != null) {
+				log.info(gfListNode.errorInfo.toString());
 				return null;
 			}
 			ArrayList<Folder> res = new ArrayList<Folder>();
@@ -370,13 +394,13 @@ public class DocumentPool extends Folder {
 	public List<Folder> getTransferFolders() {
 		try {
 			//the Dokpool is an argument to the endpoint, so we append ist
-			JSON.Node gfListNode = service.nodeFromGetRequest("/@get_transfer_folders" + pathAfterPlonesite, "metadata_fields=id");
-			if (gfListNode.get("type") != null && gfListNode.get("type").toString().equals("NotFound")){
-				log.info(gfListNode.get("message"));
+			JSON.Node tfListNode = service.nodeFromGetRequest("/@get_transfer_folders" + pathAfterPlonesite, "metadata_fields=id");
+			if (tfListNode.errorInfo != null) {
+				log.info(tfListNode.errorInfo.toString());
 				return null;
 			}
 			ArrayList<Folder> res = new ArrayList<Folder>();
-			for (JSON.Node tfNode : gfListNode.get("items")) {
+			for (JSON.Node tfNode : tfListNode.get("items")) {
 				res.add(new Folder(service, service.pathWithoutPrefix(tfNode), dataFromNode(tfNode)));
 			}
 			return res;
@@ -455,8 +479,8 @@ public class DocumentPool extends Folder {
 		try {
 			HttpClient.Response rsp = service.deleteRequest("/@users/"+userId);
 			JSON.Node rspNode = new JSON.Node(rsp.content);
-			if (rspNode.get("type") != null && rspNode.get("type").toString().equals("NotFound")){
-				log.info(rspNode.get("message"));
+			if (rspNode.errorInfo != null) {
+				log.info(rspNode.errorInfo.toString());
 				return false;
 			}
 			return true;
@@ -503,8 +527,8 @@ public class DocumentPool extends Folder {
 			;
 			HttpClient.Response rsp = service.postRequestWithNode("/@groups", createJS);
 			JSON.Node rspNode = new JSON.Node(rsp.content);
-			if (rspNode.get("error") != null) {
-				log.info(rspNode.toJSON());
+			if (rspNode.errorInfo != null) {
+				log.info(rspNode.errorInfo.toString());
 				return null;
 			}
 			return new Group(service, service.pathWithoutPrefix(rspNode), groupId, title, description, dp);
@@ -523,8 +547,8 @@ public class DocumentPool extends Folder {
 		try {
 			HttpClient.Response rsp = service.deleteRequest("/@groups/"+groupId);
 			JSON.Node rspNode = new JSON.Node(rsp.content);
-			if (rspNode.get("type") != null && rspNode.get("type").toString().equals("NotFound")){
-				log.info(rspNode.get("message"));
+			if (rspNode.errorInfo != null) {
+				log.info(rspNode.errorInfo.toString());
 				return false;
 			}
 			return true;
