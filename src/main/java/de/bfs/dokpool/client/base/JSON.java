@@ -28,6 +28,9 @@ public class JSON {
 
 	public static class Node implements Iterable<Node> {
 		private JsonNode jacksonNode;
+		
+		//This is just a convenience property to pass on error information alongside a node (e.g. HTTP Status code)
+		public Object errorInfo = null;
 
 		public Node(String json) throws Exception {
 			if (json == null) {
