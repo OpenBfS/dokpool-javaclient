@@ -3,6 +3,7 @@ package de.bfs.dokpool.client.base;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +21,7 @@ import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.protocol.HttpClientContext;
 import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.HttpHost;
 import org.apache.hc.core5.http.HttpRequest;
@@ -60,10 +62,15 @@ public class HttpClient {
 	public static class Response {
 		public final int status;
 		public final String content;
+		public final Map<String,String> headers;
 
-		Response(final int status, final String content) {
+		private Response(final int status, final String content, Header[] headers) {
 			this.status = status;
 			this.content = content;
+			this.headers = new HashMap<>();
+			for (Header header: headers) {
+				this.headers.put(header.getName(), header.getValue());
+			}
 		}
 	}
 
@@ -109,7 +116,8 @@ public class HttpClient {
 	}
 
 	public final static Response doGetRequest(final String proto, final String host, String port, final String url, Map<String,String> headers) throws Exception {
-		try (CloseableHttpClient httpclient = HttpClients.createSystem()) {
+		// Use a try-with-resources, as CloseableHttpClient should be closed():
+		try (CloseableHttpClient httpclient = HttpClients.custom().disableRedirectHandling().build()) {
 
 			final int portInt = intPortFromPortOrProtocol(port,proto);
 			final HttpHost target = new HttpHost(proto, host, portInt);
@@ -127,7 +135,7 @@ public class HttpClient {
 				HttpEntity entity = rsp.getEntity();
 				String content = entity != null ? EntityUtils.toString(entity): "";
 				EntityUtils.consume(entity);
-				return new Response(rsp.getCode(), content);
+				return new Response(rsp.getCode(), content, rsp.getHeaders());
 			});
 
 			return response;
@@ -135,7 +143,7 @@ public class HttpClient {
 	}
 
 	public final static Response doDeleteRequest(final String proto, final String host, String port, final String url, Map<String,String> headers) throws Exception {
-		try (CloseableHttpClient httpclient = HttpClients.createSystem()) {
+		try (CloseableHttpClient httpclient = HttpClients.custom().disableRedirectHandling().build()) {
 
 			final int portInt = intPortFromPortOrProtocol(port,proto);
 			final HttpHost target = new HttpHost(proto, host, portInt);
@@ -153,7 +161,7 @@ public class HttpClient {
 				HttpEntity entity = rsp.getEntity();
 				String content = entity != null ? EntityUtils.toString(entity): "";
 				EntityUtils.consume(entity);
-				return new Response(rsp.getCode(), content);
+				return new Response(rsp.getCode(), content, rsp.getHeaders());
 			});
 
 			return response;
@@ -161,7 +169,7 @@ public class HttpClient {
 	}
 
 	public final static Response doPostRequest(final String proto, final String host, String port, final String url, Map<String,String> headers, Map<String,String> parameters, String contentType, byte[] data) throws Exception {
-		try (CloseableHttpClient httpclient = HttpClients.createSystem()) {
+		try (CloseableHttpClient httpclient = HttpClients.custom().disableRedirectHandling().build()) {
 			final int portInt = intPortFromPortOrProtocol(port,proto);
 			final HttpHost target = new HttpHost(proto, host, portInt);
 			final HttpPost httppost = new HttpPost(url);
@@ -194,7 +202,7 @@ public class HttpClient {
 				HttpEntity entity = rsp.getEntity();
 				String content = entity != null ? EntityUtils.toString(entity): "";
 				EntityUtils.consume(entity);
-				return new Response(rsp.getCode(), content);
+				return new Response(rsp.getCode(), content, rsp.getHeaders());
 			});
 
 			return response;
@@ -202,7 +210,7 @@ public class HttpClient {
 	}
 
 	public final static Response doPutRequest(final String proto, final String host, String port, final String url, Map<String,String> headers, String contentType, byte[] data) throws Exception {
-		try (CloseableHttpClient httpclient = HttpClients.createSystem()) {
+		try (CloseableHttpClient httpclient = HttpClients.custom().disableRedirectHandling().build()) {
 			final int portInt = intPortFromPortOrProtocol(port,proto);
 			final HttpHost target = new HttpHost(proto, host, portInt);
 			final HttpPut httpput = new HttpPut(url);
@@ -223,7 +231,7 @@ public class HttpClient {
 				HttpEntity entity = rsp.getEntity();
 				String content = entity != null ? EntityUtils.toString(entity): "";
 				EntityUtils.consume(entity);
-				return new Response(rsp.getCode(), content);
+				return new Response(rsp.getCode(), content, rsp.getHeaders());
 			});
 
 			return response;
@@ -231,7 +239,7 @@ public class HttpClient {
 	}
 
 	public final static Response doPatchRequest(final String proto, final String host, String port, final String url, Map<String,String> headers, String contentType, byte[] data) throws Exception {
-		try (CloseableHttpClient httpclient = HttpClients.createSystem()) {
+		try (CloseableHttpClient httpclient = HttpClients.custom().disableRedirectHandling().build()) {
 			final int portInt = intPortFromPortOrProtocol(port,proto);
 			final HttpHost target = new HttpHost(proto, host, portInt);
 			final HttpPatch httppatch = new HttpPatch(url);
@@ -252,7 +260,7 @@ public class HttpClient {
 				HttpEntity entity = rsp.getEntity();
 				String content = entity != null ? EntityUtils.toString(entity): "";
 				EntityUtils.consume(entity);
-				return new Response(rsp.getCode(), content);
+				return new Response(rsp.getCode(), content, rsp.getHeaders());
 			});
 
 			return response;
