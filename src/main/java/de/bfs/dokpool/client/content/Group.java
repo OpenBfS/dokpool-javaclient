@@ -88,8 +88,7 @@ public class Group extends BaseObject {
 			JSON.Node patchJS = new JSON.Node("{}").set("users", new JSON.Node("{}")
 				.set(user.getUserId(), true)
 			);
-			HttpClient.Response rsp = service.patchRequestWithNode("/@groups/"+groupId, patchJS);
-			JSON.Node rspNode = new JSON.Node(rsp.content);
+			JSON.Node rspNode = service.patchRequestWithNode("/@groups/"+groupId, patchJS);
 			if (rspNode.errorInfo != null) {
 				log.info(rspNode.errorInfo.toString());
 				return;
@@ -109,8 +108,7 @@ public class Group extends BaseObject {
 			JSON.Node patchJS = new JSON.Node("{}").set("users", new JSON.Node("{}")
 				.set(user.getUserId(), false)
 			);
-			HttpClient.Response rsp = service.patchRequestWithNode("/@groups/"+groupId, patchJS);
-			JSON.Node rspNode = new JSON.Node(rsp.content);
+			JSON.Node rspNode = service.patchRequestWithNode("/@groups/"+groupId, patchJS);
 			if (rspNode.errorInfo != null) {
 				log.info(rspNode.errorInfo.toString());
 				return;

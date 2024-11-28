@@ -346,7 +346,11 @@ public class BaseObject {
 		data = null;
 		dataComplete = false;
 		try {
-			service.patchRequestWithNode(pathAfterPlonesite, new JSON.Node(properties));
+			JSON.Node rspNode = service.patchRequestWithNode(pathAfterPlonesite, new JSON.Node(properties));
+			if (rspNode.errorInfo != null) {
+				log.info(rspNode.errorInfo.toString());
+				return false;
+			}
 			return true;
 		} catch(Exception ex) {
 			log.error(exeptionToString(ex));

@@ -16,6 +16,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Vector;
 
+import javax.xml.ws.http.HTTPBinding;
+
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 
@@ -222,10 +224,11 @@ public class DocpoolBaseService {
 		return nodeFromGetRequest(endpoint, null);
 	}
 
-	public HttpClient.Response patchRequestWithNode(String endpoint, JSON.Node patchNode) throws Exception {
+	public JSON.Node patchRequestWithNode(String endpoint, JSON.Node patchNode) throws Exception {
 		String patchUrl = urlPrefix + endpoint;
 		byte[] patchData = patchNode.toJSON().getBytes();
-		return HttpClient.doPatchRequest(proto,host,port,patchUrl,defaultHeaders(),HttpClient.MimeTypes.JSON,patchData);
+		HttpClient.Response rsp = HttpClient.doPatchRequest(proto,host,port,patchUrl,defaultHeaders(),HttpClient.MimeTypes.JSON,patchData);
+		return addErrorInfo(new JSON.Node(rsp.content), rsp);
 	}
 
 	public HttpClient.Response postRequestWithNode(String endpoint, JSON.Node patchNode) throws Exception {
