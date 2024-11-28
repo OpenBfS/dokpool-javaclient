@@ -300,6 +300,11 @@ public class DokpoolTest {
 			log.info("Group folder remains: " +  myGroupFolder.getPathWithPlonesite());
 		}
 
+		List<Object> contentList = myGroupFolder.getContents(null);
+		for (Object contentItem : contentList){
+			log.info("group folder item id: " + ((BaseObject) contentItem).getId());
+		}
+
 		Folder myTransferFolder = null;
 		try {
 			List<Folder> tfFolders = mainDocpool.getTransferFolders();

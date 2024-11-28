@@ -118,6 +118,32 @@ public class DocpoolBaseService {
 	}
 
 	public String pathWithoutPrefix(JSON.Node node){
+		String atid = node.get("@id").toString();
+		//If the `@id` is a dview, we need to fetch the actual path differently.
+		//In this case, the path is always realtive like: "esd/..." for ELAN,
+		//so it will not start with the urlPrefix
+		if (!atid.startsWith(urlPrefix)) {
+			String uid = node.get("UID") != null ? node.get("UID").toString() : null;
+			if (uid == null) { //The node has no attribute `UID`, so we will get it from the dview String
+				int uidStart = atid.indexOf("@@dview?d=")+10;
+				int uidEnd = atid.indexOf("&", uidStart);
+				uid = atid.substring(uidStart, uidEnd);
+				log.info("uid from dview: "+ uid);
+			}
+			try {
+				HttpClient.Response rsp = HttpClient.doGetRequest(proto,host,port,urlPrefix+"/resolveuid/"+uid,defaultHeaders());
+				if (rsp.status == 404 || rsp.headers.get("Location") == null) {
+					log.error("UID " + uid + " cannot be resolved");
+					return null;
+				}
+				log.info("@id from UID: " + rsp.headers.get("Location"));
+				return rsp.headers.get("Location").substring(urlPrefixLength);
+
+			} catch (Exception ex) {
+				log.error(exeptionToString(ex));
+				return null;
+			}
+		}
 		return node.get("@id").toString().substring(urlPrefixLength);
 	}
 
@@ -276,14 +302,14 @@ public class DocpoolBaseService {
 	public DocumentPool getPrimaryDocumentPool(String user) {
 		user = (user == null || user == "") ? "" : ("/"+user);
 		String ep = "/@get_primary_documentpool" + user;
-		Map<String,Object> map;
-		try {//TODO: current API does not throw exceptions, change?
-			map = nodeFromGetRequest(ep).toMap();
-		} catch (Exception ex){
+		JSON.Node rspNode = null;
+		try {
+			rspNode = nodeFromGetRequest(ep);
+			return new DocumentPool(this, pathWithoutPrefix(rspNode), rspNode.toMap());
+		} catch (Exception ex) {
 			log.error(exeptionToString(ex));
 			return null;
 		}
-		return new DocumentPool(this, pathWithoutPrefix((String) map.get("@id")), map);
 	}
 
 	private Optional<DocumentPool> getDocumentPoolX(String name) {
