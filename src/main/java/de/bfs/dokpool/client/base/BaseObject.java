@@ -375,8 +375,7 @@ public class BaseObject {
 	 */
 	public boolean delete() {
 		try {
-			HttpClient.Response rsp = service.deleteRequest(pathAfterPlonesite);
-			JSON.Node rspNode = new JSON.Node(rsp.content);
+			JSON.Node rspNode = service.deleteRequest(pathAfterPlonesite);
 			if (rspNode.errorInfo != null) {
 				log.info(rspNode.errorInfo.toString());
 				return false;

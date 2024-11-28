@@ -477,8 +477,7 @@ public class DocumentPool extends Folder {
 	 */
 	public boolean deleteUser(String userId) {
 		try {
-			HttpClient.Response rsp = service.deleteRequest("/@users/"+userId);
-			JSON.Node rspNode = new JSON.Node(rsp.content);
+			JSON.Node rspNode = service.deleteRequest("/@users/"+userId);
 			if (rspNode.errorInfo != null) {
 				log.info(rspNode.errorInfo.toString());
 				return false;
@@ -545,8 +544,7 @@ public class DocumentPool extends Folder {
 	 */
 	public boolean deleteGroup(String groupId) {
 		try {
-			HttpClient.Response rsp = service.deleteRequest("/@groups/"+groupId);
-			JSON.Node rspNode = new JSON.Node(rsp.content);
+			JSON.Node rspNode = service.deleteRequest("/@groups/"+groupId);
 			if (rspNode.errorInfo != null) {
 				log.info(rspNode.errorInfo.toString());
 				return false;
