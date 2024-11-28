@@ -221,14 +221,11 @@ public class DokpoolTest {
 		//This does nothing, the server just returns "ok".
 		d.autocreateSubdocuments();
 
+		log.info(d.getPathAfterPlonesite());
+		log.info("modified: " + d.getDateAttribute("modified"));
+		log.info("mdate: " + d.getDateAttribute("mdate"));
+
 		d.setWorkflowStatusX("publish");
-
-		d.getProperties();
-		for (Map.Entry<String,String> entry : d.getProperties().entrySet()){
-			log.info(entry.getKey() + ": " + entry.getValue());
-		}
-		log.info(new JSON.Node((Map<String,Object>)((Map) d.getProperties())));
-
 	}
 
 	/**
@@ -317,22 +314,17 @@ public class DokpoolTest {
 		
 
 		boolean docExists = false;
-		Document myCopy = null;
+		Document oldDoc = null;
 		try {
-			myCopy = (Document) myGroupFolder.getContentItem("copy_of_"+DOCID);
-			log.info("Object exists: " +  myCopy.getPathWithPlonesite());
+			oldDoc = (Document) myGroupFolder.getContentItem(DOCID);
+			log.info("Object exists: " +  oldDoc.getPathWithPlonesite());
 			docExists = true;
 		} catch (NullPointerException e) {
-			log.info("Object does not exist: " +  myGroupFolder.getPathWithPlonesite() + "/" + "copy_of_"+DOCID);
+			log.info("Object does not exist: " +  myGroupFolder.getPathWithPlonesite() + "/" + DOCID);
 		}
 		if (docExists) {
-			myCopy.delete();
+			oldDoc.delete();
 		}
-
-		Document d = (Document) myGroupFolder.createCopyOf(myGroupFolder.getContentItem(DOCID));
-		log.info(d.getPathAfterPlonesite());
-		log.info("modified: " + d.getDateAttribute("modified"));
-		log.info("mdate: " + d.getDateAttribute("mdate"));
 
 		Map<String, Object> docProperties = new HashMap<String, Object>();
 		docProperties.put("title", "JavaDocpoolTestDocument");
@@ -343,16 +335,18 @@ public class DokpoolTest {
 		creatorsList.add(DOCUMENTOWNER);
 		creatorsList.add(USER);
 		docProperties.put("creators", creatorsList);
-		d.update(docProperties);
 
-		// TODO: use the lines instead of copying when document creation is fixed.
-		// log.info("Creating new document at " + myGroupFolder.getFolderPath() + "/" + DOCID);
-		// Document d = myGroupFolder.createDPDocument(DOCID, docProperties);
+		log.info("Creating new document at " + myGroupFolder.getPathWithPlonesite() + "/" + DOCID);
+		Document d = myGroupFolder.createDPDocument(DOCID, docProperties);
 
 		byte[] fileData = Files.readAllBytes(Paths.get("README.md"));
 		d.uploadFile("readme", "Read me!", "A file you should read.", fileData, "README.txt");
 		byte[] imageData = Files.readAllBytes(Paths.get("src/test/resources/image.png"));
 		d.uploadImage("image", "Look at me!", "An image you should look at.", imageData, "image.png");
+
+		log.info(d.getPathAfterPlonesite());
+		log.info("modified: " + d.getDateAttribute("modified"));
+		log.info("mdate: " + d.getDateAttribute("mdate"));
 
 		d.setWorkflowStatus("publish");
 	}

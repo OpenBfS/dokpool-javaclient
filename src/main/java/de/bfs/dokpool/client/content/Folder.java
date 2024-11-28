@@ -282,6 +282,21 @@ public class Folder extends BaseObject {
 				.set("@type","DPDocument")
 				.set("id", id)
 			;
+			//TODO: which attributes are actually mandatory and which are only mandatory beacuse of server side bugs?
+			//set the mandatory attributes if not given:
+			if (createJS.get("title") == null) {
+				createJS.set("title", "no title provided");
+			}
+			if (createJS.get("text") == null) {
+				createJS.set("text", "no text provided");
+			}
+			if (createJS.get("docType") == null) {
+				createJS.set("docType", "doksysdok");
+			}
+			if (createJS.get("local_behaviors") == null) {
+				createJS.set("local_behaviors", (new JSON.Node ("[]")).append("elan"));
+			}
+
 			HttpClient.Response rsp = service.postRequestWithNode(pathAfterPlonesite, createJS);
 			JSON.Node rspNode = new JSON.Node(rsp.content);
 			String newpath = service.pathWithoutPrefix(rspNode);
