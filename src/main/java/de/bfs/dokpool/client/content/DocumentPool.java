@@ -244,13 +244,8 @@ public class DocumentPool extends Folder {
 		try {
 			//the Dokpool is an argument to the endpoint, so we append ist
 			JSON.Node folderNode = service.nodeFromGetRequest("/@get_user_folder" + pathAfterPlonesite);
-			//be careful: While plone usually returns some json with "NotFound", this gives a plain null (and HTTP 200)
-			if (folderNode.type().equals("null")) {
-				return null;
-			}
-			//we still keep the usual check, as the endpoint behavior might change some day
-			if (folderNode.get("type") != null && folderNode.get("type").toString().equals("NotFound")){
-				log.info(folderNode.get("message"));
+			if (folderNode.get("error") != null) {
+				log.info(folderNode.get("error").get("message"));
 				return null;
 			}
 			return new Folder(service, service.pathWithoutPrefix(folderNode), folderNode.toMap());
