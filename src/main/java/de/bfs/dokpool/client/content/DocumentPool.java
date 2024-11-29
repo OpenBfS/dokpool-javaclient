@@ -5,7 +5,6 @@ import java.util.*;
 import org.apache.xmlrpc.client.XmlRpcClient;
 
 import de.bfs.dokpool.client.base.DocpoolBaseService;
-import de.bfs.dokpool.client.base.HttpClient;
 import de.bfs.dokpool.client.base.JSON;
 
 /**
@@ -444,10 +443,9 @@ public class DocumentPool extends Folder {
 				.set("fullname", fullname)
 				.set("dp", dpUid)
 			;
-			HttpClient.Response rsp = service.postRequestWithNode("/@users", createJS);
-			JSON.Node rspNode = new JSON.Node(rsp.content);
-			if (rspNode.get("error") != null) {
-				log.info(rspNode.toJSON());
+			JSON.Node rspNode = service.postRequestWithNode("/@users", createJS);
+			if (rspNode.errorInfo != null) {
+				log.info(rspNode.errorInfo.toString());
 				return null;
 			}
 			return new User(service, service.pathWithoutPrefix(rspNode), userId, password, fullname, dp);
@@ -524,8 +522,7 @@ public class DocumentPool extends Folder {
 				//the following line has to visible effect
 				// .set("dp", dpUid)
 			;
-			HttpClient.Response rsp = service.postRequestWithNode("/@groups", createJS);
-			JSON.Node rspNode = new JSON.Node(rsp.content);
+			JSON.Node rspNode = service.postRequestWithNode("/@groups", createJS);
 			if (rspNode.errorInfo != null) {
 				log.info(rspNode.errorInfo.toString());
 				return null;

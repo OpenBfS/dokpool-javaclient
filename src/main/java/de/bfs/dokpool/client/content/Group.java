@@ -10,7 +10,6 @@ import org.apache.xmlrpc.client.XmlRpcClient;
 
 import de.bfs.dokpool.client.base.BaseObject;
 import de.bfs.dokpool.client.base.DocpoolBaseService;
-import de.bfs.dokpool.client.base.HttpClient;
 import de.bfs.dokpool.client.base.JSON;
 
 public class Group extends BaseObject {
