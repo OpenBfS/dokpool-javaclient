@@ -108,12 +108,6 @@ public class DokpoolTest {
 		DocpoolBaseService.execute(client, "delete_object", delParams);
 	}
 
-	public static String extractPath(BaseObject bo) throws Exception {
-		Field pathField = Class.forName("de.bfs.dokpool.client.base.BaseObject").getDeclaredField("path");
-		pathField.setAccessible(true);
-		return (String) pathField.get(bo);
-	}
-
 	/**
 	 * Test document creation, file upload and setting properties.
 	 *
@@ -497,20 +491,21 @@ public class DokpoolTest {
 	@Test
 	public void userManagementTestXMLRPC() throws Exception {
 		log.info("=== TEST: userManagementTest ======");
+		Random r = new Random();
 		DocumentPool myDocumentPool = obtainDocumentPoolXMLRPC();
-		User user = myDocumentPool.createUserX("testuserId", "testuserPW", "Test User Full Name", extractPath(myDocumentPool));
+		User user = myDocumentPool.createUserX("javaTestUser"+r.nextInt(), "testuserPW", "Test User Full Name", myDocumentPool.getPathWithPlonesite());
 		if (user == null) {
 			log.error("No User created!");
 		} else {
 			log.info("User " + user.getUserId() + " created.");
 		}
-		Group group = myDocumentPool.createGroupX("testgroupId", "Test Group Full Name","for java tests", extractPath(myDocumentPool));
+		Group group = myDocumentPool.createGroupX("javaTestGroup"+r.nextInt(), "Test Group Full Name","for java tests", myDocumentPool.getPathWithPlonesite());
 		if (group == null) {
 			log.error("No group created.");
 		} else {
 			log.info("Group " + group.getGroupId() + " created.");
 		}
-		group.addUserX(user, extractPath(myDocumentPool));
+		group.addUserX(user, myDocumentPool.getPathWithPlonesite());
 		String[] docTypes = {"airactivity", "ifinprojection", "protectiveactions"};
 		group.setAllowedDocTypesX(docTypes);
 		List<String> gDoctypes = group.getAllowedDocTypes();
@@ -530,15 +525,16 @@ public class DokpoolTest {
 	@Test
 	public void userManagementTestREST() throws Exception {
 		log.info("=== TEST: userManagementTest REST ======");
+		Random r = new Random();
 		ObtainDPReturn ret = obtainDocumentPoolREST();
 		DocumentPool myDocumentPool = ret.dp;
-		User user = myDocumentPool.createUser("testuserId3", "testuserPW", "Test User Full Name", myDocumentPool.getPathAfterPlonesite());
+		User user = myDocumentPool.createUser("javaTestUser"+r.nextInt(), "testuserPW", "Test User Full Name", myDocumentPool.getPathAfterPlonesite());
 		if (user == null) {
 			log.error("No User created!");
 		} else {
 			log.info("User " + user.getUserId() + " created.");
 		}
-		Group group = myDocumentPool.createGroup("testgroupId3", "Test Group Full Name","for java tests", myDocumentPool.getPathAfterPlonesite());
+		Group group = myDocumentPool.createGroup("javaTestGroup"+r.nextInt(), "Test Group Full Name","for java tests", myDocumentPool.getPathAfterPlonesite());
 		if (group == null) {
 			log.error("No group created.");
 		} else {
