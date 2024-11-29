@@ -301,8 +301,11 @@ public class Folder extends BaseObject {
 				createJS.set("local_behaviors", (new JSON.Node ("[]")).append("elan"));
 			}
 
-			HttpClient.Response rsp = service.postRequestWithNode(pathAfterPlonesite, createJS);
-			JSON.Node rspNode = new JSON.Node(rsp.content);
+			JSON.Node rspNode = service.postRequestWithNode(pathAfterPlonesite, createJS);
+			if (rspNode.errorInfo != null) {
+				log.info(rspNode.errorInfo.toString());
+				return null;
+			}
 			String newpath = service.pathWithoutPrefix(rspNode);
 			return new Document(service, newpath, (Object[]) null);
 		} catch (Exception ex){
@@ -326,8 +329,11 @@ public class Folder extends BaseObject {
 	public BaseObject createObject(String id, Map<String, Object> properties, String type) {
 		try {
 			JSON.Node createJS = new JSON.Node(properties);
-			HttpClient.Response rsp = service.postRequestWithNode(pathAfterPlonesite, createJS);
-			JSON.Node rspNode = new JSON.Node(rsp.content);
+			JSON.Node rspNode = service.postRequestWithNode(pathAfterPlonesite, createJS);
+			if (rspNode.errorInfo != null) {
+				log.info(rspNode.errorInfo.toString());
+				return null;
+			}
 			String newpath = service.pathWithoutPrefix(rspNode);
 			return new BaseObject(service, newpath, (Object[]) null);
 		} catch (Exception ex){
@@ -358,10 +364,11 @@ public class Folder extends BaseObject {
 			JSON.Node copyJS = new JSON.Node("{}")
 				.set("source", srcPath)
 			;
-			HttpClient.Response rsp = service.postRequestWithNode(pathAfterPlonesite + "/@copy", copyJS);
-			log.info(bo.getPathAfterPlonesite());
-			log.info(rsp.content);
-			JSON.Node rspNode = new JSON.Node(rsp.content);
+			JSON.Node rspNode = service.postRequestWithNode(pathAfterPlonesite + "/@copy", copyJS);
+			if (rspNode.errorInfo != null) {
+				log.info(rspNode.errorInfo.toString());
+				return null;
+			}
 			return bo.getClass().getConstructor(DocpoolBaseService.class, String.class, Object[].class).newInstance(
 				service, service.pathWithoutPrefix(rspNode.get(0).get("target").toString()), (Object[]) null
 			);

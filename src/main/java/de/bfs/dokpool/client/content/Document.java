@@ -8,7 +8,6 @@ import java.util.Vector;
 import org.apache.xmlrpc.client.XmlRpcClient;
 
 import de.bfs.dokpool.client.base.DocpoolBaseService;
-import de.bfs.dokpool.client.base.HttpClient;
 import de.bfs.dokpool.client.base.JSON;
 
 /**
@@ -72,8 +71,7 @@ public class Document extends Folder {
 					.set("filename", filename)
 				)
 			;
-			HttpClient.Response rsp = service.postRequestWithNode(pathAfterPlonesite, createJS);
-			JSON.Node rspNode = new JSON.Node(rsp.content);
+			JSON.Node rspNode = service.postRequestWithNode(pathAfterPlonesite, createJS);
 			if (rspNode.errorInfo != null) {
 				log.info(rspNode.errorInfo.toString());
 				return null;
@@ -158,8 +156,7 @@ public class Document extends Folder {
 					.set("filename", filename)
 				)
 			;
-			HttpClient.Response rsp = service.postRequestWithNode(pathAfterPlonesite, createJS);
-			JSON.Node rspNode = new JSON.Node(rsp.content);
+			JSON.Node rspNode = service.postRequestWithNode(pathAfterPlonesite, createJS);
 			if (rspNode.errorInfo != null) {
 				log.info(rspNode.errorInfo.toString());
 				return null;

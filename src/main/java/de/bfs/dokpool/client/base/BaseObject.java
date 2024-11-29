@@ -316,7 +316,10 @@ public class BaseObject {
 					endpoint = endpoint + "/retract";
 					break;
 			}
-			service.postRequestWithNode(pathAfterPlonesite+endpoint, transNode);
+			JSON.Node rspNode = service.postRequestWithNode(pathAfterPlonesite+endpoint, transNode);
+			if (rspNode.errorInfo != null) {
+				log.info(rspNode.errorInfo.toString());
+			}
 		} catch (Exception ex) {
 			log.error(exeptionToString(ex));
 		}
