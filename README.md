@@ -40,5 +40,5 @@ If you plan to use VSCode, add this to your `.vscode/settings.json`:
 
 To go on with building irix-xxx install it into your local maven repo ~/.m2:
 
-    mvn install
+    mvn install -DskipTests
 
