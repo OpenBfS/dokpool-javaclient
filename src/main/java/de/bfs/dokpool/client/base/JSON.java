@@ -3,6 +3,7 @@ package de.bfs.dokpool.client.base;
 import java.lang.Exception;
 import java.util.Map;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Iterator;
@@ -51,13 +52,19 @@ public class JSON {
 				jacksonNode = mapper.readTree("{}");
 				for (Map.Entry<String,Object> entry : map.entrySet()){
 					Object val =  entry.getValue();
-					if (val instanceof Map){
+					if (val == null){
+						set(entry.getKey(),new Node("null"));
+					} else if (val instanceof Map){
 						@SuppressWarnings("unchecked")
 						Map<String,Object> valMap = (Map<String,Object>) val;
 						set(entry.getKey(),new Node(valMap));
 					} else if (val instanceof List){
 						@SuppressWarnings("unchecked")
 						List<Object> valVec = (List<Object>) val;
+						set(entry.getKey(),new Node(valVec));
+					} else if (val.getClass().isArray()){
+						@SuppressWarnings("unchecked")
+						List<Object> valVec = Arrays.<Object>asList((Object[]) val);
 						set(entry.getKey(),new Node(valVec));
 					} else if (val instanceof String){
 						String valStr = (String) val;
@@ -72,8 +79,10 @@ public class JSON {
 					} else if (val instanceof Boolean){
 						Boolean valBool = (Boolean) val;
 						set(entry.getKey(),valBool.booleanValue());
+					} else {
+						log.error("JSON: unsupported Object of class: " + val.getClass() + val.getClass());
+						throw new Exception();
 					}
-					//we ignore null values and everything else for now
 				}
 			} catch(Exception ex) {
 				throw new Exception("JSON creation error.");
@@ -84,13 +93,19 @@ public class JSON {
 			try {
 				jacksonNode = mapper.readTree("[]");
 				for (Object val : vec){
-					if (val instanceof Map){
+					if (val == null){
+						append(new Node("null"));
+					} else if (val instanceof Map){
 						@SuppressWarnings("unchecked")
 						Map<String,Object> valMap = (Map<String,Object>) val;
 						append(new Node(valMap));
 					} else if (val instanceof List){
 						@SuppressWarnings("unchecked")
 						List<Object> valVec = (List<Object>) val;
+						append(new Node(valVec));
+					} else if (val.getClass().isArray()){
+						@SuppressWarnings("unchecked")
+						List<Object> valVec = Arrays.<Object>asList((Object[]) val);
 						append(new Node(valVec));
 					} else if (val instanceof String){
 						String valStr = (String) val;
@@ -105,8 +120,10 @@ public class JSON {
 					} else if (val instanceof Boolean){
 						Boolean valBool = (Boolean) val;
 						append(valBool.booleanValue());
+					} else {
+						log.error("JSON: unsupported Object of class: " + val.getClass() + val.getClass());
+						throw new Exception();
 					}
-					//we ignore null values and everything else for now
 				}
 			} catch(Exception ex) {
 				throw new Exception("JSON creation error.");

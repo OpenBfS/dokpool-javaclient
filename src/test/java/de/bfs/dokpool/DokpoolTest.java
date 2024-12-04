@@ -458,7 +458,7 @@ public class DokpoolTest {
 		// BaseObject bo = groupFolder.createObject(randId, properties, "DPDocument");
 		BaseObject bo = groupFolder.createCopyOf(groupFolder.getContentItem(DOCID));
 		properties.clear();
-		properties.put("scenarios", new String[] { "scenario1", "scenario2" });
+		properties.put("scenarios", new String[] { "scenario1", "scenario2", null });
 		bo.update(properties);
 		log.info(bo.getStringAttribute("created_by"));
 		log.info(bo.getDateAttribute("effective"));
