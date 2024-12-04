@@ -188,6 +188,7 @@ public class HttpClient {
 			if (data != null){
 				httppost.setHeader("Content-type", contentType);
 				ByteArrayEntity dataEntity = new ByteArrayEntity(data,ContentType.create(contentType));
+				log.info("Request data: " + EntityUtils.toString(dataEntity));
 				httppost.setEntity(dataEntity);
 			}
 
@@ -221,6 +222,7 @@ public class HttpClient {
 			httpput.setEntity(putEntity);
 
 			log.info("Executing request " + httpput.getMethod() + " " + httpput.getUri());
+			log.info("Request data: " + EntityUtils.toString(putEntity));
 
 			final HttpClientContext clientContext = HttpClientContext.create();
 			Response response = httpclient.execute(target, httpput, clientContext, rsp -> {
@@ -246,10 +248,11 @@ public class HttpClient {
 			addHeadersToRequest(httppatch,headers);
 
 			httppatch.setHeader("Content-type", contentType);
-			ByteArrayEntity putEntity = new ByteArrayEntity(data,ContentType.create(contentType));
-			httppatch.setEntity(putEntity);
+			ByteArrayEntity patchEntity = new ByteArrayEntity(data,ContentType.create(contentType));
+			httppatch.setEntity(patchEntity);
 
 			log.info("Executing request " + httppatch.getMethod() + " " + httppatch.getUri());
+			log.info("Request data: " + EntityUtils.toString(patchEntity));
 
 			final HttpClientContext clientContext = HttpClientContext.create();
 			Response response = httpclient.execute(target, httppatch, clientContext, rsp -> {
