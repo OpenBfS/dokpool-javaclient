@@ -54,7 +54,7 @@ public class DocumentPool extends Folder {
 				return null;
 			}
 		} catch (Exception ex){
-			log.error(exeptionToString(ex));
+			log.error(exceptionToString(ex));
 			return null;
 		}
 		if (typeListNode != null) {
@@ -100,7 +100,7 @@ public class DocumentPool extends Folder {
 			}
 			itemsNode = rspNode.get("items");
 		} catch (Exception ex){
-			log.error(exeptionToString(ex));
+			log.error(exceptionToString(ex));
 			return null;
 		}
 		if (itemsNode != null) {
@@ -148,7 +148,7 @@ public class DocumentPool extends Folder {
 			}
 			itemsNode = rspNode.get("items");
 		} catch (Exception ex){
-			log.error(exeptionToString(ex));
+			log.error(exceptionToString(ex));
 			return null;
 		}
 		if (itemsNode != null) {
@@ -191,7 +191,7 @@ public class DocumentPool extends Folder {
 			}
 			itemsNode = rspNode.get("items");
 		} catch (Exception ex){
-			log.error(exeptionToString(ex));
+			log.error(exceptionToString(ex));
 			return null;
 		}
 		if (itemsNode != null) {
@@ -236,7 +236,7 @@ public class DocumentPool extends Folder {
 			}
 			itemsNode = rspNode.get("items");
 		} catch (Exception ex){
-			log.error(exeptionToString(ex));
+			log.error(exceptionToString(ex));
 			return null;
 		}
 		if (itemsNode != null) {
@@ -273,7 +273,7 @@ public class DocumentPool extends Folder {
 			}
 			return new Folder(service, service.pathWithoutPrefix(folderNode), folderNode.toMap());
 		} catch (Exception ex){
-			log.error(exeptionToString(ex));
+			log.error(exceptionToString(ex));
 			return null;
 		}
 	}
@@ -296,7 +296,7 @@ public class DocumentPool extends Folder {
 			}
 			return new Folder(service, service.pathWithoutPrefix(folderNode), folderNode.toMap());
 		} catch (Exception ex){
-			log.error(exeptionToString(ex));
+			log.error(exceptionToString(ex));
 			return null;
 		}
 	}
@@ -341,7 +341,7 @@ public class DocumentPool extends Folder {
 			}
 			return res;
 		} catch (Exception ex){
-			log.error(exeptionToString(ex));
+			log.error(exceptionToString(ex));
 			return null;
 		}
 	}
@@ -364,7 +364,7 @@ public class DocumentPool extends Folder {
 			}
 			return res;
 		} catch (Exception ex){
-			log.error(exeptionToString(ex));
+			log.error(exceptionToString(ex));
 			return null;
 		}
 	}
@@ -404,7 +404,7 @@ public class DocumentPool extends Folder {
 			}
 			return res;
 		} catch (Exception ex){
-			log.error(exeptionToString(ex));
+			log.error(exceptionToString(ex));
 			return null;
 		}
 	}
@@ -450,7 +450,7 @@ public class DocumentPool extends Folder {
 			}
 			return new User(service, service.pathWithoutPrefix(rspNode), userId, password, fullname, dp);
 		} catch (Exception ex){
-			log.error(exeptionToString(ex));
+			log.error(exceptionToString(ex));
 			return null;
 		}
 	}
@@ -482,7 +482,7 @@ public class DocumentPool extends Folder {
 			}
 			return true;
 		} catch (Exception ex){
-			log.error(exeptionToString(ex));
+			log.error(exceptionToString(ex));
 			return false;
 		}
 	}
@@ -529,7 +529,7 @@ public class DocumentPool extends Folder {
 			}
 			return new Group(service, service.pathWithoutPrefix(rspNode), groupId, title, description, dp);
 		} catch (Exception ex){
-			log.error(exeptionToString(ex));
+			log.error(exceptionToString(ex));
 			return null;
 		}
 	}
@@ -548,7 +548,7 @@ public class DocumentPool extends Folder {
 			}
 			return true;
 		} catch (Exception ex) {
-			log.error(exeptionToString(ex));
+			log.error(exceptionToString(ex));
 			return false;
 		}
 	}

@@ -94,7 +94,7 @@ public class Group extends BaseObject {
 			}
 			members.add(user);
 		} catch (Exception ex){
-			log.error(exeptionToString(ex));
+			log.error(exceptionToString(ex));
 		}
 	}
 
@@ -114,7 +114,7 @@ public class Group extends BaseObject {
 			}
 			members.remove(user);
 		} catch (Exception ex){
-			log.error(exeptionToString(ex));
+			log.error(exceptionToString(ex));
 		}
 	}
 	

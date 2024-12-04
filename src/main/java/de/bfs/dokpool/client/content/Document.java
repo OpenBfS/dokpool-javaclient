@@ -79,7 +79,7 @@ public class Document extends Folder {
 			String newpath = service.pathWithoutPrefix(rspNode);
 			return new File(service, newpath, (Object[]) null);
 		} catch (Exception ex){
-			log.error(exeptionToString(ex));
+			log.error(exceptionToString(ex));
 			return null;
 		}
 	}
@@ -164,7 +164,7 @@ public class Document extends Folder {
 			String newpath = service.pathWithoutPrefix(rspNode);
 			return new Image(service, newpath, rspNode.toMap());
 		} catch (Exception ex){
-			log.error(exeptionToString(ex));
+			log.error(exceptionToString(ex));
 			return null;
 		}
 	}

@@ -66,7 +66,7 @@ public class Folder extends BaseObject {
 					return null;
 				}
 			} catch (Exception ex) {
-				log.error(exeptionToString(ex));
+				log.error(exceptionToString(ex));
 			}
 		}
 		return contentsNode;
@@ -104,7 +104,7 @@ public class Folder extends BaseObject {
 			}
 			return new Folder(service, service.pathWithoutPrefix(subpathNode), subpathNode.toMap());
 		} catch (Exception ex){
-			log.error(exeptionToString(ex));
+			log.error(exceptionToString(ex));
 			return null;
 		}
 	}
@@ -210,7 +210,7 @@ public class Folder extends BaseObject {
 					}
 				}
 			} catch (Exception ex) {
-				log.error(exeptionToString(ex));
+				log.error(exceptionToString(ex));
 			}
 		}
 		return null;
@@ -308,7 +308,7 @@ public class Folder extends BaseObject {
 			String newpath = service.pathWithoutPrefix(rspNode);
 			return new Document(service, newpath, (Object[]) null);
 		} catch (Exception ex){
-			log.error(exeptionToString(ex));
+			log.error(exceptionToString(ex));
 			return null;
 		}
 	}
@@ -336,7 +336,7 @@ public class Folder extends BaseObject {
 			String newpath = service.pathWithoutPrefix(rspNode);
 			return new BaseObject(service, newpath, (Object[]) null);
 		} catch (Exception ex){
-			log.error(exeptionToString(ex));
+			log.error(exceptionToString(ex));
 			return null;
 		}
 	}
@@ -372,7 +372,7 @@ public class Folder extends BaseObject {
 				service, service.pathWithoutPrefix(rspNode.get(0).get("target").toString()), (Object[]) null
 			);
 		} catch (Exception ex) {
-			log.error(exeptionToString(ex));
+			log.error(exceptionToString(ex));
 			return null;
 		}
 	}

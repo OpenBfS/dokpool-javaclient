@@ -141,7 +141,7 @@ public class DocpoolBaseService {
 				return rsp.headers.get("Location").substring(urlPrefixLength);
 
 			} catch (Exception ex) {
-				log.error(exeptionToString(ex));
+				log.error(exceptionToString(ex));
 				return null;
 			}
 		}
@@ -152,7 +152,7 @@ public class DocpoolBaseService {
 		return username;
 	}
 
-	/*package-private*/ static String exeptionToString(Exception ex) {
+	/*package-private*/ static String exceptionToString(Exception ex) {
 		Writer stBuffer = new StringWriter();
 		PrintWriter stPrintWriter = new PrintWriter(stBuffer);
 		ex.printStackTrace(stPrintWriter);
@@ -288,7 +288,7 @@ public class DocpoolBaseService {
 				return null;
 			}
 		} catch (Exception ex){
-			log.error(exeptionToString(ex));
+			log.error(exceptionToString(ex));
 			return null;
 		}
 		List<DocumentPool> dpList = new ArrayList<>();
@@ -340,7 +340,7 @@ public class DocpoolBaseService {
 			}
 			return new DocumentPool(this, pathWithoutPrefix(rspNode), rspNode.toMap());
 		} catch (Exception ex) {
-			log.error(exeptionToString(ex));
+			log.error(exceptionToString(ex));
 			return null;
 		}
 	}

@@ -131,7 +131,7 @@ public class BaseObject {
 					data = rspNode.toMap();
 				}
 			} catch (Exception ex) {
-				log.error(exeptionToString(ex));
+				log.error(exceptionToString(ex));
 			}
 			dataComplete = true;
 		}
@@ -198,7 +198,7 @@ public class BaseObject {
 					return Date.from(zdt.toInstant());
 				} catch (java.time.format.DateTimeParseException pe) {
 					log.error("Malformed Date: "+ (String) dateObject);
-					log.error(exeptionToString(pe));
+					log.error(exceptionToString(pe));
 					return null;
 				}
 			}
@@ -276,7 +276,7 @@ public class BaseObject {
 			}
 			return rspNode.get("state").get("id").toString();
 		} catch (Exception ex){
-			log.error(exeptionToString(ex));
+			log.error(exceptionToString(ex));
 			return null;
 		}
 	}
@@ -321,7 +321,7 @@ public class BaseObject {
 				log.info(rspNode.errorInfo.toString());
 			}
 		} catch (Exception ex) {
-			log.error(exeptionToString(ex));
+			log.error(exceptionToString(ex));
 		}
 
 	}
@@ -356,7 +356,7 @@ public class BaseObject {
 			}
 			return true;
 		} catch(Exception ex) {
-			log.error(exeptionToString(ex));
+			log.error(exceptionToString(ex));
 			return false;
 		}
 	}
@@ -385,20 +385,20 @@ public class BaseObject {
 			}
 			return true;
 		} catch (Exception ex) {
-			log.error(exeptionToString(ex));
+			log.error(exceptionToString(ex));
 			return false;
 		}
 	}
 
-	protected static String exeptionToString(Exception ex) {
-		return DocpoolBaseService.exeptionToString(ex);
+	protected static String exceptionToString(Exception ex) {
+		return DocpoolBaseService.exceptionToString(ex);
 	}
 
 	protected Map<String,Object> dataFromNode(JSON.Node node) {
 		try {
 			return node.toMap();
 		} catch (Exception ex){
-			log.error(exeptionToString(ex));
+			log.error(exceptionToString(ex));
 			return null;
 		}
 	}
