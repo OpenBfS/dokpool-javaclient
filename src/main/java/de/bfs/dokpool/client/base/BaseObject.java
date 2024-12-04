@@ -349,6 +349,7 @@ public class BaseObject {
 		data = null;
 		dataComplete = false;
 		try {
+			log.info("update: " + new JSON.Node(properties).toJSON());
 			JSON.Node rspNode = service.patchRequestWithNode(pathAfterPlonesite, new JSON.Node(properties));
 			if (rspNode.errorInfo != null) {
 				log.info(rspNode.errorInfo.toString());

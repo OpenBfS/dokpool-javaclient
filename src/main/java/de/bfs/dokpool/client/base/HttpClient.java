@@ -93,6 +93,10 @@ public class HttpClient {
 		headers.put(Headers.AUTHORIZATION, authHeaderVal);
 	}
 
+	private static String first1000(String str) {
+		return str.substring(0,Math.min(1000,str.length()));
+	}
+
 	private static void addHeadersToRequest(HttpRequest request, Map<String,String> headers){
 		if (headers == null){
 			return;
@@ -188,7 +192,7 @@ public class HttpClient {
 			if (data != null){
 				httppost.setHeader("Content-type", contentType);
 				ByteArrayEntity dataEntity = new ByteArrayEntity(data,ContentType.create(contentType));
-				log.info("Request data: " + EntityUtils.toString(dataEntity));
+				log.info("Request data: " + first1000(EntityUtils.toString(dataEntity)));
 				httppost.setEntity(dataEntity);
 			}
 
@@ -222,7 +226,7 @@ public class HttpClient {
 			httpput.setEntity(putEntity);
 
 			log.info("Executing request " + httpput.getMethod() + " " + httpput.getUri());
-			log.info("Request data: " + EntityUtils.toString(putEntity));
+			log.info("Request data: " + first1000(EntityUtils.toString(putEntity)));
 
 			final HttpClientContext clientContext = HttpClientContext.create();
 			Response response = httpclient.execute(target, httpput, clientContext, rsp -> {
@@ -252,7 +256,7 @@ public class HttpClient {
 			httppatch.setEntity(patchEntity);
 
 			log.info("Executing request " + httppatch.getMethod() + " " + httppatch.getUri());
-			log.info("Request data: " + EntityUtils.toString(patchEntity));
+			log.info("Request data: " + first1000(EntityUtils.toString(patchEntity)));
 
 			final HttpClientContext clientContext = HttpClientContext.create();
 			Response response = httpclient.execute(target, httppatch, clientContext, rsp -> {
