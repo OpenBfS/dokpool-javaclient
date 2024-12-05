@@ -323,11 +323,15 @@ public class Folder extends BaseObject {
 		return new BaseObject(client, newpath, null);
 	}
 
-	//TODO: does not work, because of some error in Python code
-	//TODO: if @type is needed, we should check it ourself before sending the request
 	public BaseObject createObject(String id, Map<String, Object> properties, String type) {
 		try {
-			JSON.Node createJS = new JSON.Node(properties);
+			if (type == null) {
+				log.error("Objects need a type (e.g. DPDocument).");
+				return null;
+			}
+			JSON.Node createJS = new JSON.Node(properties)
+				.set("@type",type)
+			;
 			JSON.Node rspNode = service.postRequestWithNode(pathAfterPlonesite, createJS);
 			if (rspNode.errorInfo != null) {
 				log.info(rspNode.errorInfo.toString());
