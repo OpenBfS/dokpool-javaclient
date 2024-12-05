@@ -22,7 +22,7 @@ import java.nio.file.Paths;
 
 public class DokpoolTest {
 	private static final Log log = LogFactory.getLog(DokpoolTest.class);
-	private static final String envOrEmpty(String envVar){
+	private static final String envOrEmpty(String envVar) {
 		String env = System.getenv(envVar);
 		return (env != null ? env: "");
 	}
@@ -292,7 +292,7 @@ public class DokpoolTest {
 		}
 
 		List<Object> contentList = myGroupFolder.getContents(null);
-		for (Object contentItem : contentList){
+		for (Object contentItem : contentList) {
 			log.info("group folder item id: " + ((BaseObject) contentItem).getId());
 		}
 
@@ -605,7 +605,7 @@ public class DokpoolTest {
 		};
 		String path;
 		HttpClient.Response rsp = null;
-		for (String ep : endpoints){
+		for (String ep : endpoints) {
 			path = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE + ep);
 			rsp = HttpClient.doGetRequest(PROTO,HOST,PORT,path,headers);
 			log.info(rsp.content.length());
@@ -613,7 +613,7 @@ public class DokpoolTest {
 		// log.info(rsp != null?rsp.content:"");
 		JSON.Node pendingRoot = new JSON.Node(rsp.content);
 		pendingRoot.get("items");
-		if (pendingRoot != null && pendingRoot.get("items") != null && pendingRoot.get("items").get(0) != null){
+		if (pendingRoot != null && pendingRoot.get("items") != null && pendingRoot.get("items").get(0) != null) {
 			log.info(pendingRoot.get("items").get(0).get("@id").toJSON());
 		}
 		String createUrl = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/"+DOKPOOL+"/content/Groups/"+ GROUPFOLDER);

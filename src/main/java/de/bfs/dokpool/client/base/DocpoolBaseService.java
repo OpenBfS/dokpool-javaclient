@@ -64,7 +64,7 @@ public class DocpoolBaseService {
 			this.plonesite = this.plonesite.startsWith("/") ? this.plonesite.substring(1) : this.plonesite;
 			this.username = username;
 			this.password = password;
-		} catch (MalformedURLException mue){
+		} catch (MalformedURLException mue) {
 			log.fatal("Incorrect URL provided!", mue);
 		}
 		this.urlPrefix = HttpClient.composeUrl(this.proto,this.host,this.port,"/"+ this.plonesite);
@@ -114,11 +114,11 @@ public class DocpoolBaseService {
 		this.password = password;
 	}
 
-	public String pathWithoutPrefix(String path){
+	public String pathWithoutPrefix(String path) {
 		return path.substring(urlPrefixLength);
 	}
 
-	public String pathWithoutPrefix(JSON.Node node){
+	public String pathWithoutPrefix(JSON.Node node) {
 		String atid = node.get("@id").toString();
 		//If the `@id` is a dview, we need to fetch the actual path differently.
 		//In this case, the path is always realtive like: "esd/..." for ELAN,
@@ -187,7 +187,7 @@ public class DocpoolBaseService {
 	 * 
 	 * @return A Map with authentication and accept (JSON) headers.
 	 */
-	private Map<String,String> defaultHeaders(){
+	private Map<String,String> defaultHeaders() {
 		Map<String,String> headers = new HashMap<String,String>();
 		headers.put(HttpClient.Headers.ACCEPT,HttpClient.MimeTypes.JSON);
 		HttpClient.addBasicAuthToHeaders(headers,username,password);
@@ -201,9 +201,9 @@ public class DocpoolBaseService {
 		rsp = HttpClient.doGetRequest(proto,host,port,path+queryString,defaultHeaders());
 		log.info("response content length: " + rsp.content.length());
 		JSON.Node node = new JSON.Node(rsp.content);
-		if (node != null && node.get("batching") != null){
+		if (node != null && node.get("batching") != null) {
 			long itemsTotal = node.get("items_total").toLong();
-			if (queryString.equals("")){
+			if (queryString.equals("")) {
 				queryString = "?b_size=" + itemsTotal;
 			} else {
 				queryString += "&b_size=" + itemsTotal;
@@ -287,12 +287,12 @@ public class DocpoolBaseService {
 				log.info(node.errorInfo.toString());
 				return null;
 			}
-		} catch (Exception ex){
+		} catch (Exception ex) {
 			log.error(exceptionToString(ex));
 			return null;
 		}
 		List<DocumentPool> dpList = new ArrayList<>();
-		for (JSON.Node child : node){
+		for (JSON.Node child : node) {
 			dpList.add(new DocumentPool(this, "/"+child.toString(), (Map<String,Object>) null));
 		}
 		return dpList;

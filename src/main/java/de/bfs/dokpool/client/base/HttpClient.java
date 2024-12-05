@@ -74,18 +74,18 @@ public class HttpClient {
 		}
 	}
 
-	private static int intPortFromPortOrProtocol(String port, final String proto){
+	private static int intPortFromPortOrProtocol(String port, final String proto) {
 		port = port != null? port : "";
 		port = port.equals("") ? (proto.equals("https")?"443":"80"): port;
 		return Integer.parseInt(port);
 	}
 
-	public static String composeUrl(final String proto, final String host, String port, final String path){
+	public static String composeUrl(final String proto, final String host, String port, final String path) {
 		port = port.equals("") ? "" : (":" +  port);
 		return proto + "://" + host + port + path;
 	}
 
-	public static void addBasicAuthToHeaders(Map<String, String> headers, final String username, final String password){
+	public static void addBasicAuthToHeaders(Map<String, String> headers, final String username, final String password) {
 		final String auth = username + ":" + password;
 		//if we need multiple charset support, there is also: Charset.forName("UTF-8")
 		byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(StandardCharsets.UTF_8));
@@ -97,8 +97,8 @@ public class HttpClient {
 		return str.substring(0,Math.min(1000,str.length()));
 	}
 
-	private static void addHeadersToRequest(HttpRequest request, Map<String,String> headers){
-		if (headers == null){
+	private static void addHeadersToRequest(HttpRequest request, Map<String,String> headers) {
+		if (headers == null) {
 			return;
 		}
 		for (Map.Entry<String, String> entry : headers.entrySet()) {
@@ -107,7 +107,7 @@ public class HttpClient {
 	}
 
 	public static boolean tlsLogging = false;
-	private final static void logTLS(HttpClientContext clientContext){
+	private final static void logTLS(HttpClientContext clientContext) {
 		final SSLSession sslSession = clientContext.getSSLSession();
 		if (sslSession != null) {
 			try {
@@ -133,7 +133,7 @@ public class HttpClient {
 			final HttpClientContext clientContext = HttpClientContext.create();
 			Response response = httpclient.execute(target, httpget, clientContext, rsp -> {
 				log.info(httpget + "->" + new StatusLine(rsp));
-				if (proto.equals("https") && tlsLogging){
+				if (proto.equals("https") && tlsLogging) {
 					logTLS(clientContext);
 				}
 				HttpEntity entity = rsp.getEntity();
@@ -159,7 +159,7 @@ public class HttpClient {
 			final HttpClientContext clientContext = HttpClientContext.create();
 			Response response = httpclient.execute(target, httpdel, clientContext, rsp -> {
 				log.info(httpdel + "->" + new StatusLine(rsp));
-				if (proto.equals("https") && tlsLogging){
+				if (proto.equals("https") && tlsLogging) {
 					logTLS(clientContext);
 				}
 				HttpEntity entity = rsp.getEntity();
@@ -181,7 +181,7 @@ public class HttpClient {
 
 			log.info("Executing request " + httppost.getMethod() + " " + httppost.getUri());
 
-			if (parameters != null){
+			if (parameters != null) {
 				List<NameValuePair> paramList = new ArrayList<>();
 				for (Map.Entry<String, String> entry : parameters.entrySet()) {
 					paramList.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
@@ -189,7 +189,7 @@ public class HttpClient {
 				httppost.setEntity(new UrlEncodedFormEntity(paramList));
 			}
 
-			if (data != null){
+			if (data != null) {
 				httppost.setHeader("Content-type", contentType);
 				ByteArrayEntity dataEntity = new ByteArrayEntity(data,ContentType.create(contentType));
 				log.info("Request data: " + first1000(EntityUtils.toString(dataEntity)));
@@ -201,7 +201,7 @@ public class HttpClient {
 			// clientContext.setCookieStore(cookieStore);
 			Response response = httpclient.execute(target, httppost, clientContext, rsp -> {
 				log.info(httppost + "->" + new StatusLine(rsp));
-				if (proto.equals("https") && tlsLogging){
+				if (proto.equals("https") && tlsLogging) {
 					logTLS(clientContext);
 				}
 				HttpEntity entity = rsp.getEntity();
@@ -231,7 +231,7 @@ public class HttpClient {
 			final HttpClientContext clientContext = HttpClientContext.create();
 			Response response = httpclient.execute(target, httpput, clientContext, rsp -> {
 				log.info(httpput + "->" + new StatusLine(rsp));
-				if (proto.equals("https") && tlsLogging){
+				if (proto.equals("https") && tlsLogging) {
 					logTLS(clientContext);
 				}
 				HttpEntity entity = rsp.getEntity();
@@ -261,7 +261,7 @@ public class HttpClient {
 			final HttpClientContext clientContext = HttpClientContext.create();
 			Response response = httpclient.execute(target, httppatch, clientContext, rsp -> {
 				log.info(httppatch + "->" + new StatusLine(rsp));
-				if (proto.equals("https") && tlsLogging){
+				if (proto.equals("https") && tlsLogging) {
 					logTLS(clientContext);
 				}
 				HttpEntity entity = rsp.getEntity();

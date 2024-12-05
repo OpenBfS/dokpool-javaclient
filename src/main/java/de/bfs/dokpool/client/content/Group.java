@@ -93,7 +93,7 @@ public class Group extends BaseObject {
 				return;
 			}
 			members.add(user);
-		} catch (Exception ex){
+		} catch (Exception ex) {
 			log.error(exceptionToString(ex));
 		}
 	}
@@ -113,7 +113,7 @@ public class Group extends BaseObject {
 				return;
 			}
 			members.remove(user);
-		} catch (Exception ex){
+		} catch (Exception ex) {
 			log.error(exceptionToString(ex));
 		}
 	}

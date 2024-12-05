@@ -103,7 +103,7 @@ public class Folder extends BaseObject {
 				return null;
 			}
 			return new Folder(service, service.pathWithoutPrefix(subpathNode), subpathNode.toMap());
-		} catch (Exception ex){
+		} catch (Exception ex) {
 			log.error(exceptionToString(ex));
 			return null;
 		}
@@ -193,7 +193,7 @@ public class Folder extends BaseObject {
 						String portal_type = itemNode.get("@type").toString();
 						portal_type = portal_type == null ? "" : portal_type;
 						String path = service.pathWithoutPrefix(itemNode);
-						switch(portal_type){
+						switch(portal_type) {
 							case "SimpleFolder":
 							case "ELANTransferFolder":
 								return new Folder(service, path, itemNode.toMap());
@@ -307,7 +307,7 @@ public class Folder extends BaseObject {
 			}
 			String newpath = service.pathWithoutPrefix(rspNode);
 			return new Document(service, newpath, (Object[]) null);
-		} catch (Exception ex){
+		} catch (Exception ex) {
 			log.error(exceptionToString(ex));
 			return null;
 		}
@@ -335,7 +335,7 @@ public class Folder extends BaseObject {
 			}
 			String newpath = service.pathWithoutPrefix(rspNode);
 			return new BaseObject(service, newpath, (Object[]) null);
-		} catch (Exception ex){
+		} catch (Exception ex) {
 			log.error(exceptionToString(ex));
 			return null;
 		}

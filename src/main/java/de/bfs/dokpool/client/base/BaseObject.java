@@ -57,7 +57,7 @@ public class BaseObject {
 		this.data = data;
 	}
 
-	protected String fullpath(){
+	protected String fullpath() {
 		if (pathAfterPlonesite != null) {
 			return "/" + service.plonesite + pathAfterPlonesite;
 		} else {
@@ -70,7 +70,7 @@ public class BaseObject {
 	 * @return the path after the plonesite including the first /,
 	 * e.g. http://dokpool.example.com:8080/dokpool/bund/content -> /bund/content
 	 */
-	public String getPathAfterPlonesite(){
+	public String getPathAfterPlonesite() {
 		return pathAfterPlonesite;
 	}
 
@@ -81,7 +81,7 @@ public class BaseObject {
 	 * @return the path after domain (and port) including the first /,
 	 * e.g. http://dokpool.example.com:8080/dokpool/bund/content -> /dokpool/bund/content
 	 */
-	public String getPathWithPlonesite(){
+	public String getPathWithPlonesite() {
 		return fullpath();
 	}
 	
@@ -119,7 +119,7 @@ public class BaseObject {
 	private Map<String,Object> getData() {
 		if (data == null || !dataComplete) {
 			//TODO: remove XMLRPC-Part
-			if (client != null){
+			if (client != null) {
 				return getDataX();
 			}
 			try {
@@ -189,7 +189,7 @@ public class BaseObject {
 	public Date getDateAttribute(String name) {
 		if (getAttribute(name) != null) {
 			Object dateObject = getAttribute(name);
-			if (dateObject instanceof Date){
+			if (dateObject instanceof Date) {
 				return (Date)dateObject;
 			} else {
 				try {
@@ -275,7 +275,7 @@ public class BaseObject {
 				return null;
 			}
 			return rspNode.get("state").get("id").toString();
-		} catch (Exception ex){
+		} catch (Exception ex) {
 			log.error(exceptionToString(ex));
 			return null;
 		}
@@ -300,7 +300,7 @@ public class BaseObject {
 		try {
 			String endpoint = "/@workflow";
 			JSON.Node transNode = new JSON.Node("{}");
-			switch(transition){
+			switch(transition) {
 				case "publish":
 					transNode
 						.set("action","publish")
@@ -398,7 +398,7 @@ public class BaseObject {
 	protected Map<String,Object> dataFromNode(JSON.Node node) {
 		try {
 			return node.toMap();
-		} catch (Exception ex){
+		} catch (Exception ex) {
 			log.error(exceptionToString(ex));
 			return null;
 		}

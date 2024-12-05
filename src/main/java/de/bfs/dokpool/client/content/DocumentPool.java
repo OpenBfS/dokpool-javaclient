@@ -53,7 +53,7 @@ public class DocumentPool extends Folder {
 				log.info(typeListNode.errorInfo.toString());
 				return null;
 			}
-		} catch (Exception ex){
+		} catch (Exception ex) {
 			log.error(exceptionToString(ex));
 			return null;
 		}
@@ -99,7 +99,7 @@ public class DocumentPool extends Folder {
 				return null;
 			}
 			itemsNode = rspNode.get("items");
-		} catch (Exception ex){
+		} catch (Exception ex) {
 			log.error(exceptionToString(ex));
 			return null;
 		}
@@ -147,7 +147,7 @@ public class DocumentPool extends Folder {
 				return null;
 			}
 			itemsNode = rspNode.get("items");
-		} catch (Exception ex){
+		} catch (Exception ex) {
 			log.error(exceptionToString(ex));
 			return null;
 		}
@@ -190,7 +190,7 @@ public class DocumentPool extends Folder {
 				return null;
 			}
 			itemsNode = rspNode.get("items");
-		} catch (Exception ex){
+		} catch (Exception ex) {
 			log.error(exceptionToString(ex));
 			return null;
 		}
@@ -235,7 +235,7 @@ public class DocumentPool extends Folder {
 				return null;
 			}
 			itemsNode = rspNode.get("items");
-		} catch (Exception ex){
+		} catch (Exception ex) {
 			log.error(exceptionToString(ex));
 			return null;
 		}
@@ -272,7 +272,7 @@ public class DocumentPool extends Folder {
 				return null;
 			}
 			return new Folder(service, service.pathWithoutPrefix(folderNode), folderNode.toMap());
-		} catch (Exception ex){
+		} catch (Exception ex) {
 			log.error(exceptionToString(ex));
 			return null;
 		}
@@ -285,7 +285,7 @@ public class DocumentPool extends Folder {
 	 * @return the user folder under /DocumentPool.fullpath()/content/Members/<user>
 	 */
 	public Folder getUserFolder(String user) {
-		if (user.contains("-") && !user.contains("--")){
+		if (user.contains("-") && !user.contains("--")) {
 			user = user.replaceAll("-","--");
 		}
 		try {
@@ -295,7 +295,7 @@ public class DocumentPool extends Folder {
 				return null;
 			}
 			return new Folder(service, service.pathWithoutPrefix(folderNode), folderNode.toMap());
-		} catch (Exception ex){
+		} catch (Exception ex) {
 			log.error(exceptionToString(ex));
 			return null;
 		}
@@ -340,7 +340,7 @@ public class DocumentPool extends Folder {
 				res.add(new Folder(service, service.pathWithoutPrefix(gfNode), dataFromNode(gfNode)));
 			}
 			return res;
-		} catch (Exception ex){
+		} catch (Exception ex) {
 			log.error(exceptionToString(ex));
 			return null;
 		}
@@ -363,7 +363,7 @@ public class DocumentPool extends Folder {
 				res.add(new Folder(service, service.pathWithoutPrefix(gfNode), dataFromNode(gfNode)));
 			}
 			return res;
-		} catch (Exception ex){
+		} catch (Exception ex) {
 			log.error(exceptionToString(ex));
 			return null;
 		}
@@ -403,13 +403,13 @@ public class DocumentPool extends Folder {
 				res.add(new Folder(service, service.pathWithoutPrefix(tfNode), dataFromNode(tfNode)));
 			}
 			return res;
-		} catch (Exception ex){
+		} catch (Exception ex) {
 			log.error(exceptionToString(ex));
 			return null;
 		}
 	}
 	
-	public User createUserX(String userId, String password, String fullname, String esd){
+	public User createUserX(String userId, String password, String fullname, String esd) {
 		User user = null;
 		Vector<String> params = new Vector<String>();
 		params.add(userId);
@@ -449,7 +449,7 @@ public class DocumentPool extends Folder {
 				return null;
 			}
 			return new User(service, service.pathWithoutPrefix(rspNode), userId, password, fullname, dp);
-		} catch (Exception ex){
+		} catch (Exception ex) {
 			log.error(exceptionToString(ex));
 			return null;
 		}
@@ -481,7 +481,7 @@ public class DocumentPool extends Folder {
 				return false;
 			}
 			return true;
-		} catch (Exception ex){
+		} catch (Exception ex) {
 			log.error(exceptionToString(ex));
 			return false;
 		}
@@ -528,7 +528,7 @@ public class DocumentPool extends Folder {
 				return null;
 			}
 			return new Group(service, service.pathWithoutPrefix(rspNode), groupId, title, description, dp);
-		} catch (Exception ex){
+		} catch (Exception ex) {
 			log.error(exceptionToString(ex));
 			return null;
 		}
