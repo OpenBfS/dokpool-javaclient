@@ -251,7 +251,7 @@ public class DocumentPool extends Folder {
 	}
 
 	/**
-	 * @return the user folder of the current user /content/Members/<username>
+	 * @return the user folder of the current user /content/Members/&lt;username&gt;
 	 */
 	public Folder getUserFolderX() {
 		Vector<String> params = new Vector<String>();
@@ -282,7 +282,7 @@ public class DocumentPool extends Folder {
 	 * Get user folders for any user. This does **not** use a special endpoint, but
 	 * as the endpoint get_user_folder constructs its path with the constant
 	 * "{esdpath}/content/Members/{username}", we can do the same.
-	 * @return the user folder under /DocumentPool.fullpath()/content/Members/<user>
+	 * @return the user folder under /DocumentPool.fullpath()/content/Members/&lt;user&gt;
 	 */
 	public Folder getUserFolder(String user) {
 		if (user.contains("-") && !user.contains("--")) {

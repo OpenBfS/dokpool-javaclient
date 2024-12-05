@@ -225,7 +225,7 @@ public class Folder extends BaseObject {
 	}
 
 	/**
-	 * Return this folders full path (http://mydokppol.example.com:8080/dokpool/content -> /dokpool/content).
+	 * Return this folders full path (http://mydokppol.example.com:8080/dokpool/content -&gt; /dokpool/content).
 	 * @deprecated Use BaseObject.getPathAfterPlonesite() or BaseObject.getPathWithPlonesite() instead.
 	 * The constructor of all BaseObject descendants expects a path WITHOUT the plonesite.
 	 * This method will not be removed, it is only marked as deprecated to stop users

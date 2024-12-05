@@ -150,7 +150,7 @@ public class JSON {
 		/**
 		 * Set the child node with given id if the current node is an object.
 		 * This creates a **deep copy** of the child.
-		 * @param index Position, if negative prepends, if >= size(), the node will be appended.
+		 * @param childId the id the child shalle have afterwards.
 		 * @param child The node to insert.
 		 */
 		public Node set(String childId, Node child) throws Exception {
@@ -201,7 +201,7 @@ public class JSON {
 		/**
 		 * Insert child at the specified position if node is an array.
 		 * This creates a **deep copy** of the child.
-		 * @param index Position, if negative prepends, if >= size(), the node will be appended.
+		 * @param index Position, if negative prepends, if &gt;= size(), the node will be appended.
 		 * @param child The node to insert.
 		 */
 		public Node insert(int index, Node child) throws Exception {
@@ -215,7 +215,7 @@ public class JSON {
 
 	    /**
 		 * Insert double at the specified position if node is an array.
-		 * @param index Position, if negative prepends, if >= size(), the node will be appended.
+		 * @param index Position, if negative prepends, if &gt;= size(), the node will be appended.
 		 * @param d The double to insert.
 		 */
 		public Node insert(int index, double d) throws Exception {
@@ -229,8 +229,8 @@ public class JSON {
 
 	    /**
 		 * Insert double at the specified position if node is an array.
-		 * @param index Position, if negative prepends, if >= size(), the node will be appended.
-		 * @param d The double to insert.
+		 * @param index Position, if negative prepends, if &gt;= size(), the node will be appended.
+		 * @param i The long integer to insert.
 		 */
 		public Node insert(int index, long i) throws Exception {
 			try {
@@ -243,7 +243,7 @@ public class JSON {
 
 		/**
 		 * Insert a string at the specified position if node is an array.
-		 * @param index Position, if negative prepends, if >= size(), the node will be appended.
+		 * @param index Position, if negative prepends, if &gt;= size(), the node will be appended.
 		 * @param str The string to insert.
 		 */
 		public Node insert(int index, String str) throws Exception {
@@ -284,7 +284,7 @@ public class JSON {
 
 		/**
 		 * Appends a double if node is an array.
-		 * @param d The double to insert.
+		 * @param i The long integer to insert.
 		 */
 		public Node append(long i) throws Exception {
 			try {
@@ -310,7 +310,7 @@ public class JSON {
 
 		/**
 		 * Appends a boolean if node is an array.
-		 * @param str The string to insert.
+		 * @param b The boolean to insert.
 		 */
 		public Node append(boolean b) throws Exception {
 			try {

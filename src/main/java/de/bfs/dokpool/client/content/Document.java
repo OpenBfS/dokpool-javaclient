@@ -139,7 +139,7 @@ public class Document extends Folder {
 	 * @param description
 	 * @param data: binary data of the image
 	 * @param filename
-	 * @param MIME-Type of the Image (e.g. image/png)
+	 * @param mimeType MIME-Type of the Image (e.g. image/png)
 	 * @return the Image object representing the image on the server
 	 */
 	public Image uploadImage(final String id, final String title, final String description, final byte[] data, final String filename, String mimeType) {

@@ -69,7 +69,7 @@ public class BaseObject {
 	}
 
 	/**
-	 * e.g. if pathAfterPlonesite = /bund/... -> bund
+	 * e.g. if pathAfterPlonesite = /bund/... -&gt; bund
 	 * @return the part of the path that specifies the Dokpool.
 	 */
 	protected String dokpoolId() {
@@ -79,7 +79,7 @@ public class BaseObject {
 	/**
 	 * Get the path within the dokpool plone instance.
 	 * @return the path after the plonesite including the first /,
-	 * e.g. http://dokpool.example.com:8080/dokpool/bund/content -> /bund/content
+	 * e.g. http://dokpool.example.com:8080/dokpool/bund/content -&gt; /bund/content
 	 */
 	public String getPathAfterPlonesite() {
 		return pathAfterPlonesite;
@@ -90,7 +90,7 @@ public class BaseObject {
 	 * DO NOT USE this function to construct a path for the cosntructors of
 	 * BaseObject and its descendant.
 	 * @return the path after domain (and port) including the first /,
-	 * e.g. http://dokpool.example.com:8080/dokpool/bund/content -> /dokpool/bund/content
+	 * e.g. http://dokpool.example.com:8080/dokpool/bund/content -&gt; to /dokpool/bund/content
 	 */
 	public String getPathWithPlonesite() {
 		return fullpath();
@@ -174,9 +174,8 @@ public class BaseObject {
 	}
 
 	/**
-	 * Helper to get value of an attribute.
-	 * @param name: the name of the attribute
-	 * @return the value
+	 * Helper to get all attributes.
+	 * @return a map of all attributes
 	 */
 	public Map<String,Object> getAllAttributes() {
 		//we fetch data if and only if we have no data or
@@ -405,6 +404,7 @@ public class BaseObject {
 	 * Update the object's attributes with the given map.
 	 * Any attribute that is not explicitly set will keep its value;
 	 * @param attributes
+	 * @return true, if the update succeeded; false otherwise
 	 */
 	public boolean update(Map<String, Object> attributes) {
 		/* we reset the data, as setting some attribute to a new value
@@ -431,7 +431,8 @@ public class BaseObject {
 	/**
 	 * Update a single attribute with a given value.
 	 * To unset a value set, set it to null.
-	 * @param properties
+	 * @param name the name of the attribute
+	 * @param value its designated value
 	 */
 	public boolean setAttribute(String name, Object value) {
 		Map<String,Object> attribute = new HashMap<String,Object>();
