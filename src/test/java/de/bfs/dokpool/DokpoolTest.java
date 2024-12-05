@@ -450,15 +450,16 @@ public class DokpoolTest {
 		properties.put("title", "Generic Title");
 		properties.put("description", "Generic Description");
 		properties.put("text", "<b>Text</b>");
-		properties.put("docType", "ifinprojection");
+		properties.put("docType", "gammadoserate");
 		properties.put("subjects", new String[] { "Tag1", "Tag2" });
 		properties.put("local_behaviors", new String[] { "elan" });
+		properties.put("scenarios", new String[] { "scenario1", null });
 		String randId = "generic" + r.nextInt();
 		// TODO: Use this line instead of the following when document creation works via REST.
-		// BaseObject bo = groupFolder.createObject(randId, properties, "DPDocument");
-		BaseObject bo = groupFolder.createCopyOf(groupFolder.getContentItem(DOCID));
+		BaseObject bo = groupFolder.createObject(randId, properties, "DPDocument");
+		// BaseObject bo = groupFolder.createCopyOf(groupFolder.getContentItem(DOCID));
 		properties.clear();
-		properties.put("scenarios", new String[] { "scenario1", "scenario2", null });
+		properties.put("scenarios", new String[] { "routinemode", "scenario2", null });
 		bo.update(properties);
 		log.info(bo.getStringAttribute("created_by"));
 		log.info(bo.getDateAttribute("effective"));

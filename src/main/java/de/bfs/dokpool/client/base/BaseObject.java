@@ -4,6 +4,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +52,8 @@ public class BaseObject {
 		}
 	}
 
+	protected static final Map<String,Object> noData = null;
+
 	public BaseObject(DocpoolBaseService service, String path, Map<String,Object> data) {
 		this.service = service;
 		this.pathAfterPlonesite = path;
@@ -63,6 +66,14 @@ public class BaseObject {
 		} else {
 			return pathWithPlonesite;
 		}
+	}
+
+	/**
+	 * e.g. if pathAfterPlonesite = /bund/... -> bund
+	 * @return the part of the path that specifies the Dokpool.
+	 */
+	protected String dokpoolId() {
+		return pathAfterPlonesite.substring(1,pathAfterPlonesite.indexOf('/', 1));
 	}
 
 	/**
@@ -325,6 +336,53 @@ public class BaseObject {
 		}
 
 	}
+
+	protected List<Object> ensureObjectIsList(Object o) {
+		if (o instanceof List) {
+			@SuppressWarnings("unchecked")
+			List<Object> list = (List<Object>) o;
+			return list;
+		} else if (o.getClass().isArray()) {
+			@SuppressWarnings("unchecked")
+			List<Object> list = Arrays.<Object>asList((Object[]) o);
+			return list;
+		} else {
+			String clazz = o != null ? o.getClass().toString() : "null";
+			log.error("Cannot convert to list, object has class: " + clazz);
+			return null;
+		}
+
+	}
+
+	protected void attributeCompatibilityAdjustment(Map<String,Object> attributes) {
+		if (attributes == null) {
+			return;
+		}
+		for (Map.Entry<String,Object> entry: attributes.entrySet()) {
+			switch (entry.getKey()) {
+				case "events":
+				case "scenarios":
+					attributes.put(entry.getKey(),eventIdsToUids(ensureObjectIsList(entry.getValue())));
+					break;
+			}
+		}
+	}
+
+	protected List<Object> eventIdsToUids (List<Object> eventIds) {
+		List<Object> ret = new ArrayList<Object>();
+		//we assume the event ids refer to events of the current BasePbject's Dokpool
+		String dpId = dokpoolId();
+		for (Object evIdObj : eventIds) {
+			String evId = (String) evIdObj;
+			String uid = (new de.bfs.dokpool.client.content.Event(service, "/"+dpId+"/contentconfig/scen/"+evId, noData)).getStringAttribute("UID");
+			if (uid == null) {
+				log.error("Could not get event uid for event with id: " + evId);
+			} else {
+				ret.add(uid);
+			}
+		}
+		return ret;
+	}
 	
 	/**
 	 * Update the object with the given properties.
@@ -338,19 +396,21 @@ public class BaseObject {
 	}
 
 	/**
-	 * Update the object's attributes with the given properties.
+	 * Update the object's attributes with the given map.
 	 * Any attribute that is not explicitly set will keep its value;
-	 * @param properties
+	 * @param attributes
 	 */
-	public boolean update(Map<String, Object> properties) {
+	public boolean update(Map<String, Object> attributes) {
 		/* we reset the data, as setting some attribute to a new value
 		 * might trigger changes in other attributes
 		 */
 		data = null;
 		dataComplete = false;
+		//Some attributes (e.g. scenarios) need to be handled differently in Plone6
+		attributeCompatibilityAdjustment(attributes);
 		try {
-			log.info("update: " + new JSON.Node(properties).toJSON());
-			JSON.Node rspNode = service.patchRequestWithNode(pathAfterPlonesite, new JSON.Node(properties));
+			log.info("update: " + new JSON.Node(attributes).toJSON());
+			JSON.Node rspNode = service.patchRequestWithNode(pathAfterPlonesite, new JSON.Node(attributes));
 			if (rspNode.errorInfo != null) {
 				log.info(rspNode.errorInfo.toString());
 				return false;

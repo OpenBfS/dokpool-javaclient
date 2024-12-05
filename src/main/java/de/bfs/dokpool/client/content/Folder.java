@@ -258,13 +258,13 @@ public class Folder extends BaseObject {
 	 */
 	public Document createDPDocument(String id, String title, String description, String text, String docType,
 			String[] behaviors) {
-		Map<String, Object> properties = new HashMap<String, Object>();
-		properties.put("title", title);
-		properties.put("description", description);
-		properties.put("text", text);
-		properties.put("docType", docType);
-		properties.put("local_behaviors", behaviors);
-		return client != null ? createDPDocumentX(id, properties) : createDPDocumentX(id, properties);
+		Map<String, Object> attributes = new HashMap<String, Object>();
+		attributes.put("title", title);
+		attributes.put("description", description);
+		attributes.put("text", text);
+		attributes.put("docType", docType);
+		attributes.put("local_behaviors", behaviors);
+		return client != null ? createDPDocumentX(id, attributes) : createDPDocumentX(id, attributes);
 	}
 
 	public Document createDPDocumentX(String id, Map<String, Object> properties) {
@@ -277,10 +277,11 @@ public class Folder extends BaseObject {
 		return new Document(client, newpath, null);
 	}
 
-	//TODO: does not work, because of some error in Python code
-	public Document createDPDocument(String id, Map<String, Object> properties) {
+	//TODO: does only work for local_behavior elan, because of some error in Python code
+	public Document createDPDocument(String id, Map<String, Object> attributes) {
 		try {
-			JSON.Node createJS = new JSON.Node(properties);
+			attributeCompatibilityAdjustment(attributes);
+			JSON.Node createJS = new JSON.Node(attributes);
 			createJS
 				.set("@type","DPDocument")
 				.set("id", id)
@@ -323,13 +324,14 @@ public class Folder extends BaseObject {
 		return new BaseObject(client, newpath, null);
 	}
 
-	public BaseObject createObject(String id, Map<String, Object> properties, String type) {
+	public BaseObject createObject(String id, Map<String, Object> attributes, String type) {
 		try {
 			if (type == null) {
 				log.error("Objects need a type (e.g. DPDocument).");
 				return null;
 			}
-			JSON.Node createJS = new JSON.Node(properties)
+			attributeCompatibilityAdjustment(attributes);
+			JSON.Node createJS = new JSON.Node(attributes)
 				.set("@type",type)
 			;
 			JSON.Node rspNode = service.postRequestWithNode(pathAfterPlonesite, createJS);
