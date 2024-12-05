@@ -376,7 +376,13 @@ public class BaseObject {
 			String evId = (String) evIdObj;
 			String uid = (new de.bfs.dokpool.client.content.Event(service, "/"+dpId+"/contentconfig/scen/"+evId, noData)).getStringAttribute("UID");
 			if (uid == null) {
-				log.error("Could not get event uid for event with id: " + evId);
+				//Maybe the evId already was a uid? Then we will get a non-null path fot it:
+				if (service.uidToPathAfterPlonesite(evId) != null) {
+					uid = evId;
+					ret.add(uid);
+				} else {
+					log.error("Could not get event uid for event with id: " + evId);
+				}
 			} else {
 				ret.add(uid);
 			}

@@ -41,7 +41,8 @@ public class DokpoolTest {
 	//MEMBER should have an associated user folder
 	private static final String MEMBER         = envOrEmpty("DOKPOOL_MEMBER");
 	private static final String EVENT          = envOrEmpty("DOKPOOL_EVENT");
-	private static final String DOCID          = "java-docpool-test-doc";
+	private static final String EVENTUID       = envOrEmpty("DOKPOOL_EVENTUID");
+	private static final String DOCID          = envOrEmpty("DOKPOOL_DOCID");
 	private static final String PROTOP5        = envOrEmpty("DOKPOOL_PROTOP5");
 	private static final String HOSTP5         = envOrEmpty("DOKPOOL_HOSTP5");
 	private static final String PORTP5         = envOrEmpty("DOKPOOL_PORTP5");
@@ -453,7 +454,7 @@ public class DokpoolTest {
 		properties.put("docType", "gammadoserate");
 		properties.put("subjects", new String[] { "Tag1", "Tag2" });
 		properties.put("local_behaviors", new String[] { "elan" });
-		properties.put("scenarios", new String[] { "scenario1", null });
+		properties.put("scenarios", new String[] { "scenario1", null, EVENTUID, EVENT });
 		String randId = "generic" + r.nextInt();
 		// TODO: Use this line instead of the following when document creation works via REST.
 		BaseObject bo = groupFolder.createObject(randId, properties, "DPDocument");

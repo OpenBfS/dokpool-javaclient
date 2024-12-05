@@ -118,6 +118,19 @@ public class DocpoolBaseService {
 		return path.substring(urlPrefixLength);
 	}
 
+	public String uidToPathAfterPlonesite(String uid) {
+		try {
+			HttpClient.Response rsp = HttpClient.doGetRequest(proto,host,port,urlPrefix+"/resolveuid/"+uid,defaultHeaders());
+			if (rsp.status == 404 || rsp.headers.get("Location") == null) {
+				return null;
+			}
+			return rsp.headers.get("Location").substring(urlPrefixLength);
+		} catch (Exception ex) {
+			log.error(exceptionToString(ex));
+			return null;
+		}
+	}
+
 	public String pathWithoutPrefix(JSON.Node node) {
 		String atid = node.get("@id").toString();
 		//If the `@id` is a dview, we need to fetch the actual path differently.
@@ -131,19 +144,13 @@ public class DocpoolBaseService {
 				uid = atid.substring(uidStart, uidEnd);
 				log.info("uid from dview: "+ uid);
 			}
-			try {
-				HttpClient.Response rsp = HttpClient.doGetRequest(proto,host,port,urlPrefix+"/resolveuid/"+uid,defaultHeaders());
-				if (rsp.status == 404 || rsp.headers.get("Location") == null) {
-					log.error("UID " + uid + " cannot be resolved");
-					return null;
-				}
-				log.info("@id from UID: " + rsp.headers.get("Location"));
-				return rsp.headers.get("Location").substring(urlPrefixLength);
-
-			} catch (Exception ex) {
-				log.error(exceptionToString(ex));
-				return null;
+			String path = uidToPathAfterPlonesite(uid);
+			if (path == null) {
+				log.error("UID " + uid + " cannot be resolved");
+			} else {
+				log.info("path from UID: " + path);
 			}
+			return path;
 		}
 		return node.get("@id").toString().substring(urlPrefixLength);
 	}
