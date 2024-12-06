@@ -27,6 +27,7 @@ public class BaseObject {
 
 	protected XmlRpcClient client = null;
 	protected DocpoolBaseService service = null;
+	protected DocpoolBaseService.PrivateDocpoolBaseService privateService;
 	//
 	private String pathWithPlonesite = null;
 	protected String pathAfterPlonesite = null;
@@ -46,6 +47,7 @@ public class BaseObject {
 
 	public BaseObject(DocpoolBaseService service, String path, Object[] alldata) {
 		this.service = service;
+		this.privateService = service.privateService;
 		this.pathAfterPlonesite = path;
 		if (alldata != null) {
 			data = (Map<String,Object>)alldata[0];
@@ -56,6 +58,7 @@ public class BaseObject {
 
 	public BaseObject(DocpoolBaseService service, String path, Map<String,Object> data) {
 		this.service = service;
+		this.privateService = service.privateService;
 		this.pathAfterPlonesite = path;
 		this.data = data;
 	}
@@ -134,7 +137,7 @@ public class BaseObject {
 				return getDataX();
 			}
 			try {
-				JSON.Node rspNode = service.nodeFromGetRequest(pathAfterPlonesite);
+				JSON.Node rspNode = privateService.nodeFromGetRequest(pathAfterPlonesite);
 				if (rspNode.errorInfo != null) {
 					log.info(rspNode.errorInfo.toString());
 					data = new HashMap<String,Object> ();
@@ -279,7 +282,7 @@ public class BaseObject {
 	 */
 	public String getWorkflowStatus() {
 		try {
-			JSON.Node rspNode = service.nodeFromGetRequest(pathAfterPlonesite+"/@workflow");
+			JSON.Node rspNode = privateService.nodeFromGetRequest(pathAfterPlonesite+"/@workflow");
 			if (rspNode.errorInfo != null) {
 				log.info(rspNode.errorInfo.toString());
 				return null;
@@ -326,7 +329,7 @@ public class BaseObject {
 					endpoint = endpoint + "/retract";
 					break;
 			}
-			JSON.Node rspNode = service.postRequestWithNode(pathAfterPlonesite+endpoint, transNode);
+			JSON.Node rspNode = privateService.postRequestWithNode(pathAfterPlonesite+endpoint, transNode);
 			if (rspNode.errorInfo != null) {
 				log.info(rspNode.errorInfo.toString());
 			}
@@ -376,7 +379,7 @@ public class BaseObject {
 			String uid = (new de.bfs.dokpool.client.content.Event(service, "/"+dpId+"/contentconfig/scen/"+evId, noData)).getStringAttribute("UID");
 			if (uid == null) {
 				//Maybe the evId already was a uid? Then we will get a non-null path fot it:
-				if (service.uidToPathAfterPlonesite(evId) != null) {
+				if (privateService.uidToPathAfterPlonesite(evId) != null) {
 					uid = evId;
 					ret.add(uid);
 				} else {
@@ -416,7 +419,7 @@ public class BaseObject {
 		attributeCompatibilityAdjustment(attributes);
 		try {
 			log.info("update: " + new JSON.Node(attributes).toJSON());
-			JSON.Node rspNode = service.patchRequestWithNode(pathAfterPlonesite, new JSON.Node(attributes));
+			JSON.Node rspNode = privateService.patchRequestWithNode(pathAfterPlonesite, new JSON.Node(attributes));
 			if (rspNode.errorInfo != null) {
 				log.info(rspNode.errorInfo.toString());
 				return false;
@@ -446,7 +449,7 @@ public class BaseObject {
 	 */
 	public boolean delete() {
 		try {
-			JSON.Node rspNode = service.deleteRequest(pathAfterPlonesite);
+			JSON.Node rspNode = privateService.deleteRequest(pathAfterPlonesite);
 			if (rspNode.errorInfo != null) {
 				log.info(rspNode.errorInfo.toString());
 				return false;

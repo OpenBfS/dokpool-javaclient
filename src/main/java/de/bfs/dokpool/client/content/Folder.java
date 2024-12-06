@@ -60,7 +60,7 @@ public class Folder extends BaseObject {
 	private JSON.Node getContentsNode() {
 		if (contentsNode == null) {
 			try {
-				contentsNode = service.nodeFromGetRequest(pathAfterPlonesite,"metadata_fields=id");
+				contentsNode = privateService.nodeFromGetRequest(pathAfterPlonesite,"metadata_fields=id");
 				if (contentsNode.errorInfo != null) {
 					log.info(contentsNode.errorInfo.toString());
 					return null;
@@ -97,7 +97,7 @@ public class Folder extends BaseObject {
 	public Folder getFolder(String subpath) {
 		subpath = subpath.startsWith("/") ? subpath: ("/" + subpath);
 		try {
-			JSON.Node subpathNode = service.nodeFromGetRequest(pathAfterPlonesite + subpath);
+			JSON.Node subpathNode = privateService.nodeFromGetRequest(pathAfterPlonesite + subpath);
 			if (subpathNode.errorInfo != null) {
 				log.info(subpathNode.errorInfo.toString());
 				return null;
@@ -301,7 +301,7 @@ public class Folder extends BaseObject {
 				createJS.set("local_behaviors", (new JSON.Node ("[]")).append("elan"));
 			}
 
-			JSON.Node rspNode = service.postRequestWithNode(pathAfterPlonesite, createJS);
+			JSON.Node rspNode = privateService.postRequestWithNode(pathAfterPlonesite, createJS);
 			if (rspNode.errorInfo != null) {
 				log.info(rspNode.errorInfo.toString());
 				return null;
@@ -334,7 +334,7 @@ public class Folder extends BaseObject {
 			JSON.Node createJS = new JSON.Node(attributes)
 				.set("@type",type)
 			;
-			JSON.Node rspNode = service.postRequestWithNode(pathAfterPlonesite, createJS);
+			JSON.Node rspNode = privateService.postRequestWithNode(pathAfterPlonesite, createJS);
 			if (rspNode.errorInfo != null) {
 				log.info(rspNode.errorInfo.toString());
 				return null;
@@ -369,7 +369,7 @@ public class Folder extends BaseObject {
 			JSON.Node copyJS = new JSON.Node("{}")
 				.set("source", srcPath)
 			;
-			JSON.Node rspNode = service.postRequestWithNode(pathAfterPlonesite + "/@copy", copyJS);
+			JSON.Node rspNode = privateService.postRequestWithNode(pathAfterPlonesite + "/@copy", copyJS);
 			if (rspNode.errorInfo != null) {
 				log.info(rspNode.errorInfo.toString());
 				return null;

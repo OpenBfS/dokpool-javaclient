@@ -48,7 +48,7 @@ public class DocumentPool extends Folder {
 	public List<DocType> getTypes() {
 		JSON.Node typeListNode = null;
 		try {
-			typeListNode = service.nodeFromGetRequest(pathAfterPlonesite + "/@types");
+			typeListNode = privateService.nodeFromGetRequest(pathAfterPlonesite + "/@types");
 			if (typeListNode.errorInfo != null) {
 				log.info(typeListNode.errorInfo.toString());
 				return null;
@@ -93,7 +93,7 @@ public class DocumentPool extends Folder {
 		JSON.Node itemsNode = null;
 		try {
 			//TODO: only search /contentconfig/scen/?
-			JSON.Node rspNode = service.nodeFromGetRequest(pathAfterPlonesite + "/@search", "portal_type=ELANScenario&metadata_fields=id");
+			JSON.Node rspNode = privateService.nodeFromGetRequest(pathAfterPlonesite + "/@search", "portal_type=ELANScenario&metadata_fields=id");
 			if (rspNode.errorInfo != null) {
 				log.info(rspNode.errorInfo.toString());
 				return null;
@@ -141,7 +141,7 @@ public class DocumentPool extends Folder {
 		JSON.Node itemsNode = null;
 		try {
 			//TODO: only search /contentconfig/scen/?
-			JSON.Node rspNode = service.nodeFromGetRequest(pathAfterPlonesite + "/@search", "portal_type=ELANScenario&dp_type=active&metadata_fields=id");
+			JSON.Node rspNode = privateService.nodeFromGetRequest(pathAfterPlonesite + "/@search", "portal_type=ELANScenario&dp_type=active&metadata_fields=id");
 			if (rspNode.errorInfo != null) {
 				log.info(rspNode.errorInfo.toString());
 				return null;
@@ -184,7 +184,7 @@ public class DocumentPool extends Folder {
 	public List<Event> getEvents() {
 		JSON.Node itemsNode = null;
 		try {
-			JSON.Node rspNode = service.nodeFromGetRequest(pathAfterPlonesite + "/contentconfig/scen/@search", "portal_type=DPEvent&metadata_fields=id");
+			JSON.Node rspNode = privateService.nodeFromGetRequest(pathAfterPlonesite + "/contentconfig/scen/@search", "portal_type=DPEvent&metadata_fields=id");
 			if (rspNode.errorInfo != null) {
 				log.info(rspNode.errorInfo.toString());
 				return null;
@@ -229,7 +229,7 @@ public class DocumentPool extends Folder {
 	public List<Event> getActiveEvents() {
 		JSON.Node itemsNode = null;
 		try {
-			JSON.Node rspNode = service.nodeFromGetRequest(pathAfterPlonesite + "/contentconfig/scen/@search", "portal_type=DPEvent&dp_type=active&metadata_fields=id");
+			JSON.Node rspNode = privateService.nodeFromGetRequest(pathAfterPlonesite + "/contentconfig/scen/@search", "portal_type=DPEvent&dp_type=active&metadata_fields=id");
 			if (rspNode.errorInfo != null) {
 				log.info(rspNode.errorInfo.toString());
 				return null;
@@ -266,7 +266,7 @@ public class DocumentPool extends Folder {
 	public Folder getUserFolder() {
 		try {
 			//the Dokpool is an argument to the endpoint, so we append ist
-			JSON.Node folderNode = service.nodeFromGetRequest("/@get_user_folder" + pathAfterPlonesite);
+			JSON.Node folderNode = privateService.nodeFromGetRequest("/@get_user_folder" + pathAfterPlonesite);
 			if (folderNode.errorInfo != null) {
 				log.info(folderNode.errorInfo.toString());
 				return null;
@@ -289,7 +289,7 @@ public class DocumentPool extends Folder {
 			user = user.replaceAll("-","--");
 		}
 		try {
-			JSON.Node folderNode = service.nodeFromGetRequest(pathAfterPlonesite + "/content/Members/" + user);
+			JSON.Node folderNode = privateService.nodeFromGetRequest(pathAfterPlonesite + "/content/Members/" + user);
 			if (folderNode.errorInfo != null) {
 				log.info(folderNode.errorInfo.toString());
 				return null;
@@ -330,7 +330,7 @@ public class DocumentPool extends Folder {
 	public List<Folder> getGroupFolders() {
 		try {
 			//the Dokpool is an argument to the endpoint, so we append ist
-			JSON.Node gfListNode = service.nodeFromGetRequest("/@get_group_folders" + pathAfterPlonesite, "metadata_fields=id");
+			JSON.Node gfListNode = privateService.nodeFromGetRequest("/@get_group_folders" + pathAfterPlonesite, "metadata_fields=id");
 			if (gfListNode.errorInfo != null) {
 				log.info(gfListNode.errorInfo.toString());
 				return null;
@@ -353,7 +353,7 @@ public class DocumentPool extends Folder {
 	 */
 	public List<Folder> getAllGroupFolders() {
 		try {
-			JSON.Node gfListNode = service.nodeFromGetRequest(pathAfterPlonesite + "/content/Groups/", "metadata_fields=id");
+			JSON.Node gfListNode = privateService.nodeFromGetRequest(pathAfterPlonesite + "/content/Groups/", "metadata_fields=id");
 			if (gfListNode.errorInfo != null) {
 				log.info(gfListNode.errorInfo.toString());
 				return null;
@@ -393,7 +393,7 @@ public class DocumentPool extends Folder {
 	public List<Folder> getTransferFolders() {
 		try {
 			//the Dokpool is an argument to the endpoint, so we append ist
-			JSON.Node tfListNode = service.nodeFromGetRequest("/@get_transfer_folders" + pathAfterPlonesite, "metadata_fields=id");
+			JSON.Node tfListNode = privateService.nodeFromGetRequest("/@get_transfer_folders" + pathAfterPlonesite, "metadata_fields=id");
 			if (tfListNode.errorInfo != null) {
 				log.info(tfListNode.errorInfo.toString());
 				return null;
@@ -443,7 +443,7 @@ public class DocumentPool extends Folder {
 				.set("fullname", fullname)
 				.set("dp", dpUid)
 			;
-			JSON.Node rspNode = service.postRequestWithNode("/@users", createJS);
+			JSON.Node rspNode = privateService.postRequestWithNode("/@users", createJS);
 			if (rspNode.errorInfo != null) {
 				log.info(rspNode.errorInfo.toString());
 				return null;
@@ -475,7 +475,7 @@ public class DocumentPool extends Folder {
 	 */
 	public boolean deleteUser(String userId) {
 		try {
-			JSON.Node rspNode = service.deleteRequest("/@users/"+userId);
+			JSON.Node rspNode = privateService.deleteRequest("/@users/"+userId);
 			if (rspNode.errorInfo != null) {
 				log.info(rspNode.errorInfo.toString());
 				return false;
@@ -522,7 +522,7 @@ public class DocumentPool extends Folder {
 				//the following line has to visible effect
 				// .set("dp", dpUid)
 			;
-			JSON.Node rspNode = service.postRequestWithNode("/@groups", createJS);
+			JSON.Node rspNode = privateService.postRequestWithNode("/@groups", createJS);
 			if (rspNode.errorInfo != null) {
 				log.info(rspNode.errorInfo.toString());
 				return null;
@@ -541,7 +541,7 @@ public class DocumentPool extends Folder {
 	 */
 	public boolean deleteGroup(String groupId) {
 		try {
-			JSON.Node rspNode = service.deleteRequest("/@groups/"+groupId);
+			JSON.Node rspNode = privateService.deleteRequest("/@groups/"+groupId);
 			if (rspNode.errorInfo != null) {
 				log.info(rspNode.errorInfo.toString());
 				return false;

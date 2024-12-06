@@ -71,7 +71,7 @@ public class Document extends Folder {
 					.set("filename", filename)
 				)
 			;
-			JSON.Node rspNode = service.postRequestWithNode(pathAfterPlonesite, createJS);
+			JSON.Node rspNode = privateService.postRequestWithNode(pathAfterPlonesite, createJS);
 			if (rspNode.errorInfo != null) {
 				log.info(rspNode.errorInfo.toString());
 				return null;
@@ -156,7 +156,7 @@ public class Document extends Folder {
 					.set("filename", filename)
 				)
 			;
-			JSON.Node rspNode = service.postRequestWithNode(pathAfterPlonesite, createJS);
+			JSON.Node rspNode = privateService.postRequestWithNode(pathAfterPlonesite, createJS);
 			if (rspNode.errorInfo != null) {
 				log.info(rspNode.errorInfo.toString());
 				return null;

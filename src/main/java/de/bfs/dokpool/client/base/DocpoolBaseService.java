@@ -45,6 +45,8 @@ public class DocpoolBaseService {
 	private final String urlPrefix;
 	private final int urlPrefixLength;
 
+	/*package-private*/ PrivateDocpoolBaseService privateService;
+
 	/**
 	 * Get a service object.
 	 * 
@@ -55,6 +57,7 @@ public class DocpoolBaseService {
 	 */
 	public DocpoolBaseService(String url, String username, String password) {
 		//new REST-Code:
+		this.privateService = new PrivateDocpoolBaseService(this);
 		try {
 			URL urlObject = new URL(url);
 			this.proto = urlObject.getProtocol();
@@ -104,6 +107,7 @@ public class DocpoolBaseService {
 	 * @param password
 	 */
 	public DocpoolBaseService(String proto, String host, String port, String plonesite, String username, String password) {
+		this.privateService = new PrivateDocpoolBaseService(this);
 		this.urlPrefix = HttpClient.composeUrl(proto,host,port,"/"+ plonesite);
 		this.urlPrefixLength = urlPrefix.length();
 		this.proto = proto;
@@ -118,7 +122,7 @@ public class DocpoolBaseService {
 		return path.substring(urlPrefixLength);
 	}
 
-	public String uidToPathAfterPlonesite(String uid) {
+	private String uidToPathAfterPlonesite(String uid) {
 		try {
 			HttpClient.Response rsp = HttpClient.doGetRequest(proto,host,port,urlPrefix+"/resolveuid/"+uid,defaultHeaders());
 			if (rsp.status == 404 || rsp.headers.get("Location") == null) {
@@ -166,7 +170,7 @@ public class DocpoolBaseService {
 		return ex.toString() + ": " + ex.getLocalizedMessage() + "\n" + stBuffer.toString();
 	}
 
-	public JSON.Node addErrorInfo(JSON.Node baseNode, HttpClient.Response rsp) throws Exception {
+	private JSON.Node addErrorInfo(JSON.Node baseNode, HttpClient.Response rsp) throws Exception {
 		if (baseNode == null || baseNode.type().equals("null")) {
 			baseNode = new JSON.Node("null");
 			baseNode.errorInfo = "REST response error: No content or null content";
@@ -201,7 +205,7 @@ public class DocpoolBaseService {
 		return headers;
 	}
 
-	public JSON.Node nodeFromGetRequest(String endpoint, String queryString) throws Exception {
+	private JSON.Node nodeFromGetRequest(String endpoint, String queryString) throws Exception {
 		queryString = (queryString == null || queryString.equals("")) ? "" : ("?"+queryString);
 		String path = urlPrefix + endpoint;
 		HttpClient.Response	rsp;
@@ -222,28 +226,25 @@ public class DocpoolBaseService {
 		return addErrorInfo(node,rsp);
 	}
 
-
-	// TODO: we do not actually want these methods to be part of the public api
-	// -> make them package-private and add references to them to the base object
-	public JSON.Node nodeFromGetRequest(String endpoint) throws Exception {
+	private JSON.Node nodeFromGetRequest(String endpoint) throws Exception {
 		return nodeFromGetRequest(endpoint, null);
 	}
 
-	public JSON.Node patchRequestWithNode(String endpoint, JSON.Node patchNode) throws Exception {
+	private JSON.Node patchRequestWithNode(String endpoint, JSON.Node patchNode) throws Exception {
 		String patchUrl = urlPrefix + endpoint;
 		byte[] patchData = patchNode.toJSON().getBytes();
 		HttpClient.Response rsp = HttpClient.doPatchRequest(proto,host,port,patchUrl,defaultHeaders(),HttpClient.MimeTypes.JSON,patchData);
 		return addErrorInfo(new JSON.Node(rsp.content), rsp);
 	}
 
-	public JSON.Node postRequestWithNode(String endpoint, JSON.Node patchNode) throws Exception {
+	private JSON.Node postRequestWithNode(String endpoint, JSON.Node patchNode) throws Exception {
 		String patchUrl = urlPrefix + endpoint;
 		byte[] patchData = patchNode.toJSON().getBytes();
 		HttpClient.Response rsp = HttpClient.doPostRequest(proto,host,port,patchUrl,defaultHeaders(),null,HttpClient.MimeTypes.JSON,patchData);
 		return addErrorInfo(new JSON.Node(rsp.content), rsp);
 	}
 	
-	public JSON.Node deleteRequest(String endpoint) throws Exception {
+	private JSON.Node deleteRequest(String endpoint) throws Exception {
 		String path = urlPrefix + endpoint;
 		HttpClient.Response rsp = HttpClient.doDeleteRequest(proto,host,port,path,defaultHeaders());
 		return addErrorInfo(new JSON.Node(rsp.content), rsp);
@@ -415,6 +416,35 @@ public class DocpoolBaseService {
 		} catch (XmlRpcException e) {
 			log.error(e);
 			return null;
+		}
+	}
+
+	/**
+	 * This class only exists as a visibility hack across (sub)packages.
+	 */
+	public class PrivateDocpoolBaseService {
+		DocpoolBaseService service;
+		PrivateDocpoolBaseService(DocpoolBaseService service) {
+			this.service = service;
+		}
+
+		public String uidToPathAfterPlonesite(String uid) {
+			return service.uidToPathAfterPlonesite(uid);
+		};
+		public JSON.Node nodeFromGetRequest(String endpoint, String queryString) throws Exception {
+			return service.nodeFromGetRequest(endpoint,queryString);
+		}
+		public JSON.Node nodeFromGetRequest(String endpoint) throws Exception {
+			return service.nodeFromGetRequest(endpoint);
+		}
+		public JSON.Node patchRequestWithNode(String endpoint, JSON.Node patchNode) throws Exception {
+			return service.patchRequestWithNode(endpoint, patchNode);
+		}
+		public JSON.Node postRequestWithNode(String endpoint, JSON.Node patchNode) throws Exception {
+			return service.postRequestWithNode(endpoint, patchNode);
+		}
+		public JSON.Node deleteRequest(String endpoint) throws Exception {
+			return service.deleteRequest(endpoint);
 		}
 	}
 
