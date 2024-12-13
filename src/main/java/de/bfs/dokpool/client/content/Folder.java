@@ -259,12 +259,12 @@ public class Folder extends BaseObject {
 	public Document createDPDocument(String id, String title, String description, String text, String docType,
 			String[] behaviors) {
 		Map<String, Object> attributes = new HashMap<String, Object>();
-		attributes.put("title", title);
-		attributes.put("description", description);
-		attributes.put("text", text);
-		attributes.put("docType", docType);
-		attributes.put("local_behaviors", behaviors);
-		return client != null ? createDPDocumentX(id, attributes) : createDPDocumentX(id, attributes);
+		if (title != null) { attributes.put("title", title); }
+		if (description != null) { attributes.put("description", description); }
+		if (text != null) { attributes.put("text", text); }
+		if (docType != null) { attributes.put("docType", docType); }
+		if (behaviors != null) { attributes.put("local_behaviors", behaviors); }
+		return client != null ? createDPDocumentX(id, attributes) : createDPDocument(id, attributes);
 	}
 
 	public Document createDPDocumentX(String id, Map<String, Object> properties) {
@@ -277,7 +277,6 @@ public class Folder extends BaseObject {
 		return new Document(client, newpath, null);
 	}
 
-	//TODO: does only work for local_behavior elan, because of some error in Python code
 	public Document createDPDocument(String id, Map<String, Object> attributes) {
 		try {
 			attributeCompatibilityAdjustment(attributes);
@@ -286,19 +285,49 @@ public class Folder extends BaseObject {
 				.set("@type","DPDocument")
 				.set("id", id)
 			;
-			//TODO: which attributes are actually mandatory and which are only mandatory beacuse of server side bugs?
-			//set the mandatory attributes if not given:
 			if (createJS.get("title") == null) {
 				createJS.set("title", "no title provided");
 			}
 			if (createJS.get("text") == null) {
 				createJS.set("text", "no text provided");
 			}
+			JSON.Node localBehaviors = createJS.get("local_behaviors");
+			if (localBehaviors == null) {
+				localBehaviors = (new JSON.Node ("[]")).append("elan");
+				createJS.set("local_behaviors", localBehaviors);
+			}
+			if (localBehaviors.arrayHasValue("doksys")) {
+				if (createJS.get("OperationMode") == null) {
+					createJS.set("OperationMode", "Routine");
+				}
+			}
+			if (localBehaviors.arrayHasValue("rodos")) {
+				if (createJS.get("PrognosisType") == null) {
+					createJS.set("PrognosisType", "RODOS Prognose");
+				}
+				if (createJS.get("docType") == null) {
+					createJS.set("docType", "rodosprojection");
+				}
+			}
+			if (localBehaviors.arrayHasValue("rei")) {
+				if (createJS.get("MStIDs") == null) {
+					createJS.set("MStIDs", new JSON.Node("null"));
+				}
+				if (createJS.get("docType") == null) {
+					createJS.set("docType", "reireport");
+				}
+				if ((createJS.get("Authority") == null) || (createJS.get("ReiLegalBases") == null) ||
+						(createJS.get("NuclearInstallations") == null) || (createJS.get("Year") == null) ||
+						(createJS.get("Period") == null) || (createJS.get("Origins") == null) ||
+						(createJS.get("PDFVersion") == null)
+				) {
+					log.info("Authority, ReiLegalBases, NuclearInstallations, Year, Period, Origins and PDFVersion are mandatory for REI with no sensible default.");
+				}
+			}
+
+			
 			if (createJS.get("docType") == null) {
 				createJS.set("docType", "doksysdok");
-			}
-			if (createJS.get("local_behaviors") == null) {
-				createJS.set("local_behaviors", (new JSON.Node ("[]")).append("elan"));
 			}
 
 			JSON.Node rspNode = privateService.postRequestWithNode(pathAfterPlonesite, createJS);
@@ -329,6 +358,10 @@ public class Folder extends BaseObject {
 			if (type == null) {
 				log.error("Objects need a type (e.g. DPDocument).");
 				return null;
+			}
+			//if you ask for a DPDocument, we call the specialized method to ensure mandatory attributes are set
+			if (type == "DPDocument") {
+				return createDPDocument(id,attributes);
 			}
 			attributeCompatibilityAdjustment(attributes);
 			JSON.Node createJS = new JSON.Node(attributes)
@@ -386,32 +419,35 @@ public class Folder extends BaseObject {
 	public Document createAppSpecificDocument(String id, String title, String description, String text, String docType,
 			String[] behaviors, Map<String, Object> elanProperties, Map<String, Object> doksysProperties,
 			Map<String, Object> rodosProperties, Map<String, Object> reiProperties) {
-		Map<String, Object> properties = new HashMap<>();
+		Map<String, Object> attributes = new HashMap<>();
 		for (String appName : behaviors) {
 			App app = App.fromString(appName);
 			switch (app) {
 			case ELAN:
 				assert(!mapEmptyOrNull(elanProperties));
-				properties.putAll(elanProperties);
+				attributes.putAll(elanProperties);
 				break;
 			case RODOS:
 				assert(!mapEmptyOrNull(rodosProperties));
-				properties.putAll(rodosProperties);
+				attributes.putAll(rodosProperties);
 				break;
 			case DOKSYS:
 				assert(!mapEmptyOrNull(doksysProperties));
-				properties.putAll(doksysProperties);
+				attributes.putAll(doksysProperties);
 				break;
 			case REI:
 				assert(!mapEmptyOrNull(reiProperties));
-				properties.putAll(reiProperties);
+				attributes.putAll(reiProperties);
+				try {log.info(new JSON.Node(attributes).toJSON());} catch (Exception e) {}
 				break;
 			}
 		}
-		Document document = createDPDocument(id, title, description, text, docType, behaviors);
-		//TODO: remove XMLRPC
-		if (client!= null) {document.updateX(properties);} else {document.update(properties);}
-		return document;
+		if (title != null) { attributes.put("title", title); }
+		if (description != null) { attributes.put("description", description); }
+		if (text != null) { attributes.put("text", text); }
+		if (docType != null) { attributes.put("docType", docType); }
+		if (behaviors != null) { attributes.put("local_behaviors", behaviors); }
+		return client != null ? createDPDocumentX(id, attributes) : createDPDocument(id, attributes);
 	}
 
 	/**

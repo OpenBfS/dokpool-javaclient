@@ -452,11 +452,12 @@ public class DokpoolTest {
 		properties.put("description", "Generic Description");
 		properties.put("text", "<b>Text</b>");
 		properties.put("docType", "gammadoserate");
-		properties.put("subjects", new String[] { "Tag1", "Tag2" });
-		properties.put("local_behaviors", new String[] { "elan" });
+		properties.put("subjects", new String[] {"Tag1", "Tag2"});
+		properties.put("local_behaviors", new String[] {"elan", "doksys"});
+		//OperationMode is a required REST argument for behavior doksys, but createObject adds it if missing
+		// properties.put("OperationMode", "Routine");
 		properties.put("scenarios", new String[] { "scenario1", null, EVENTUID, EVENT });
 		String randId = "generic" + r.nextInt();
-		// TODO: Use this line instead of the following when document creation works via REST.
 		BaseObject bo = groupFolder.createObject(randId, properties, "DPDocument");
 		// BaseObject bo = groupFolder.createCopyOf(groupFolder.getContentItem(DOCID));
 		properties.clear();
@@ -467,19 +468,41 @@ public class DokpoolTest {
 		bo.delete();
 
 		Map<String, Object> elanProperties = new HashMap<String, Object>();
-		elanProperties.put("scenarios", new String[] { "demo-on-2024-04-01" });
+		elanProperties.put("scenarios", new String[] {"demo-on-2024-04-01"});
 		Map<String, Object> rodosProperties = new HashMap<String, Object>();
 		rodosProperties.put("reportId", "REPORT");
 		randId = "fromjava" + r.nextInt();
 		Document d = (Document) groupFolder.createCopyOf(groupFolder.getContentItem(DOCID));
-		// TODO: Use this line instead of the line above when document creation works via REST.
-		// Document d = groupFolder.createAppSpecificDocument(randId, "New from Java",
-		// 		"Description from Java", "<p>Text from Java!</p>", "ifinprojection", new String[] { "elan", "rodos" },
-		// 		elanProperties,
-		// 		null,
-		// 		rodosProperties,
-		// 		null
-		// 		);
+		d.delete();
+
+		d = groupFolder.createAppSpecificDocument(randId, "New from Java",
+			"Description from Java", "<p>Text from Java!</p>","rodosprojection", new String[] {"elan", "rodos"},
+			elanProperties,
+			null,
+			rodosProperties,
+			null
+		);
+		log.info(d.getTitle());
+		log.info(d.getWorkflowStatus());
+		log.info(d.getStringsAttribute("local_behaviors"));
+		d.delete();
+
+		randId = "fromjava" + r.nextInt();
+		Map<String, Object> reiProperties = new HashMap<String, Object>();
+		reiProperties.put("Authority","de_nw");
+		reiProperties.put("ReiLegalBases",new String[] {"REI-I"});
+		reiProperties.put("NuclearInstallations", new String[] {"U05T"});
+		reiProperties.put("Year", "2020");
+		reiProperties.put("Period","Q4");
+		reiProperties.put("Origins", "Strahlenschutzverantwortlicher");
+		reiProperties.put("PDFVersion", "PDF/A-1b");
+		d = groupFolder.createAppSpecificDocument(randId, "New from Java",
+			"Description from Java", "<p>Text from Java!</p>","reireport", new String[] {"rei"},
+			null,
+			null,
+			null,
+			reiProperties
+		);
 		log.info(d.getTitle());
 		log.info(d.getWorkflowStatus());
 		log.info(d.getStringsAttribute("local_behaviors"));
