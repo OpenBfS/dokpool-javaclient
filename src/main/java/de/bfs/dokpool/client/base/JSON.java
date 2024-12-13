@@ -63,7 +63,6 @@ public class JSON {
 						List<Object> valVec = (List<Object>) val;
 						set(entry.getKey(),new Node(valVec));
 					} else if (val.getClass().isArray()) {
-						@SuppressWarnings("unchecked")
 						List<Object> valVec = Arrays.<Object>asList((Object[]) val);
 						set(entry.getKey(),new Node(valVec));
 					} else if (val instanceof String) {
@@ -104,7 +103,6 @@ public class JSON {
 						List<Object> valVec = (List<Object>) val;
 						append(new Node(valVec));
 					} else if (val.getClass().isArray()) {
-						@SuppressWarnings("unchecked")
 						List<Object> valVec = Arrays.<Object>asList((Object[]) val);
 						append(new Node(valVec));
 					} else if (val instanceof String) {
@@ -145,6 +143,38 @@ public class JSON {
 		public Node get(int index) {
 			JsonNode gotNode = jacksonNode != null ? jacksonNode.get(index) : null;
 			return gotNode != null ? new Node(gotNode) : null;
+		}
+
+		public boolean arrayHasValue(Object val) throws Exception {
+			try {
+				ArrayNode arrayNode = ((ArrayNode) jacksonNode);
+				for(JsonNode node : arrayNode) {
+					Object nodeVal = (new Node(node)).toObject();
+					if (nodeVal == null && val == null){
+						return true;
+					} else if (nodeVal == null){
+						continue;
+					}
+					if (nodeVal.equals(val)){
+						return true;
+					}
+				}
+			} catch (ClassCastException cce) {
+				throw new Exception("JSON node is not an array.");
+			}
+			return false;
+		}
+
+		public boolean arrayHasValue(long i) throws Exception {
+			return arrayHasValue(new Long(i));
+		}
+
+		public boolean arrayHasValue(boolean b) throws Exception {
+			return arrayHasValue(new Boolean(b));
+		}
+
+		public boolean arrayHasValue(double d) throws Exception {
+			return arrayHasValue(new Double(d));
 		}
 		
 		/**
