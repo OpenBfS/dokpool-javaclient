@@ -6,7 +6,7 @@
 	<groupId>de.bfs</groupId>
 	<artifactId>dokpool-client</artifactId>
 	<packaging>jar</packaging>
-	<version>2.3-SNAPSHOT</version>
+	<version>2.3.0</version>
 	<name>Dokpool REST API Client</name>
 	<organization>
 		<name>German Federal Office for Radiation Protection</name>
