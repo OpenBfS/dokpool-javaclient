@@ -19,6 +19,7 @@ import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.Instant;
 
 public class DokpoolTest {
 	private static final Log log = LogFactory.getLog(DokpoolTest.class);
@@ -454,6 +455,9 @@ public class DokpoolTest {
 		properties.put("docType", "gammadoserate");
 		properties.put("subjects", new String[] {"Tag1", "Tag2"});
 		properties.put("local_behaviors", new String[] {"elan", "doksys"});
+		// These attributes are not required, we use them to test date handling:
+		properties.put("TrajectoryStartTime", Date.from(Instant.now().minusSeconds(3600)));
+		properties.put("TrajectoryEndTime", Date.from(Instant.now()));
 		//OperationMode is a required REST argument for behavior doksys, but createObject adds it if missing
 		// properties.put("OperationMode", "Routine");
 		properties.put("scenarios", new String[] { "scenario1", null, EVENTUID, EVENT });
@@ -719,9 +723,10 @@ public class DokpoolTest {
 		hmap.put("two","2");
 		mthree.put("four","4");
 		hmap.put("three",mthree);
+		hmap.put("date",Date.from(Instant.ofEpochSecond(1234678910)));
 		JSON.Node hmapnode = new JSON.Node(hmap);
 		log.info("root JSON: "+hmapnode.toJSON());
-		Assert.assertEquals("{\"one\":\"1\",\"two\":\"2\",\"three\":{\"four\":\"4\"}}", hmapnode.toJSON());
+		Assert.assertEquals("{\"date\":\"2009-02-15T06:21:50.000Z\",\"one\":\"1\",\"two\":\"2\",\"three\":{\"four\":\"4\"}}", hmapnode.toJSON());
 	}
 
 }

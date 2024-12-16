@@ -1,11 +1,16 @@
 package de.bfs.dokpool.client.base;
 
 import java.lang.Exception;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
@@ -78,6 +83,12 @@ public class JSON {
 					} else if (val instanceof Boolean) {
 						Boolean valBool = (Boolean) val;
 						set(entry.getKey(),valBool.booleanValue());
+					} else if (val instanceof Date) {
+						//TODO: Date handling Code also exists in BaseObject. It should only be in a single place.
+						Date valDate = (Date) val;
+						ZonedDateTime valZDT = ZonedDateTime.ofInstant(valDate.toInstant(),ZoneOffset.UTC);
+						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("[yyyy-MM-dd'T'HH:mm:ss[.SSS][XXX]]", Locale.ENGLISH).withZone(ZoneOffset.UTC);
+						set(entry.getKey(),valZDT.format(formatter));
 					} else {
 						log.error("JSON: unsupported Object of class: " + val.getClass() + val.getClass());
 						throw new Exception();
@@ -118,6 +129,12 @@ public class JSON {
 					} else if (val instanceof Boolean) {
 						Boolean valBool = (Boolean) val;
 						append(valBool.booleanValue());
+					} else if (val instanceof Date) {
+						//TODO: Date handling Code also exists in BaseObject. It should only be in a single place.
+						Date valDate = (Date) val;
+						ZonedDateTime valZDT = ZonedDateTime.ofInstant(valDate.toInstant(),ZoneOffset.UTC);
+						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("[yyyy-MM-dd'T'HH:mm:ss[.SSS][XXX]]", Locale.ENGLISH).withZone(ZoneOffset.UTC);
+						append(valZDT.format(formatter));
 					} else {
 						log.error("JSON: unsupported Object of class: " + val.getClass() + val.getClass());
 						throw new Exception();
