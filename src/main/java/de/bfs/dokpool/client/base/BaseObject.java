@@ -10,9 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Vector;
-
-import org.apache.xmlrpc.client.XmlRpcClient;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,7 +22,6 @@ import org.apache.commons.logging.LogFactory;
 public class BaseObject {
 	protected final Log log = LogFactory.getLog(DocpoolBaseService.class);
 
-	protected XmlRpcClient client = null;
 	protected DocpoolBaseService service = null;
 	protected DocpoolBaseService.PrivateDocpoolBaseService privateService;
 	//
@@ -35,16 +31,8 @@ public class BaseObject {
 	//we may initilize an Object with partial data
 	protected boolean dataComplete = false;
 	protected Map<String,Object> metadata = null;
-	
-	public BaseObject(XmlRpcClient client, String path, Object[] alldata) {
-		this.client = client;
-		this.pathWithPlonesite = path;
-		if (alldata != null) {
-			data = (Map<String,Object>)alldata[0];
-			dataComplete = true;
-		}
-	}
 
+	@SuppressWarnings("unchecked")
 	public BaseObject(DocpoolBaseService service, String path, Object[] alldata) {
 		this.service = service;
 		this.privateService = service.privateService;
@@ -98,33 +86,6 @@ public class BaseObject {
 	public String getPathWithPlonesite() {
 		return fullpath();
 	}
-	
-
-	/**
-	 * Fetches all data and contents for this object via XMLRPC.
-	 * There will be no REST equivalent for this method as its only
-	 * use except in getData() is in Folder.
-	 * @return object data as XMLRPC structure
-	 */
-	protected Object[] getObjectDataX() {
-		Vector<String> params = new Vector<String>();
-		params.add(fullpath());
-		params.add("");
-		Object[] res = (Object[])executeX("get_plone_object", params);
-		return res;
-	}
-	
-	/**
-	 * Gets just the attributes for the object from XMLRPC data.
-	 * @return object attributes as map
-	 */
-	private Map<String,Object> getDataX() {
-		if (data == null) {
-			data = (Map<String,Object>)((Object[])(getObjectDataX()[1]))[0];
-			dataComplete = true;
-		}
-		return data;
-	}
 
 	/**
 	 * Gets just the attributes for the object via a REST-Request.
@@ -132,10 +93,6 @@ public class BaseObject {
 	 */
 	private Map<String,Object> getData() {
 		if (data == null || !dataComplete) {
-			//TODO: remove XMLRPC-Part
-			if (client != null) {
-				return getDataX();
-			}
 			try {
 				JSON.Node rspNode = privateService.nodeFromGetRequest(pathAfterPlonesite);
 				if (rspNode.errorInfo != null) {
@@ -150,11 +107,6 @@ public class BaseObject {
 			dataComplete = true;
 		}
 		return data;
-	}
-	
-	
-	protected Object executeX(String command, Vector params) {
-		return DocpoolBaseService.execute(this.client, command, params);
 	}
 
 	/**
@@ -265,17 +217,6 @@ public class BaseObject {
 	public String getDescription() {
 		return getStringAttribute("description");
 	}
-	
-	
-	/**
-	 * @return The workflow status of the object (i.e. 'published', 'private', ...)
-	 */
-	public String getWorkflowStatusX() {
-		Vector<String> params = new Vector<String>();
-		params.add(fullpath());
-		Map<String, Object> res = (Map<String, Object>)executeX("get_workflow", params);
-		return (String)res.get("state");
-	}
 
 	/**
 	 * @return The workflow status of the object (i.e. 'published', 'private', ...)
@@ -292,17 +233,6 @@ public class BaseObject {
 			log.error(exceptionToString(ex));
 			return null;
 		}
-	}
-	
-	/**
-	 * Attempts to execute a transition to set a new workflow status.
-	 * @param transition: the name of the transition
-	 */
-	public void setWorkflowStatusX(String transition) {
-		Vector<String> params = new Vector<String>();
-		params.add(transition);
-		params.add(fullpath());
-		executeX("set_workflow", params);		
 	}
 
 	/**
@@ -345,7 +275,6 @@ public class BaseObject {
 			List<Object> list = (List<Object>) o;
 			return list;
 		} else if (o.getClass().isArray()) {
-			@SuppressWarnings("unchecked")
 			List<Object> list = Arrays.<Object>asList((Object[]) o);
 			return list;
 		} else {
@@ -390,17 +319,6 @@ public class BaseObject {
 			}
 		}
 		return ret;
-	}
-	
-	/**
-	 * Update the object with the given properties.
-	 * @param properties
-	 */
-	public void updateX(Map<String, Object> properties) {
-		Vector<Object> params = new Vector<Object>();
-		params.add(fullpath());
-		params.add(properties);
-		executeX("update_dp_object", params);
 	}
 
 	/**

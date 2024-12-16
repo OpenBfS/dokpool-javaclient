@@ -3,9 +3,6 @@ package de.bfs.dokpool.client.content;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Vector;
-
-import org.apache.xmlrpc.client.XmlRpcClient;
 
 import de.bfs.dokpool.client.base.DocpoolBaseService;
 import de.bfs.dokpool.client.base.JSON;
@@ -15,38 +12,12 @@ import de.bfs.dokpool.client.base.JSON;
  *
  */
 public class Document extends Folder {
-	public Document(XmlRpcClient client, String path, Object[] data) {
-		super(client, path, data);
-	}
-
 	public Document(DocpoolBaseService service, String path, Object[] alldata) {
 		super(service, path, alldata);
 	}
 
 	public Document(DocpoolBaseService service, String path, Map<String,Object> data) {
 		super(service, path, data);
-	}
-	
-	/**
-	 * Uploads a file into the document
-	 * @param id: short name for the file
-	 * @param title
-	 * @param description
-	 * @param data: binary data of the file
-	 * @param filename
-	 * @return
-	 */
-	public File uploadFileX(String id, String title, String description, byte[] data, String filename) {
-		Vector<Object> params = new Vector<Object>();
-		System.out.println("Dokument: "+id+title+description+filename);
-		params.add(fullpath());
-		params.add(id);
-		params.add(title);
-		params.add(description);
-		params.add(data);
-		params.add(filename);
-		String newpath = (String)executeX("upload_file", params);
-		return new File(client, newpath, null);
 	}
 
 	/**
@@ -82,27 +53,6 @@ public class Document extends Folder {
 			log.error(exceptionToString(ex));
 			return null;
 		}
-	}
-
-	/**
-	 * Uploads an image into the document
-	 * @param id: short name for the image
-	 * @param title
-	 * @param description
-	 * @param data: binary data of the image
-	 * @param filename
-	 * @return
-	 */	public Image uploadImageX(final String id, final String title, final String description, final byte[] data, final String filename) {
-		Vector<Object> params = new Vector<Object>();
-		System.out.println("Dokument: "+id+title+description+filename);
-		params.add(fullpath());
-		params.add(id);
-		params.add(title);
-		params.add(description);
-		params.add(data);
-		params.add(filename);
-		String newpath = (String)executeX("upload_image", params);
-		return new Image(client, newpath, null);
 	}
 
 	protected String mimeTypeFromFilename(String filename) {
@@ -199,13 +149,6 @@ public class Document extends Folder {
 	 */
 	@Deprecated public String autocreateSubdocuments() {
 		return null;
-	}
-	 
-	public String readPropertiesFromFileX() {
-		Vector<Object> params = new Vector<Object>();
-		params.add(fullpath());
-		String msg = (String)executeX("read_properties_from_file", params);
-		return msg;
 	}
 
 	/**

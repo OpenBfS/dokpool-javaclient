@@ -2,8 +2,6 @@ package de.bfs.dokpool.client.content;
 
 import java.util.*;
 
-import org.apache.xmlrpc.client.XmlRpcClient;
-
 import de.bfs.dokpool.client.base.DocpoolBaseService;
 import de.bfs.dokpool.client.base.JSON;
 
@@ -12,10 +10,6 @@ import de.bfs.dokpool.client.base.JSON;
  *
  */
 public class DocumentPool extends Folder {
-	
-	public DocumentPool(XmlRpcClient client, String path, Object[] data) {
-		super(client, path, data);
-	}
 
 	public DocumentPool(DocpoolBaseService service, String path, Object[] data) {
 		super(service, path, data);
@@ -23,23 +17,6 @@ public class DocumentPool extends Folder {
 
 	public DocumentPool(DocpoolBaseService service, String path, Map<String,Object> data) {
 		super(service, path, data);
-	}
-
-	
-	/**
-	 * @return all DocTypes within this ESD
-	 */
-	public List<DocType> getTypesX() {
-		Map<String, Object> types = DocpoolBaseService.queryObjects(client, fullpath(), "DocType");
-		if (types != null) {
-			ArrayList<DocType> res = new ArrayList<DocType>();
-			for (String path: types.keySet()) {
-				res.add(new DocType(client, path, null));
-			}
-			return res;
-		} else {
-			return null;
-		}
 	}
 
 	/**
@@ -61,23 +38,6 @@ public class DocumentPool extends Folder {
 			ArrayList<DocType> res = new ArrayList<DocType>();
 			for (JSON.Node typeNode : typeListNode) {
 				res.add(new DocType(service, service.pathWithoutPrefix(typeNode), dataFromNode(typeNode)));
-			}
-			return res;
-		} else {
-			return null;
-		}
-	}
-	
-	/**
-	 * @return all Scenarios within this ESD
-	 * @deprecated
-	 */
-	@Deprecated public List<Scenario> getScenariosX() {
-		Map<String, Object> scen = DocpoolBaseService.queryObjects(client, fullpath(), "ELANScenario");
-		if (scen != null) {
-			ArrayList<Scenario> res = new ArrayList<Scenario>();
-			for (String path: scen.keySet()) {
-				res.add(new Scenario(client, path, null));
 			}
 			return res;
 		} else {
@@ -118,25 +78,6 @@ public class DocumentPool extends Folder {
 	 * @return all active Scenarios within this ESD
 	 * @deprecated
 	 */
-	@Deprecated public List<Scenario> getActiveScenariosX() {
-		HashMap<String, String> filterparams = new HashMap<String, String>();
-		filterparams.put("dp_type", "active");
-		Map<String, Object> scen = DocpoolBaseService.queryObjects(client, fullpath(), "ELANScenario", filterparams);
-		if (scen != null) {
-			ArrayList<Scenario> res = new ArrayList<Scenario>();
-			for (String path: scen.keySet()) {
-				res.add(new Scenario(client, path, null));
-			}
-			return res;
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * @return all active Scenarios within this ESD
-	 * @deprecated
-	 */
 	@Deprecated public List<Scenario> getActiveScenarios() {
 		JSON.Node itemsNode = null;
 		try {
@@ -155,22 +96,6 @@ public class DocumentPool extends Folder {
 			ArrayList<Scenario> res = new ArrayList<Scenario>();
 			for (JSON.Node scenarioNode : itemsNode) {
 				res.add(new Scenario(service, service.pathWithoutPrefix(scenarioNode), dataFromNode(scenarioNode)));
-			}
-			return res;
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * @return all Events within this ESD
-	 */
-	public List<Event> getEventsX() {
-		Map<String, Object> events = DocpoolBaseService.queryObjects(client, fullpath(), "DPEvent");
-		if (events != null) {
-			ArrayList<Event> res = new ArrayList<Event>();
-			for (String path: events.keySet()) {
-				res.add(new Event(client, path, null));
 			}
 			return res;
 		} else {
@@ -206,24 +131,6 @@ public class DocumentPool extends Folder {
 	}
 
 	/**
-	 * @return all active Events within this ESD
-	 */
-	public List<Event> getActiveEventsX() {
-		HashMap<String, String> filterparams = new HashMap<String, String>();
-		filterparams.put("dp_type", "active");
-		Map<String, Object> events = DocpoolBaseService.queryObjects(client, fullpath(), "DPEvent", filterparams);
-		if (events != null) {
-			ArrayList<Event> res = new ArrayList<Event>();
-			for (String path: events.keySet()) {
-				res.add(new Event(client, path, null));
-			}
-			return res;
-		} else {
-			return null;
-		}
-	}
-
-	/**
 	 * @return all Events within this ESD
 	 */
 	public List<Event> getActiveEvents() {
@@ -248,16 +155,6 @@ public class DocumentPool extends Folder {
 		} else {
 			return null;
 		}
-	}
-
-	/**
-	 * @return the user folder of the current user /content/Members/&lt;username&gt;
-	 */
-	public Folder getUserFolderX() {
-		Vector<String> params = new Vector<String>();
-		params.add(fullpath());
-		Object[] res = (Object[])executeX("get_user_folder", params);
-		return new Folder(client, (String)res[0], (Object[])res[1]);
 	}
 
 	/**
@@ -299,26 +196,6 @@ public class DocumentPool extends Folder {
 			log.error(exceptionToString(ex));
 			return null;
 		}
-	}
-
-	
-	
-	/**
-	 * @return all group folders for the current user
-	 */
-	public List<Folder> getGroupFoldersX() {
-		Vector<String> params = new Vector<String>();
-		params.add(fullpath());
-		Map<String, Object> folders = (Map<String, Object>)executeX("get_group_folders", params);
-		if (folders != null) {
-			ArrayList<Folder> res = new ArrayList<Folder>();
-			for (String path: folders.keySet()) {
-				res.add(new Folder(client, path, null));
-			}
-			return res;
-		} else {
-			return null;
-		}		
 	}
 
 	/**
@@ -370,24 +247,6 @@ public class DocumentPool extends Folder {
 	}
 
 	/**
-	 * @return all transfer folders for the current user
-	 */
-	public List<Folder> getTransferFoldersX() {
-		Vector<String> params = new Vector<String>();
-		params.add(fullpath());
-		Map<String, Object> folders = (Map<String, Object>)executeX("get_transfer_folders", params);
-		if (folders != null) {
-			ArrayList<Folder> res = new ArrayList<Folder>();
-			for (String path: folders.keySet()) {
-				res.add(new Folder(client, path, null));
-			}
-			return res;
-		} else {
-			return null;
-		}		
-	}
-
-	/**
 	 * @return all transfer folders for this Dokpool.
 	 */
 	public List<Folder> getTransferFolders() {
@@ -407,20 +266,6 @@ public class DocumentPool extends Folder {
 			log.error(exceptionToString(ex));
 			return null;
 		}
-	}
-	
-	public User createUserX(String userId, String password, String fullname, String esd) {
-		User user = null;
-		Vector<String> params = new Vector<String>();
-		params.add(userId);
-		params.add(password);
-		params.add(fullname);
-		params.add(esd);
-		Object o = executeX("post_user", params);
-		if (((String) o).equals(userId)) {
-			user = new User(client, fullpath(), userId, password, fullname, esd);
-		}
-		return user;
 	}
 
 	/**
@@ -486,21 +331,6 @@ public class DocumentPool extends Folder {
 			return false;
 		}
 	}
-	
-	public Group createGroupX(String groupId, String title, String description, String esd) {
-		Group group = null;
-		Vector<String> params = new Vector<String>();
-		params.add(groupId);
-		params.add(title);
-		params.add(description);
-		params.add(esd);
-		Object o = executeX("post_group", params);
-		System.out.println((String) o+"  "+groupId);
-		if (((String) o).equals(groupId)) {
-			group = new Group(client, fullpath(), groupId, title, description, esd);
-		}
-		return group;
-	}
 
 	/**
 	 * Creates a new user. Currently the dokpool dp cannot be set and is silently ignored.
@@ -554,7 +384,7 @@ public class DocumentPool extends Folder {
 	}
 
 	public Optional<Folder> getGroupFolder(String name) {
-		List<Folder> groupFolders = client != null ? getGroupFoldersX() : getGroupFolders();
+		List<Folder> groupFolders = getGroupFolders();
 		return groupFolders.stream().filter(folder -> folder.getId().equals(name)).findFirst();
 	}
 	

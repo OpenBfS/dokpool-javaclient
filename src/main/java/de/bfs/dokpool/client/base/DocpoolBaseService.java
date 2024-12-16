@@ -13,13 +13,6 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Vector;
-
-import org.apache.xmlrpc.XmlRpcException;
-import org.apache.xmlrpc.client.XmlRpcClient;
-
-import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 
 import de.bfs.dokpool.client.base.HttpClient.Headers;
 import de.bfs.dokpool.client.content.DocumentPool;
@@ -34,7 +27,6 @@ import org.apache.commons.logging.LogFactory;
  */
 public class DocpoolBaseService {
 	private final Log log = LogFactory.getLog(DocpoolBaseService.class);
-	private XmlRpcClient client = null;
 
 	private String proto;
 	private String host;
@@ -72,28 +64,6 @@ public class DocpoolBaseService {
 		}
 		this.urlPrefix = HttpClient.composeUrl(this.proto,this.host,this.port,"/"+ this.plonesite);
 		this.urlPrefixLength = urlPrefix.length();
-
-		//TODO: old XMLRPC-Code:
-		XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
-		// you can now do authenticated XML-RPC calls with the proxy
-		try {
-			URL serverurl = new URL(url);
-			config.setServerURL(serverurl);
-			config.setBasicUserName(username);
-			config.setBasicPassword(password);
-			client = new XmlRpcClient();
-			// concatenate and base64 encode the username and password (suitable for use in
-			// HTTP Basic Authentication)
-			// final String auth =
-			// javax.xml.bind.DatatypeConverter.printBase64Binary((username + ":" +
-			// password).getBytes());
-			// set the HTTP Header for Basic Authentication
-			// client.setRequestProperty("Authorization", "Basic " + auth);
-			client.setConfig(config);
-			client.setTypeFactory(new DocpoolBaseTypeFactory(client));
-		} catch (MalformedURLException e) {
-			log.fatal("Incorrect URL provided!", e);
-		}
 	}
 
 	/**
@@ -252,24 +222,6 @@ public class DocpoolBaseService {
 
 	/**
 	 * Get all ESDs available to the current user.
-	 * 
-	 * @return
-	 */
-	public List<DocumentPool> getDocumentPoolsX() {
-		Map<String, Object> esds = DocpoolBaseService.queryObjects(this.client, "/", "DocumentPool");
-		if (esds != null) {
-			ArrayList<DocumentPool> res = new ArrayList<DocumentPool>();
-			for (String path : esds.keySet()) {
-				res.add(new DocumentPool(client, path, null));
-			}
-			return res;
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * Get all ESDs available to the current user.
 	 * Calls the endpoint /@get_documentpools.
 	 * 
 	 * @return a list of Dokpools
@@ -306,16 +258,6 @@ public class DocpoolBaseService {
 		return dpList;
 	}
 
-	/**
-	 * @return the ESD, which the user is a member of - or the first available ESD
-	 *         for global users
-	 */
-	public DocumentPool getPrimaryDocumentPoolX() {
-		Object[] res = (Object[]) DocpoolBaseService.execute(client, "get_primary_documentpool", new Vector());
-		log.info(res.length);
-		return new DocumentPool(client, (String) res[0], (Object[]) res[1]);
-	}
-
     /**
 	 * 
 	 * Calls the endpoint /@get_primary_documentpool.
@@ -349,72 +291,6 @@ public class DocpoolBaseService {
 			return new DocumentPool(this, pathWithoutPrefix(rspNode), rspNode.toMap());
 		} catch (Exception ex) {
 			log.error(exceptionToString(ex));
-			return null;
-		}
-	}
-
-	private Optional<DocumentPool> getDocumentPoolX(String name) {
-		List<DocumentPool> documentPools = getDocumentPoolsX();
-		return documentPools.stream().filter(pool -> pool.getId().equals(name)).findFirst();
-	}
-
-	private Optional<DocumentPool> getDocumentPool(String name) {
-		List<DocumentPool> documentPools = getDocumentPools();
-		return documentPools.stream().filter(pool -> pool.getId().equals(name)).findFirst();
-	}
-
-	/**
-	 * Helper method for querying objects.
-	 * @param client: the XMLRPC client
-	 * @param path: path in Plone
-	 * @param type: Plone type to search for
-	 * @return
-	 */
-	@Deprecated public static Map queryObjects(XmlRpcClient client, String path, String type) {
-		Vector<Object> params = new Vector<Object>();
-		HashMap<String, Object> query = new HashMap<String, Object>();
-		query.put("path", path);
-		query.put("portal_type", type);
-		params.add(query);
-		Map res = (Map)execute(client, "query", params);
-		return res;
-	}
-
-	/**
-	 * Helper method for querying objects.
-	 * @param client: the XMLRPC client
-	 * @param path: path in Plone
-	 * @param type: Plone type to search for
-	 * @param filterparams: Plne params to search for
-	 * @return
-	 */
-	@Deprecated public static Map queryObjects(XmlRpcClient client, String path, String type, HashMap<String, String> filterparams) {
-		Vector<Object> params = new Vector<Object>();
-		HashMap<String, Object> query = new HashMap<String, Object>();
-		query.put("path", path);
-		query.put("portal_type", type);
-		for (Map.Entry<String, String> filterparam : filterparams.entrySet()) {
-			query.put(filterparam.getKey(), filterparam.getValue());
-		}
-		params.add(query);
-		Map res = (Map)execute(client, "query", params);
-		return res;
-	}
-
-	/**
-	 * Helper method to execute XMLRPC calls
-	 * 
-	 * @param client: the XMLRPC client
-	 * @param command: the command (i.e. method of the WSAPI module)
-	 * @param params: the parameters for the call
-	 * @return
-	 */
-	@Deprecated public static Object execute(XmlRpcClient client, String command, Vector params) {
-		Log log = LogFactory.getLog(DocpoolBaseService.class);
-		try {
-			return client.execute(command, params);
-		} catch (XmlRpcException e) {
-			log.error(e);
 			return null;
 		}
 	}

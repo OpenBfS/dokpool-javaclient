@@ -11,10 +11,7 @@ import de.bfs.dokpool.client.content.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-// import org.apache.xmlrpc.XmlRpcException;
-import org.apache.xmlrpc.client.XmlRpcClient;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -44,41 +41,17 @@ public class DokpoolTest {
 	private static final String EVENT          = envOrEmpty("DOKPOOL_EVENT");
 	private static final String EVENTUID       = envOrEmpty("DOKPOOL_EVENTUID");
 	private static final String DOCID          = envOrEmpty("DOKPOOL_DOCID");
-	private static final String PROTOP5        = envOrEmpty("DOKPOOL_PROTOP5");
-	private static final String HOSTP5         = envOrEmpty("DOKPOOL_HOSTP5");
-	private static final String PORTP5         = envOrEmpty("DOKPOOL_PORTP5");
 
+	// private static class ObtainDPReturn {
+	// 	public DocumentPool dp;
+	// 	public DocpoolBaseService service;
+	// 	public ObtainDPReturn(DocumentPool dp, DocpoolBaseService service) {
+	// 		this.service = service;
+	// 		this.dp = dp;
+	// 	}
+	// }
 
-	public static DocumentPool obtainDocumentPoolXMLRPC() throws Exception {
-		log.info("URL: " + PROTOP5 + "://" + HOSTP5 + ":" + PORTP5 + "/" + PLONESITE + " User:" + USER + " Password:" + PW);
-		DocpoolBaseService docpoolBaseService = new DocpoolBaseService(PROTOP5 + "://" + HOSTP5 + ":" + PORTP5 + "/" + PLONESITE, USER, PW);
-		List<DocumentPool> myDocpools = docpoolBaseService.getDocumentPoolsX();
-		DocumentPool mainDocpool = docpoolBaseService.getPrimaryDocumentPoolX();
-
-		log.info("Number of Dokppols: " + myDocpools.size());
-		log.info("Main Dokpool: " + mainDocpool.getPathWithPlonesite());
-
-		for (DocumentPool sDocpool : myDocpools) {
-			if (sDocpool.getPathWithPlonesite().matches("/" + PLONESITE + "/" + DOKPOOL)) {
-				mainDocpool = sDocpool;
-				log.info("Main Dokpool is now: " + mainDocpool.getPathWithPlonesite());
-				break;
-			}
-		}
-
-		return mainDocpool;
-	}
-
-	private static class ObtainDPReturn {
-		public DocumentPool dp;
-		public DocpoolBaseService service;
-		public ObtainDPReturn(DocumentPool dp, DocpoolBaseService service) {
-			this.service = service;
-			this.dp = dp;
-		}
-	}
-
-	public static ObtainDPReturn obtainDocumentPoolREST() throws Exception {
+	public static DocumentPool obtainDocumentPoolREST() throws Exception {
 		log.info("URL: " + PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE + " User:" + USER + " Password:" + PW);
 		DocpoolBaseService docpoolBaseService = new DocpoolBaseService(PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE, USER, PW);
 		List<DocumentPool> myDocpools = docpoolBaseService.getDocumentPools();
@@ -97,131 +70,7 @@ public class DokpoolTest {
 
 		// new Folder(docpoolBaseService, "/bund/content/Groups/bund_zdb/java-docpool-test-doc", (Object[])null).setWorkflowStatus("retract");
 		// log.info(new Folder(docpoolBaseService, "/bund/content/Groups/bund_zdb/java-docpool-test-doc", (Object[])null).getWorkflowStatus());
-		return new ObtainDPReturn(mainDocpool, docpoolBaseService);
-	}
-
-	public static void deleteObjectXMLRPC(Folder folder, String objId) throws Exception {
-		log.info("Trying to delete "+folder.getPathWithPlonesite() + "/" + objId);
-		Field clientField = Class.forName("de.bfs.dokpool.client.base.BaseObject").getDeclaredField("client");
-		clientField.setAccessible(true);
-		XmlRpcClient client = (XmlRpcClient) clientField.get(folder);
-		Vector<String[]> delParams = new Vector<String[]>();
-		delParams.add(new String[]{folder.getPathWithPlonesite() + "/" + objId});
-		DocpoolBaseService.execute(client, "delete_object", delParams);
-	}
-
-	/**
-	 * Test document creation, file upload and setting properties.
-	 *
-	 */
-	@Test
-	public void documentTestXMLRPC() throws Exception {
-		log.info("=== TEST: documentTest ======");
-		DocumentPool mainDocpool = obtainDocumentPoolXMLRPC();
-
-		log.info("numer of events: " + mainDocpool.getEventsX().size());
-		log.info("numer of active events: " + mainDocpool.getActiveEventsX().size());
-		List<Event> events = mainDocpool.getEventsX();
-		try {
-			Event ev = events.get(0);
-			log.info("First event from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
-		} catch (NullPointerException e) {
-			log.info("Could not find any events for " + mainDocpool.getPathWithPlonesite());
-		}
-
-		events = mainDocpool.getActiveEventsX();
-		try {
-			Event ev = events.get(0);
-			log.info("First active event from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
-		} catch (NullPointerException e) {
-			log.info("Could not find any active events for " + mainDocpool.getPathWithPlonesite());
-		}
-
-		List<Scenario> scenarios = mainDocpool.getScenariosX();
-		try {
-			Scenario ev = scenarios.get(0);
-			log.info("First scenario from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
-		} catch (NullPointerException | IndexOutOfBoundsException e) {
-			log.info("Could not find any scenarios for " + mainDocpool.getPathWithPlonesite());
-		}
-
-		scenarios = mainDocpool.getActiveScenariosX();
-		try {
-			Scenario ev = scenarios.get(0);
-			log.info("First active scenario from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
-		} catch (NullPointerException | IndexOutOfBoundsException e) {
-			log.info("Could not find any active scenarios for " + mainDocpool.getPathWithPlonesite());
-		}
-
-		log.info("My very own user folder: " + mainDocpool.getUserFolderX());
-
-		Folder myGroupFolder = null;
-		try {
-			myGroupFolder = mainDocpool.getGroupFoldersX().get(0);
-		} catch (NullPointerException e) {
-			throw new NullPointerException("Could not find any valid GroupFolder for Dokpool " + mainDocpool.getPathWithPlonesite());
-		}
-
-		log.info("Group folder path (first from Dokpool): " + myGroupFolder.getPathWithPlonesite());
-
-		try {
-			myGroupFolder = mainDocpool.getFolderX(/*mainDocpool.getFolderPath() + "/*/"content/Groups/" + GROUPFOLDER);
-			log.info("Group folder now set from from env: " +  myGroupFolder.getPathWithPlonesite());
-			myGroupFolder = mainDocpool.getGroupFolder(GROUPFOLDER).get();
-			log.info("Group folder set from from env again: " +  myGroupFolder.getPathWithPlonesite());
-		} catch (NullPointerException e) {
-			log.warn("Could not find DOKPOOL_GROUPFOLDER: " + mainDocpool.getPathWithPlonesite() + "/content/Groups/" + GROUPFOLDER);
-			log.info("Group folder remains: " +  myGroupFolder.getPathWithPlonesite());
-		}
-
-		Folder myTransferFolder = null;
-		try {
-			List<Folder> tfFolders = mainDocpool.getTransferFoldersX();
-			log.info("number of transfer folders: " + tfFolders.size());
-			myTransferFolder = tfFolders.get(0);
-			log.info("Transfer folder path (first from Dokpool): " + myTransferFolder.getPathWithPlonesite());
-		} catch (NullPointerException e) {
-			log.info("Could not find any valid TransferFolder for Dokpool " + mainDocpool.getPathWithPlonesite());
-		}
-
-		boolean docExists = false;
-		try {
-			myGroupFolder.getFolderX(DOCID);
-			log.info("Object exists: " +   myGroupFolder.getPathWithPlonesite() + "/" + DOCID);
-			docExists = true;
-		} catch (NullPointerException e) {
-			log.info("Object does not exist: " +  myGroupFolder.getPathWithPlonesite() + "/" + DOCID);
-		}
-		if (docExists) {
-			deleteObjectXMLRPC(myGroupFolder, DOCID);
-		}
-
-		Map<String, Object> docProperties = new HashMap<String, Object>();
-		docProperties.put("title", "JavaDocpoolTestDocument");
-		docProperties.put("description", "Created by mvn test.");
-		docProperties.put("text", "This is just a Test and can be deleted.");
-
-		List<String> creatorsList = new ArrayList<String>();
-		creatorsList.add(DOCUMENTOWNER);
-		creatorsList.add(USER);
-		docProperties.put("creators", creatorsList);
-
-		log.info("Creating new document at " + myGroupFolder.getPathWithPlonesite() + "/" + DOCID);
-		Document d = myGroupFolder.createDPDocumentX(DOCID, docProperties);
-
-		byte[] fileData = Files.readAllBytes(Paths.get("README.md"));
-		d.uploadFileX("readme", "Read me!", "A file you should read.", fileData, "README.txt");
-		byte[] imageData = Files.readAllBytes(Paths.get("src/test/resources/image.png"));
-		d.uploadImageX("image", "Look at me!", "An image you should look at.", imageData, "image.png");
-
-		//This does nothing, the server just returns "ok".
-		d.autocreateSubdocuments();
-
-		log.info(d.getPathAfterPlonesite());
-		log.info("modified: " + d.getDateAttribute("modified"));
-		log.info("mdate: " + d.getDateAttribute("mdate"));
-
-		d.setWorkflowStatusX("publish");
+		return mainDocpool;
 	}
 
 	/**
@@ -231,9 +80,7 @@ public class DokpoolTest {
 	@Test
 	public void documentTestREST() throws Exception {
 		log.info("=== TEST: documentTest ======");
-		ObtainDPReturn ret = obtainDocumentPoolREST();
-		DocumentPool mainDocpool = ret.dp;
-		DocpoolBaseService service = ret.service;
+		DocumentPool mainDocpool = obtainDocumentPoolREST();
 		log.info(mainDocpool.getWorkflowStatus());
 
 		log.info("numer of events: " + mainDocpool.getEvents().size());
@@ -347,74 +194,6 @@ public class DokpoolTest {
 		d.setWorkflowStatus("publish");
 	}
 
-
-	/**
-	 * Document handling parts of old main Test method.
-	 *
-	 * @throws Exception
-	 */
-	@Test
-	public void miscObjectTestXMLRPC() throws Exception {
-		log.info("=== TEST: miscObjectTest ======");
-		log.info("URL: " + PROTOP5 + "://" + HOSTP5 + ":" + PORTP5 + "/" + PLONESITE + " User:" + USER + " Password:" + PW);
-		DocpoolBaseService docpoolBaseService = new DocpoolBaseService(PROTOP5 + "://" + HOSTP5 + ":" + PORTP5 + "/" + PLONESITE, USER, PW);
-
-		List<DocumentPool> documentpools = docpoolBaseService.getDocumentPoolsX();
-		if (documentpools.isEmpty()) {
-			log.warn("No DocumentPools found!");
-		}
-
-		Method gdPField = Class.forName("de.bfs.dokpool.client.base.DocpoolBaseService").getDeclaredMethod("getDocumentPoolX",Class.forName("java.lang.String"));
-		gdPField.setAccessible(true);
-		DocumentPool myDocumentPool = ((Optional<DocumentPool>) gdPField.invoke(docpoolBaseService,DOKPOOL)).get();
-		log.info(myDocumentPool.getTitle());
-		log.info(myDocumentPool.getDescription());
-		List<DocType> types = myDocumentPool.getTypesX();
-		for (DocType t : types) {
-			log.info(t.getId());
-			log.info(t.getTitle());
-		}
-
-		Folder groupFolder = myDocumentPool.getGroupFolder(GROUPFOLDER).get();
-		Random r = new Random();
-		log.info(groupFolder);
-		log.info(groupFolder.getTitle());
-		List<Object> documents = groupFolder.getContentsX(null);
-		List<Folder> tf = myDocumentPool.getTransferFoldersX();
-		Map<String, Object> properties = new HashMap<String, Object>();
-		properties.put("title", "Generic Title");
-		properties.put("description", "Generic Description");
-		properties.put("text", "<b>Text</b>");
-		properties.put("docType", "ifinprojection");
-		properties.put("subjects", new String[] { "Tag1", "Tag2" });
-		properties.put("local_behaviors", new String[] { "elan" });
-		String randId = "generic" + r.nextInt();
-		BaseObject bo = groupFolder.createObjectX(randId, properties, "DPDocument");
-		properties.clear();
-		properties.put("scenarios", new String[] { "scenario1", "scenario2" });
-		bo.updateX(properties);
-		log.info(bo.getStringAttribute("created_by"));
-		log.info(bo.getDateAttribute("effective"));
-		deleteObjectXMLRPC(groupFolder,randId);
-
-		Map<String, Object> elanProperties = new HashMap<String, Object>();
-		elanProperties.put("scenarios", new String[] { "demo-on-2024-04-01" });
-		Map<String, Object> rodosProperties = new HashMap<String, Object>();
-		rodosProperties.put("reportId", "REPORT");
-		randId = "fromjava" + r.nextInt();
-		Document d = groupFolder.createAppSpecificDocument(randId, "New from Java",
-				"Description from Java", "<p>Text from Java!</p>", "ifinprojection", new String[] { "elan", "rodos" },
-				elanProperties,
-				null,
-				rodosProperties,
-				null
-				);
-		log.info(d.getTitle());
-		log.info(d.getWorkflowStatusX());
-		log.info(d.getStringsAttribute("local_behaviors"));
-		deleteObjectXMLRPC(groupFolder,randId);
-	}
-
 	/**
 	 * Document handling parts of old main Test method.
 	 *
@@ -431,9 +210,14 @@ public class DokpoolTest {
 			log.warn("No DocumentPools found!");
 		}
 
-		Method gdPField = Class.forName("de.bfs.dokpool.client.base.DocpoolBaseService").getDeclaredMethod("getDocumentPool",Class.forName("java.lang.String"));
-		gdPField.setAccessible(true);
-		DocumentPool myDocumentPool = ((Optional<DocumentPool>) gdPField.invoke(docpoolBaseService,DOKPOOL)).get();
+		DocumentPool myDocumentPool = null;
+		for (DocumentPool sDocpool : documentpools) {
+			if (sDocpool.getPathWithPlonesite().matches("/" + PLONESITE + "/" + DOKPOOL)) {
+				myDocumentPool = sDocpool;
+				log.info("Main Dokpool is now: " + myDocumentPool.getPathWithPlonesite());
+				break;
+			}
+		}
 		log.info(myDocumentPool.getTitle());
 		log.info(myDocumentPool.getDescription());
 		List<DocType> types = myDocumentPool.getTypes();
@@ -518,45 +302,10 @@ public class DokpoolTest {
 	 *
 	 */
 	@Test
-	public void userManagementTestXMLRPC() throws Exception {
-		log.info("=== TEST: userManagementTest ======");
-		Random r = new Random();
-		DocumentPool myDocumentPool = obtainDocumentPoolXMLRPC();
-		User user = myDocumentPool.createUserX("javaTestUser"+r.nextInt(), "testuserPW", "Test User Full Name", myDocumentPool.getPathWithPlonesite());
-		if (user == null) {
-			log.error("No User created!");
-		} else {
-			log.info("User " + user.getUserId() + " created.");
-		}
-		Group group = myDocumentPool.createGroupX("javaTestGroup"+r.nextInt(), "Test Group Full Name","for java tests", myDocumentPool.getPathWithPlonesite());
-		if (group == null) {
-			log.error("No group created.");
-		} else {
-			log.info("Group " + group.getGroupId() + " created.");
-		}
-		group.addUserX(user, myDocumentPool.getPathWithPlonesite());
-		String[] docTypes = {"airactivity", "ifinprojection", "protectiveactions"};
-		group.setAllowedDocTypesX(docTypes);
-		List<String> gDoctypes = group.getAllowedDocTypes();
-		log.info("docTypes " + docTypes);
-		log.info("gDocTypes " + gDoctypes);
-		if (gDoctypes != null && gDoctypes.equals(Arrays.asList(docTypes))) {
-			log.info("Group properties were successfully set.");
-		} else {
-			log.error("Error while setting group properties.");
-		}
-	}
-
-	/**
-	 * Test user and group  handling.
-	 *
-	 */
-	@Test
 	public void userManagementTestREST() throws Exception {
 		log.info("=== TEST: userManagementTest REST ======");
 		Random r = new Random();
-		ObtainDPReturn ret = obtainDocumentPoolREST();
-		DocumentPool myDocumentPool = ret.dp;
+		DocumentPool myDocumentPool = obtainDocumentPoolREST();
 		User user = myDocumentPool.createUser("javaTestUser"+r.nextInt(), "testuserPW", "Test User Full Name", myDocumentPool.getPathAfterPlonesite());
 		if (user == null) {
 			log.error("No User created!");

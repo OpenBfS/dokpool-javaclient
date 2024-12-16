@@ -1,12 +1,8 @@
 package de.bfs.dokpool.client.content;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Vector;
-
-import org.apache.xmlrpc.client.XmlRpcClient;
 
 import de.bfs.dokpool.client.base.BaseObject;
 import de.bfs.dokpool.client.base.DocpoolBaseService;
@@ -20,14 +16,6 @@ public class Group extends BaseObject {
 	private String description = "";
 	private Set<User> members = new HashSet<User>();
 	private List<String> allowedDocTypes;
-	
-	protected Group(XmlRpcClient client, String path, String groupId, String title, String description, String dp) {
-		super(client, path, null);
-		this.groupId = groupId;
-		this.title = title;
-		this.description = description;
-		this.dp = dp;
-	}
 
 	protected Group(DocpoolBaseService service, String path, String groupId, String title, String description, String dp) {
 		super(service, path, (Object[])null);
@@ -37,36 +25,11 @@ public class Group extends BaseObject {
 		this.dp = dp;
 	}
 
-	public void setAllowedDocTypesX(String[] doctypes) {
-		Vector<Object> params = new Vector<Object>();
-		params.add(groupId);
-		params.add(title);
-		params.add(description);
-		params.add(dp);
-		params.add(doctypes);
-		Object o = executeX("put_group", params);
-		if (((String) o).equals("changed")) {
-			allowedDocTypes = Arrays.asList(doctypes);
-		}
-	}
-
 	/**
 	 * NOT IMPLEMENTED.
 	 * @param doctypes
 	 */
 	public void setAllowedDocTypes(String[] doctypes) {
-	}
-	
-	public void addUserX(User user,String esd) {
-		Vector<String> params = new Vector<String>();
-		params.add(user.getUserId());
-		params.add(groupId);
-		params.add(esd);
-		Object o = executeX("add_user_to_group", params);
-		if (((String) o).equals("added")) {
-			members.add(user);
-		}
-		
 	}
 
 	/**
