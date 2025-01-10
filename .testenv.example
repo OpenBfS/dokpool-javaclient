@@ -1,3 +1,4 @@
+#Main Test instance, must be Plone 6 with DOKPOOL specific REST endpoints 
 DOKPOOL_PROTO=https
 DOKPOOL_HOST=host
 DOKPOOL_PORT=port
@@ -5,6 +6,12 @@ DOKPOOL_PLONESITE=site
 DOKPOOL_DOKPOOL=bund
 DOKPOOL_GROUPFOLDER=grouo_folder
 DOKPOOL_DOCUMENTOWNER=user
-#The following User must have enough rights to also delete documents (e.g. role DocPoolAdmin)
+#The following user should have an associated user folder in DOKPOOL_DOKPOOL
+DOKPOOL_MEMBER=nvo-loc
+DOKPOOL_EVENT=routinemode
+#The UID may or may not belong to the event above
+DOKPOOL_EVENTUID="8aa08ebe53ec4e58ad3f41fd5209c76d"
+DOKPOOL_DOCID="java-docpool-test-doc"
+#The following User must have enough rights to also delete documents (e.g. role DocPoolAdmin or Manage and ContentAdmin)
 DOKPOOL_USER=user
 DOKPOOL_PW=pw
