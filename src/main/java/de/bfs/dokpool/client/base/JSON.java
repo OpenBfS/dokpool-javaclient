@@ -183,15 +183,15 @@ public class JSON {
 		}
 
 		public boolean arrayHasValue(long i) throws Exception {
-			return arrayHasValue(new Long(i));
+			return arrayHasValue(Long.valueOf(i));
 		}
 
 		public boolean arrayHasValue(boolean b) throws Exception {
-			return arrayHasValue(new Boolean(b));
+			return arrayHasValue(Boolean.valueOf(b));
 		}
 
 		public boolean arrayHasValue(double d) throws Exception {
-			return arrayHasValue(new Double(d));
+			return arrayHasValue(Double.valueOf(d));
 		}
 		
 		/**
@@ -397,14 +397,14 @@ public class JSON {
 					return toList();
 				case "number":
 					if (toDouble() == toLong()) {
-						return new Long(toLong());
+						return Long.valueOf(toLong());
 					} else {
-						return new Double(toDouble());
+						return Double.valueOf(toDouble());
 					}
 				case "string":
 					return toString();
 				case "boolean":
-					return new Boolean(toBoolean());
+					return Boolean.valueOf(toBoolean());
 				case "null":
 					return null;
 				default:
