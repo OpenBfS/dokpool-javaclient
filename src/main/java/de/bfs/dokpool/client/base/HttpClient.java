@@ -31,8 +31,6 @@ import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.apache.hc.core5.http.message.StatusLine;
 import org.apache.hc.core5.http.NameValuePair;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -41,7 +39,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class HttpClient {
 
-	private static final Log log = LogFactory.getLog(HttpClient.class);
+	private static final DocpoolBaseService.Log log = new DocpoolBaseService.Log(DocpoolBaseService.class);
 
 	public class Headers {
 		public static final String AUTHORIZATION = "Authorization";

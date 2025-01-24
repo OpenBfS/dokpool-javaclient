@@ -9,9 +9,6 @@ import org.junit.*;
 import de.bfs.dokpool.client.base.*;
 import de.bfs.dokpool.client.content.*;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -19,7 +16,7 @@ import java.nio.file.Paths;
 import java.time.Instant;
 
 public class DokpoolTest {
-	private static final Log log = LogFactory.getLog(DokpoolTest.class);
+	private static final DocpoolBaseService.Log log = new DocpoolBaseService.Log(DokpoolTest.class);
 	private static final String envOrEmpty(String envVar) {
 		String env = System.getenv(envVar);
 		return (env != null ? env: "");

@@ -11,16 +11,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 
 /**
  * Base class for all API objects. Contains helper methods for all types.
  *
  */
 public class BaseObject {
-	protected final Log log = LogFactory.getLog(DocpoolBaseService.class);
+	protected final DocpoolBaseService.Log log;
 
 	protected DocpoolBaseService service = null;
 	protected DocpoolBaseService.PrivateDocpoolBaseService privateService;
@@ -34,6 +31,7 @@ public class BaseObject {
 
 	@SuppressWarnings("unchecked")
 	public BaseObject(DocpoolBaseService service, String path, Object[] alldata) {
+		this.log = new DocpoolBaseService.Log(this.getClass());
 		this.service = service;
 		this.privateService = service.privateService;
 		this.pathAfterPlonesite = path;
@@ -45,6 +43,7 @@ public class BaseObject {
 	protected static final Map<String,Object> noData = null;
 
 	public BaseObject(DocpoolBaseService service, String path, Map<String,Object> data) {
+		this.log = new DocpoolBaseService.Log(this.getClass());
 		this.service = service;
 		this.privateService = service.privateService;
 		this.pathAfterPlonesite = path;

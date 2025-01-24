@@ -17,8 +17,6 @@ import java.util.Map;
 import de.bfs.dokpool.client.base.HttpClient.Headers;
 import de.bfs.dokpool.client.content.DocumentPool;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * The root class to access REST-API services for DOKPOOL.
@@ -26,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
  *
  */
 public class DocpoolBaseService {
-	private final Log log = LogFactory.getLog(DocpoolBaseService.class);
+	private final DocpoolBaseService.Log log = new DocpoolBaseService.Log(DocpoolBaseService.class);
 
 	private String proto;
 	private String host;
@@ -321,6 +319,45 @@ public class DocpoolBaseService {
 		}
 		public JSON.Node deleteRequest(String endpoint) throws Exception {
 			return service.deleteRequest(endpoint);
+		}
+	}
+
+	public static class Log {
+		
+		private final String name;
+		private final java.lang.System.Logger logger;
+
+		public Log(Class<?> clazz) {
+			name = clazz.getName();
+			logger = System.getLogger(clazz.getName());
+		}
+
+		public void fatal(String msg, Throwable ex) {
+			logger.log(java.lang.System.Logger.Level.ERROR, name + " " + msg, ex);
+		}
+
+		public void error(String msg, Throwable ex)  {
+			logger.log(java.lang.System.Logger.Level.ERROR, name + " " + msg, ex);
+		}
+
+		public void error(String msg) {
+			logger.log(java.lang.System.Logger.Level.ERROR, name + " " + msg);
+		}
+
+		public void info(String msg, Throwable ex) {
+			logger.log(java.lang.System.Logger.Level.INFO, name + " " + msg, ex);
+		}
+
+		public void info(String msg) {
+			logger.log(java.lang.System.Logger.Level.INFO, name + " " + msg);
+		}
+
+		public void info(Object o) {
+			logger.log(java.lang.System.Logger.Level.INFO, o);
+		}
+
+		public void warn(String msg) {
+			logger.log(java.lang.System.Logger.Level.WARNING, name + " " + msg);
 		}
 	}
 

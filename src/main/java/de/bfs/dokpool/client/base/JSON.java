@@ -13,9 +13,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Iterator;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -29,7 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class JSON {
 
-	private static final Log log = LogFactory.getLog(JSON.class);
+	private static final DocpoolBaseService.Log log = new DocpoolBaseService.Log(JSON.class);
 	private static final ObjectMapper mapper = new ObjectMapper();
 
 	public static class Node implements Iterable<Node> {
