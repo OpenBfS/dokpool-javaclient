@@ -324,40 +324,43 @@ public class DocpoolBaseService {
 
 	public static class Log {
 		
-		private final String name;
+		private final String namePrefix;
 		private final java.lang.System.Logger logger;
 
 		public Log(Class<?> clazz) {
-			name = clazz.getName();
+			namePrefix = clazz.getName().substring(clazz.getName().lastIndexOf(".")+1) + ": ";
 			logger = System.getLogger(clazz.getName());
 		}
 
 		public void fatal(String msg, Throwable ex) {
-			logger.log(java.lang.System.Logger.Level.ERROR, name + " " + msg, ex);
+			logger.log(java.lang.System.Logger.Level.ERROR, namePrefix + msg, ex);
 		}
 
 		public void error(String msg, Throwable ex)  {
-			logger.log(java.lang.System.Logger.Level.ERROR, name + " " + msg, ex);
+			logger.log(java.lang.System.Logger.Level.ERROR, namePrefix + msg, ex);
 		}
 
 		public void error(String msg) {
-			logger.log(java.lang.System.Logger.Level.ERROR, name + " " + msg);
+			logger.log(java.lang.System.Logger.Level.ERROR, namePrefix + msg);
 		}
 
 		public void info(String msg, Throwable ex) {
-			logger.log(java.lang.System.Logger.Level.INFO, name + " " + msg, ex);
+			logger.log(java.lang.System.Logger.Level.INFO, namePrefix + msg, ex);
 		}
 
 		public void info(String msg) {
-			logger.log(java.lang.System.Logger.Level.INFO, name + " " + msg);
+			logger.log(java.lang.System.Logger.Level.INFO, namePrefix + msg);
 		}
 
 		public void info(Object o) {
+			if (o == null) {
+				o = "null";
+			}
 			logger.log(java.lang.System.Logger.Level.INFO, o);
 		}
 
 		public void warn(String msg) {
-			logger.log(java.lang.System.Logger.Level.WARNING, name + " " + msg);
+			logger.log(java.lang.System.Logger.Level.WARNING, namePrefix + msg);
 		}
 	}
 

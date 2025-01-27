@@ -17,7 +17,7 @@ import java.util.Map;
  *
  */
 public class BaseObject {
-	protected final DocpoolBaseService.Log log;
+	protected final DocpoolBaseService.Log log = new DocpoolBaseService.Log(this.getClass());
 
 	protected DocpoolBaseService service = null;
 	protected DocpoolBaseService.PrivateDocpoolBaseService privateService;
@@ -31,7 +31,6 @@ public class BaseObject {
 
 	@SuppressWarnings("unchecked")
 	public BaseObject(DocpoolBaseService service, String path, Object[] alldata) {
-		this.log = new DocpoolBaseService.Log(this.getClass());
 		this.service = service;
 		this.privateService = service.privateService;
 		this.pathAfterPlonesite = path;
@@ -43,7 +42,6 @@ public class BaseObject {
 	protected static final Map<String,Object> noData = null;
 
 	public BaseObject(DocpoolBaseService service, String path, Map<String,Object> data) {
-		this.log = new DocpoolBaseService.Log(this.getClass());
 		this.service = service;
 		this.privateService = service.privateService;
 		this.pathAfterPlonesite = path;
