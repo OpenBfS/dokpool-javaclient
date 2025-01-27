@@ -1,5 +1,45 @@
-# dokpool_javaclient - java library providing access to Dokpool via REST-Calls
+# Dokpool Javaclient - Java Library providing access to Dokpool via REST-Calls
 
+further information:
+
+ - [Changelog](Changelog.md)
+ - [License](COPYING)
+
+## Usage
+
+Declare dependency in Maven:
+
+```xml
+<dependency>
+    <groupId>de.bfs</groupId>
+    <artifactId>dokpool-client</artifactId>
+    <version>[3.1,)</version>
+</dependency>
+```
+
+Creating a new document for your dokpool plone instance `my.inst.example/dokpool` within Dokpool `myPool` works as follow:
+
+```java
+import de.bfs.dokpool.client.base.*;
+import de.bfs.dokpool.client.content.*;
+//[...]
+DocpoolBaseService docpoolBaseService = new DocpoolBaseService("https://my.inst.example/dokpool", "me", "myPassword");
+DocumentPool myDocpool = docpoolBaseService.getPrimaryDocumentPool();
+//use the first available group folder (ensure there is one):
+Folder myGroupFolder = myDocpool.getGroupFolders().get(0);
+Map<String, Object> docAttributes = new HashMap<String, Object>();
+    docAttributes.put("title", "JavaDocpoolTestDocument");
+    docAttributes.put("description", "Created by mvn test.");
+    docAttributes.put("text", "This is just a Test and can be deleted.");
+    //this document is for ELAN = Elektronische Lagedarstellung für den Notfallschutz
+    docAttributes.put("local_behaviors", new String[] {"elan"});
+Document myDoc = myGroupFolder.createDPDocument("my-new-doucment", docAttributes);
+System.out.println(myDoc.getPathAfterPlonesite());
+//Prints something like: /groupfolder/my-new-doucment
+//You will find your new document at: https://my.inst.example/dokpool/groupfolder/my-new-doucment
+```
+
+See the [test class](src/test/java/de/bfs/dokpool/DokpoolTest.java) for more examples. Building Javadocs is explained below.
 
 ## Building
 

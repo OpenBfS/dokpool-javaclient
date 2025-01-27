@@ -238,7 +238,7 @@ public class Folder extends BaseObject {
 						(createJS.get("Period") == null) || (createJS.get("Origins") == null) ||
 						(createJS.get("PDFVersion") == null)
 				) {
-					log.info("Authority, ReiLegalBases, NuclearInstallations, Year, Period, Origins and PDFVersion are mandatory for REI with no sensible default.");
+					log.error("Authority, ReiLegalBases, NuclearInstallations, Year, Period, Origins and PDFVersion are mandatory for REI with no sensible default.");
 				}
 			}
 
