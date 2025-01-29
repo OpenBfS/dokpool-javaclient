@@ -3,7 +3,7 @@
 further information:
 
  - [Changelog](Changelog.md)
- - [License](COPYING)
+ - [License](LICENSE)
 
 ## Usage
 

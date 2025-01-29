@@ -2,7 +2,7 @@
 
 ## Version 3.x
 
-## 3.1 *2025-01-27*
+### 3.1 *2025-01-27*
 
  - evrything from 2.2.0 -> 2.3.0 (testing, REST-API,  minimum Dokpool Release is now 2.0.0)
  - use version ranges up to the next major version for non-plugin dependencies
@@ -11,7 +11,7 @@
  - added dependency-check to pom.xml
  - deployment tested with Java 11 and Java 21 (build version remains 11)
 
-## 3.0 *2023-10-24* (changes vs. 2.2.0)
+### 3.0 *2023-10-24* (changes vs. 2.2.0)
 
  - start of upgrade to Java 11, Java build version: 11
  - dependency upgrades SpringBoot and jackson-annotations
