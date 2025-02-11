@@ -243,6 +243,32 @@ public class JSON {
 		}
 
 		/**
+		 * Set the child node with given id if the current node is an object.
+		 * This creates a **deep copy** of the child.
+		 * If the child is null, no actions is performed.
+		 * @param childId the id the child shalle have afterwards.
+		 * @param child The node to insert.
+		 */
+		public Node setNonNull(String childId, Node c) throws Exception {
+			if (c != null) {
+				return set(childId, c);
+			}
+			return this;
+		}
+
+		/**
+		 * Set the attribute childId to str if and only if str != null.
+		 * @param childId the id the child shalle have afterwards.
+		 * @param str
+		 */
+		public Node setNonNull(String childId, String str) throws Exception {
+			if (str != null) {
+				return set(childId, str);
+			}
+			return this;
+		}
+
+		/**
 		 * Insert child at the specified position if node is an array.
 		 * This creates a **deep copy** of the child.
 		 * @param index Position, if negative prepends, if &gt;= size(), the node will be appended.
