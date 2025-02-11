@@ -106,6 +106,11 @@ public class BaseObject {
 		return data;
 	}
 
+	protected void clearData() {
+		data = null;
+		dataComplete = false;
+	}
+
 	/**
 	 * Helper to get value of an attribute.
 	 * @param name: the name of the attribute

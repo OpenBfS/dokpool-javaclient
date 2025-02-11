@@ -179,10 +179,25 @@ public class DokpoolTest {
 		log.info("Creating new document at " + myGroupFolder.getPathWithPlonesite() + "/" + DOCID);
 		Document d = myGroupFolder.createDPDocument(DOCID, docProperties);
 
-		byte[] fileData = Files.readAllBytes(Paths.get("README.md"));
-		d.uploadFile("readme", "Read me!", "A file you should read.", fileData, "README.txt");
+		byte[] fileData = ("Readme, I'm a string!").getBytes();
+		File readme = d.uploadFile("readme", "Read me!", "A file you should read.", fileData, "README.txt");
+		fileData = Files.readAllBytes(Paths.get("README.md"));
+		File readme2 = d.uploadFile("readme", "Read me!", "A file you should read.", fileData, "README.txt");
+		if (readme2 != null) {
+			throw new Exception("Upload to an existing file should not work and return null, but we got non-null value.");
+		}
+		String newTitle = "No, read me!";
+		readme.replace(newTitle, "readme from file", fileData,"README.txt" , "text/plain");
+		if (!readme.getStringAttribute("title").equals(newTitle)) {
+			throw new Exception("File metadata replacement did not work.");
+		}
 		byte[] imageData = Files.readAllBytes(Paths.get("src/test/resources/image.png"));
-		d.uploadImage("image", "Look at me!", "An image you should look at.", imageData, "image.png");
+		Image img = d.uploadImage("image", "Look at me!", "An image you should look at.", imageData, "image.png");
+		newTitle = "look at me again";
+		img.replace(newTitle, "An image you should still look at.", imageData, "image.png", "image/png" );
+		if (!img.getStringAttribute("title").equals(newTitle)) {
+			throw new Exception("Image metadata replacement did not work.");
+		}
 
 		log.info(d.getPathAfterPlonesite());
 		log.info("modified: " + d.getDateAttribute("modified"));

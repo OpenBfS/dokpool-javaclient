@@ -21,15 +21,19 @@ public class Document extends Folder {
 	}
 
 	/**
-	 * Uploads a file into the document
+	 * Uploads a file into the document.
+	 * This method never replaces an exising file.
+	 * If the id is not null and a file exists, upload is rejected.
+	 * If the id is null, a new file is created in any case.
 	 * @param id: short name for the file
 	 * @param title
 	 * @param description
 	 * @param data: binary data of the file
-	 * @param filename
+	 * @param filename (used for display and download)
+	 * @param mimeType
 	 * @return the File object representing the file on the server
 	 */
-	public File uploadFile(String id, String title, String description, byte[] data, String filename) {
+	public File uploadFile(String id, String title, String description, byte[] data, String filename, String mimeType) {
 		try {
 			JSON.Node createJS = new JSON.Node("{}")
 				.set("@type","File")
@@ -38,6 +42,7 @@ public class Document extends Folder {
 				.set("description", description)
 				.set("file", new JSON.Node("{}")
 					.set("encoding", "base64")
+					.setNonNull("content-type", mimeType)
 					.set("data", new String(Base64.getEncoder().encode(data)))
 					.set("filename", filename)
 				)
@@ -55,7 +60,23 @@ public class Document extends Folder {
 		}
 	}
 
-	protected String mimeTypeFromFilename(String filename) {
+	/**
+	 * Uploads a file into the document.
+	 * This method never replaces an exising file.
+	 * If the id is not null and a file exists, upload is rejected.
+	 * If the id is null, a new file is created in any case.
+	 * @param id: short name for the file
+	 * @param title
+	 * @param description
+	 * @param data: binary data of the file
+	 * @param filename (used for display and download)
+	 * @return the File object representing the file on the server
+	 */
+	public File uploadFile(String id, String title, String description, byte[] data, String filename) {
+		return uploadFile(id, title, description, data, filename, null);
+	}
+
+	protected static String mimeTypeFromFilename(String filename) {
 		String ext = filename.substring(filename.lastIndexOf(".")+1).toLowerCase();
 		switch(ext) {
 			case "bmp":
@@ -83,12 +104,15 @@ public class Document extends Folder {
 	}
 
 	/**
-	 * Uploads an image into the document
+	 * Uploads an image into the document.
+	 * This method never replaces an exising image.
+	 * If the id is not null and an image already exists, upload is rejected.
+	 * If the id is null, a new image is created in any case.
 	 * @param id: short name for the image
 	 * @param title
 	 * @param description
 	 * @param data: binary data of the image
-	 * @param filename
+	 * @param filename (used for display and download)
 	 * @param mimeType MIME-Type of the Image (e.g. image/png)
 	 * @return the Image object representing the image on the server
 	 */
@@ -121,6 +145,9 @@ public class Document extends Folder {
 
 	/**
 	 * Uploads an image into the document
+	 * This method never replaces an exising image.
+	 * If the id is not null and an image already exists, upload is rejected.
+	 * If the id is null, a new image is created in any case.
 	 * @param id: short name for the image
 	 * @param title
 	 * @param description
