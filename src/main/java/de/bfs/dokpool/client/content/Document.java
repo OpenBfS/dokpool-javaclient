@@ -3,6 +3,7 @@ package de.bfs.dokpool.client.content;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import de.bfs.dokpool.client.base.DocpoolBaseService;
 import de.bfs.dokpool.client.base.JSON;
@@ -157,6 +158,55 @@ public class Document extends Folder {
 	 */
 	public Image uploadImage(final String id, final String title, final String description, final byte[] data, final String filename) {
 		return uploadImage(id, title, description, data, filename, mimeTypeFromFilename(filename));
+	}
+
+	@Override
+	protected void checkAttrNodeUpdate(JSON.Node attrNode) throws Exception {
+		JSON.Node newLocalBehaviors = attrNode.get("local_behaviors");
+		if (newLocalBehaviors == null) {
+			newLocalBehaviors = new JSON.Node("[]");
+		}
+		JSON.Node oldLocalBehaviors = new JSON.Node(getAllAttributes()).get("local_behaviors");
+		if (oldLocalBehaviors == null) {
+			oldLocalBehaviors = new JSON.Node("[]");
+		} else {
+			oldLocalBehaviors = oldLocalBehaviors.flattenArray("token");
+		}
+
+		if (newLocalBehaviors.arrayHasValue("rodos") || oldLocalBehaviors.arrayHasValue("rodos")) {
+			boolean bahaviorAdded = newLocalBehaviors.arrayHasValue("rodos") &&
+				!oldLocalBehaviors.arrayHasValue("rodos");
+			rodosCheck(attrNode, bahaviorAdded);
+		}
+	}
+
+	protected static void rodosCheck(JSON.Node attrNode, boolean addMandatory) throws Exception {
+		final Set<String> validPrognosisType = Set.of(
+			"Sonstige Ausbreitungsrechnung",
+			"Potenziell betroffene Gebiete",
+			"RODOS Prognose",
+			"DWD Ausbreitungsrechnung ab Quelle",
+			"LASAIR/LASAT"
+		);
+		final Set<String> validPrognosisForm = Set.of(
+			"Routinerechnung",
+			"Einzelrechnung"
+		);
+		String ptype = attrNode.get("PrognosisType") != null ?
+			attrNode.get("PrognosisType").toString() : null;
+		if (addMandatory && ptype == null) {
+			attrNode.set("PrognosisType", "Sonstige Ausbreitungsrechnung");
+		} else if (ptype != null && !validPrognosisType.contains(ptype)) {
+			attrNode.remove("PrognosisType");
+		}
+		String pform = attrNode.get("PrognosisForm") != null ?
+			attrNode.get("PrognosisForm").toString() : null;
+		if (pform != null && !validPrognosisForm.contains(pform)) {
+			attrNode.remove("PrognosisForm");
+		}
+		if (attrNode.get("docType") == null) {
+			attrNode.set("docType", "rodosprojection");
+		}
 	}
 
 	/*

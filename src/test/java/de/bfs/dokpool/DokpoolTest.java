@@ -270,7 +270,10 @@ public class DokpoolTest {
 		Map<String, Object> elanProperties = new HashMap<String, Object>();
 		elanProperties.put("scenarios", new String[] {"demo-on-2024-04-01"});
 		Map<String, Object> rodosProperties = new HashMap<String, Object>();
+		//reportId is no longer a rodos property, but this should just be ignored
 		rodosProperties.put("reportId", "REPORT");
+		//PrognosisForm is not mandatory, but if present it should be in a list of accepted values
+		rodosProperties.put("PrognosisForm", "invalid value");
 		randId = "fromjava" + r.nextInt();
 		Document d = (Document) groupFolder.createCopyOf(groupFolder.getContentItem(DOCID));
 		d.delete();
@@ -282,9 +285,14 @@ public class DokpoolTest {
 			rodosProperties,
 			null
 		);
-		log.info(d.getTitle());
-		log.info(d.getWorkflowStatus());
-		log.info(d.getStringsAttribute("local_behaviors"));
+		log.info("title: " + d.getTitle());
+		log.info("status: " + d.getWorkflowStatus());
+		log.info("behaviors: " + d.getStringsAttribute("local_behaviors"));
+
+		rodosProperties = new HashMap<String, Object>();
+		rodosProperties.put("PrognosisForm", "invalid value");
+		rodosProperties.put("PrognosisType", "RODOS Prognose");
+		d.update(rodosProperties);
 		d.delete();
 
 		randId = "fromjava" + r.nextInt();
@@ -303,9 +311,9 @@ public class DokpoolTest {
 			null,
 			reiProperties
 		);
-		log.info(d.getTitle());
-		log.info(d.getWorkflowStatus());
-		log.info(d.getStringsAttribute("local_behaviors"));
+		log.info("title: " + d.getTitle());
+		log.info("status: " + d.getWorkflowStatus());
+		log.info("behaviors: " + d.getStringsAttribute("local_behaviors"));
 		d.delete();
 	}
 

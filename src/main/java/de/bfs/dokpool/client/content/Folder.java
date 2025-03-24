@@ -219,12 +219,7 @@ public class Folder extends BaseObject {
 				}
 			}
 			if (localBehaviors.arrayHasValue("rodos")) {
-				if (createJS.get("PrognosisType") == null) {
-					createJS.set("PrognosisType", "RODOS Prognose");
-				}
-				if (createJS.get("docType") == null) {
-					createJS.set("docType", "rodosprojection");
-				}
+				Document.rodosCheck(createJS, true);
 			}
 			if (localBehaviors.arrayHasValue("rei")) {
 				if (createJS.get("MStIDs") == null) {
@@ -345,7 +340,6 @@ public class Folder extends BaseObject {
 			case REI:
 				assert(!mapEmptyOrNull(reiProperties));
 				attributes.putAll(reiProperties);
-				try {log.info(new JSON.Node(attributes).toJSON());} catch (Exception e) {}
 				break;
 			}
 		}

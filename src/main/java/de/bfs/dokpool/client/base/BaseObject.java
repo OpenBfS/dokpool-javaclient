@@ -287,6 +287,7 @@ public class BaseObject {
 
 	}
 
+	//TODO: merge with checkAttrNode?
 	protected void attributeCompatibilityAdjustment(Map<String,Object> attributes) {
 		if (attributes == null) {
 			return;
@@ -323,6 +324,8 @@ public class BaseObject {
 		return ret;
 	}
 
+	protected void checkAttrNodeUpdate(JSON.Node attrNode) throws Exception {}
+
 	/**
 	 * Update the object's attributes with the given map.
 	 * Any attribute that is not explicitly set will keep its value;
@@ -338,8 +341,10 @@ public class BaseObject {
 		//Some attributes (e.g. scenarios) need to be handled differently in Plone6
 		attributeCompatibilityAdjustment(attributes);
 		try {
-			log.info("update: " + new JSON.Node(attributes).toJSON());
-			JSON.Node rspNode = privateService.patchRequestWithNode(pathAfterPlonesite, new JSON.Node(attributes));
+			JSON.Node attrNode = new JSON.Node(attributes);
+			log.info("update: " + attrNode.toJSON());
+			checkAttrNodeUpdate(attrNode);
+			JSON.Node rspNode = privateService.patchRequestWithNode(pathAfterPlonesite, attrNode);
 			if (rspNode.errorInfo != null) {
 				log.info(rspNode.errorInfo.toString());
 				return false;

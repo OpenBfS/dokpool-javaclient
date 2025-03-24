@@ -27,7 +27,7 @@ public class Image extends BaseObject {
 	 * @param description
 	 * @param data binary data of the file
 	 * @param filename (used for display and download)
-	 * @param mimeType if not it is deduced from the filename
+	 * @param mimeType if null it is deduced from the filename
 	 * @return true if deletion succeeds, false otherwise
 	 */
 	public boolean replace(String title, String description, byte[] data, String filename, String mimeType) {
