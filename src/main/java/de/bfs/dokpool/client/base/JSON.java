@@ -92,7 +92,7 @@ public class JSON {
 					}
 				}
 			} catch(Exception ex) {
-				throw new Exception("JSON creation error.");
+				throw new Exception("JSON creation error.", ex);
 			}
 		}
 
@@ -177,6 +177,26 @@ public class JSON {
 				throw new Exception("JSON node is not an array.");
 			}
 			return false;
+		}
+
+		/**
+		 * Flattens an array of objects by a common id.
+		 * @param childId
+		 * @return an array where every element is element[childId] of the input array.
+		 * @throws Exception
+		 */
+		public JSON.Node flattenArray(String childId) throws Exception {
+			JSON.Node flatArray = new JSON.Node("[]");
+			ArrayNode flatArrayNode = (ArrayNode) flatArray.jacksonNode;
+			try {
+				ArrayNode arrayNode = ((ArrayNode) jacksonNode);
+				for(JsonNode node : arrayNode) {
+					flatArrayNode.add(node.get(childId));
+				}
+			} catch (ClassCastException cce) {
+				throw new Exception("JSON node cannot be flattened by common id.");
+			}
+			return flatArray;
 		}
 
 		public boolean arrayHasValue(long i) throws Exception {
@@ -264,6 +284,36 @@ public class JSON {
 		public Node setNonNull(String childId, String str) throws Exception {
 			if (str != null) {
 				return set(childId, str);
+			}
+			return this;
+		}
+
+		/**
+		 * Remove the child at a given id (fails silently if no such child exists).
+		 * @param childId the id which shall be deleted
+		 * @return the node itself
+		 * @throws Exception
+		 */
+		public Node remove(String childId) throws Exception {
+			try {
+				((ObjectNode) jacksonNode).remove(childId);
+			} catch (ClassCastException cce) {
+				throw new Exception("JSON node is not an object.");
+			}
+			return this;
+		}
+
+		/**
+		 * Remove the entry at a given inidex (fails silently if no such entry exists).
+		 * @param childId the id which shall be deleted
+		 * @return the node itself
+		 * @throws Exception
+		 */
+		public Node remove(int index) throws Exception {
+			try {
+				((ArrayNode) jacksonNode).remove(index);
+			} catch (ClassCastException cce) {
+				throw new Exception("JSON node is not an array.");
 			}
 			return this;
 		}
