@@ -34,11 +34,11 @@ public class Image extends BaseObject {
 		try {
 			//TODO: we might keep some data, but this is the save, easy and costly way:
 			clearData();
-			mimeType = mimeType != null ? mimeType : Document.mimeTypeFromFilename(filename);
+			mimeType = mimeType != null ? Document.ensureImageMimeType(mimeType) : Document.mimeTypeFromFilename(filename);
 			JSON.Node createJS = new JSON.Node("{}")
 				.setNonNull("title", title)
 				.setNonNull("description", description)
-				.set("file", new JSON.Node("{}")
+				.set("image", new JSON.Node("{}")
 					.set("encoding", "base64")
 					.setNonNull("content-type", mimeType)
 					.setNonNull("data", new String(Base64.getEncoder().encode(data)))

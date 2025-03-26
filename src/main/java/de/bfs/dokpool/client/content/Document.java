@@ -104,6 +104,13 @@ public class Document extends Folder {
 		return "text/plain";
 	}
 
+	protected static String ensureImageMimeType(String mimeType) {
+		if (mimeType.startsWith("image/")) {
+			return mimeType;
+		}
+		return "image/" + mimeType.replaceAll("/", "_");
+	}
+
 	/**
 	 * Uploads an image into the document.
 	 * This method never replaces an exising image.
@@ -126,7 +133,7 @@ public class Document extends Folder {
 				.set("description", description)
 				.set("image", new JSON.Node("{}")
 					.set("encoding", "base64")
-					.set("content-type", mimeType)
+					.set("content-type", ensureImageMimeType(mimeType))
 					.set("data", new String(Base64.getEncoder().encode(data)))
 					.set("filename", filename)
 				)

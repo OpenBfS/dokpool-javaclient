@@ -192,9 +192,11 @@ public class DokpoolTest {
 			throw new Exception("File metadata replacement did not work.");
 		}
 		byte[] imageData = Files.readAllBytes(Paths.get("src/test/resources/image.png"));
-		Image img = d.uploadImage("image", "Look at me!", "An image you should look at.", imageData, "image.png");
+		//we purposely use a wrong mimetype (image/svg) here to check that Plone still does not care:
+		Image img = d.uploadImage("image", "Look at me!", "An image you should look at.", imageData, "image.png", "image/svg");
 		newTitle = "look at me again";
-		img.replace(newTitle, "An image you should still look at.", imageData, "image.png", "image/png" );
+		imageData = Files.readAllBytes(Paths.get("src/test/resources/image.jpeg"));
+		img.replace(newTitle, "An image you should still look at.", imageData, "image.jpeg", "image/jpeg");
 		if (!img.getStringAttribute("title").equals(newTitle)) {
 			throw new Exception("Image metadata replacement did not work.");
 		}
