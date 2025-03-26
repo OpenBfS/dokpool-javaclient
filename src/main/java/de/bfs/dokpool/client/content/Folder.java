@@ -38,7 +38,7 @@ public class Folder extends BaseObject {
 	 * @return the complete contents of this folder
 	 */
 	private JSON.Node getContentsNode() {
-		if (contentsNode == null) {
+		if (contentsNode == null || !service.allowCaching) {
 			try {
 				contentsNode = privateService.nodeFromGetRequest(pathAfterPlonesite,"metadata_fields=id");
 				if (contentsNode.errorInfo != null) {
@@ -50,6 +50,10 @@ public class Folder extends BaseObject {
 			}
 		}
 		return contentsNode;
+	}
+
+	protected void invalidateContentsNode() {
+		contentsNode = null;
 	}
 
 	/**
@@ -242,6 +246,7 @@ public class Folder extends BaseObject {
 				createJS.set("docType", "doksysdok");
 			}
 
+			invalidateContentsNode();
 			JSON.Node rspNode = privateService.postRequestWithNode(pathAfterPlonesite, createJS);
 			if (rspNode.errorInfo != null) {
 				log.info(rspNode.errorInfo.toString());
@@ -269,6 +274,7 @@ public class Folder extends BaseObject {
 			JSON.Node createJS = new JSON.Node(attributes)
 				.set("@type",type)
 			;
+			invalidateContentsNode();
 			JSON.Node rspNode = privateService.postRequestWithNode(pathAfterPlonesite, createJS);
 			if (rspNode.errorInfo != null) {
 				log.info(rspNode.errorInfo.toString());
@@ -304,6 +310,7 @@ public class Folder extends BaseObject {
 			JSON.Node copyJS = new JSON.Node("{}")
 				.set("source", srcPath)
 			;
+			invalidateContentsNode();
 			JSON.Node rspNode = privateService.postRequestWithNode(pathAfterPlonesite + "/@copy", copyJS);
 			if (rspNode.errorInfo != null) {
 				log.info(rspNode.errorInfo.toString());

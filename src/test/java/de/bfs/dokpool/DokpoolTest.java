@@ -186,6 +186,10 @@ public class DokpoolTest {
 		if (readme2 != null) {
 			throw new Exception("Upload to an existing file should not work and return null, but we got non-null value.");
 		}
+		File readme3 = d.uploadOrReplaceFile("readme", "Read me!", "A file you should read.", fileData, "README.txt", null);
+		if (readme3 == null) {
+			throw new Exception("UploadOrReplace to an existing file should work, but we got a null value.");
+		}
 		String newTitle = "No, read me!";
 		readme.replace(newTitle, "readme from file", fileData,"README.txt" , "text/plain");
 		if (!readme.getStringAttribute("title").equals(newTitle)) {
@@ -193,13 +197,18 @@ public class DokpoolTest {
 		}
 		byte[] imageData = Files.readAllBytes(Paths.get("src/test/resources/image.png"));
 		//we purposely use a wrong mimetype (image/svg) here to check that Plone still does not care:
-		Image img = d.uploadImage("image", "Look at me!", "An image you should look at.", imageData, "image.png", "image/svg");
+		Image img = d.uploadOrReplaceImage("image", "Look at me!", "An image you should look at.", imageData, "image.png", "image/svg");
+		img = d.uploadOrReplaceImage("image", "Look at me!", "An image you should look at.", imageData, "image.png", "image/svg");
 		newTitle = "look at me again";
 		imageData = Files.readAllBytes(Paths.get("src/test/resources/image.jpeg"));
 		img.replace(newTitle, "An image you should still look at.", imageData, "image.jpeg", "image/jpeg");
 		if (!img.getStringAttribute("title").equals(newTitle)) {
 			throw new Exception("Image metadata replacement did not work.");
 		}
+
+
+		log.info(d.getContentItem("image"));
+		log.info(d.getContentItem("imaggee"));
 
 		log.info(d.getPathAfterPlonesite());
 		log.info("modified: " + d.getDateAttribute("modified"));

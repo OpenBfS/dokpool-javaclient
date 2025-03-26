@@ -35,17 +35,34 @@ public class DocpoolBaseService {
 	private final String urlPrefix;
 	private final int urlPrefixLength;
 
+	public final boolean allowCaching;
+	public static final boolean NOCACHING = false;
+
 	/*package-private*/ PrivateDocpoolBaseService privateService;
 
 	/**
 	 * Get a service object.
-	 * 
+	 *
 	 * @param url:
 	 *            the address of the ELAN instance root
 	 * @param username
 	 * @param password
+	 * @param caching (default: true) whether or not to cache metadata and folder contents
 	 */
 	public DocpoolBaseService(String url, String username, String password) {
+		this(url, username, password, true);
+	}
+
+	/**
+	 * Get a service object.
+	 *
+	 * @param url:
+	 *            the address of the ELAN instance root
+	 * @param username
+	 * @param password
+	 * @param caching (default: true) whether or not to cache metadata and folder contents
+	 */
+	public DocpoolBaseService(String url, String username, String password, boolean caching) {
 		//new REST-Code:
 		this.privateService = new PrivateDocpoolBaseService(this);
 		try {
@@ -62,11 +79,12 @@ public class DocpoolBaseService {
 		}
 		this.urlPrefix = HttpClient.composeUrl(this.proto,this.host,this.port,"/"+ this.plonesite);
 		this.urlPrefixLength = urlPrefix.length();
+		this.allowCaching = caching;
 	}
 
 	/**
 	 * Get a service object.
-	 * 
+	 *
 	 * @param proto http/https
 	 * @param host name or ip of the host
 	 * @param port can be null or "" if standard for http or https, respectively
@@ -75,6 +93,21 @@ public class DocpoolBaseService {
 	 * @param password
 	 */
 	public DocpoolBaseService(String proto, String host, String port, String plonesite, String username, String password) {
+		this(proto, host, port, plonesite, username, password, true);
+	}
+
+	/**
+	 * Get a service object.
+	 *
+	 * @param proto http/https
+	 * @param host name or ip of the host
+	 * @param port can be null or "" if standard for http or https, respectively
+	 * @param plonesite usually "dokpool"
+	 * @param username
+	 * @param password
+	 * @param caching (default: true) whether or not to cache metadata and folder contents
+	 */
+	public DocpoolBaseService(String proto, String host, String port, String plonesite, String username, String password, boolean caching) {
 		this.privateService = new PrivateDocpoolBaseService(this);
 		this.urlPrefix = HttpClient.composeUrl(proto,host,port,"/"+ plonesite);
 		this.urlPrefixLength = urlPrefix.length();
@@ -84,6 +117,7 @@ public class DocpoolBaseService {
 		this.plonesite = plonesite.startsWith("/") ? plonesite.substring(1) : plonesite;
 		this.username = username;
 		this.password = password;
+		this.allowCaching = true;
 	}
 
 	public String pathWithoutPrefix(String path) {

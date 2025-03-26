@@ -89,7 +89,7 @@ public class BaseObject {
 	 * @return object attributes as map
 	 */
 	private Map<String,Object> getData() {
-		if (data == null || !dataComplete) {
+		if (data == null || !dataComplete || !service.allowCaching) {
 			try {
 				JSON.Node rspNode = privateService.nodeFromGetRequest(pathAfterPlonesite);
 				if (rspNode.errorInfo != null) {
@@ -119,7 +119,7 @@ public class BaseObject {
 	public Object getAttribute(String name) {
 		//we fetch data if and only if we have no data or
 		//(incomplete data with the requesting string missing)
-		if (data == null || (!dataComplete && data.get(name) == null)) {
+		if (data == null || (!dataComplete && data.get(name) == null) || !service.allowCaching) {
 			getData();
 		}
 		//data or data.get(name) may still be null
@@ -137,7 +137,7 @@ public class BaseObject {
 	public Map<String,Object> getAllAttributes() {
 		//we fetch data if and only if we have no data or
 		//(incomplete data with the requesting string missing)
-		if (data == null || !dataComplete) {
+		if (data == null || !dataComplete || !service.allowCaching) {
 			getData();
 		}
 		return data;

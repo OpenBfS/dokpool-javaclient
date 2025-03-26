@@ -48,6 +48,7 @@ public class Document extends Folder {
 					.set("filename", filename)
 				)
 			;
+			invalidateContentsNode();
 			JSON.Node rspNode = privateService.postRequestWithNode(pathAfterPlonesite, createJS);
 			if (rspNode.errorInfo != null) {
 				log.info(rspNode.errorInfo.toString());
@@ -75,6 +76,32 @@ public class Document extends Folder {
 	 */
 	public File uploadFile(String id, String title, String description, byte[] data, String filename) {
 		return uploadFile(id, title, description, data, filename, null);
+	}
+
+	/**
+	 * Uploads a file into the document or replaces a file with the same id.
+	 * If the id is not null and a file exists, the file is replaced.
+	 * If the id is null, a new file is created in any case.
+	 * @param id: short name for the file
+	 * @param title
+	 * @param description
+	 * @param data: binary data of the file
+	 * @param filename (used for display and download)
+	 * @param mimeType
+	 * @return the File object representing the file on the server
+	 */
+	public File uploadOrReplaceFile(String id, String title, String description, byte[] data, String filename, String mimeType) {
+		//same behavior as uploadFile without an id
+		if (id == null) {
+			return uploadFile(id, title, description, data, filename, mimeType);
+		}
+		File oldFile = (File) getContentItem(id);
+		if (oldFile == null) {
+			return uploadFile(id, title, description, data, filename, mimeType);
+		} else {
+			oldFile.replace(title, description, data, filename, mimeType);
+			return oldFile;
+		}
 	}
 
 	protected static String mimeTypeFromFilename(String filename) {
@@ -126,6 +153,7 @@ public class Document extends Folder {
 	 */
 	public Image uploadImage(final String id, final String title, final String description, final byte[] data, final String filename, String mimeType) {
 		try {
+			mimeType = mimeType != null ? Document.ensureImageMimeType(mimeType) : Document.mimeTypeFromFilename(filename);
 			JSON.Node createJS = new JSON.Node("{}")
 				.set("@type","Image")
 				.set("id", id)
@@ -138,6 +166,7 @@ public class Document extends Folder {
 					.set("filename", filename)
 				)
 			;
+			invalidateContentsNode();
 			JSON.Node rspNode = privateService.postRequestWithNode(pathAfterPlonesite, createJS);
 			if (rspNode.errorInfo != null) {
 				log.info(rspNode.errorInfo.toString());
@@ -165,6 +194,32 @@ public class Document extends Folder {
 	 */
 	public Image uploadImage(final String id, final String title, final String description, final byte[] data, final String filename) {
 		return uploadImage(id, title, description, data, filename, mimeTypeFromFilename(filename));
+	}
+
+	/**
+	 * Uploads an image into the document or replaces an image with the same id.
+	 * If the id is not null and a image exists, the image is replaced.
+	 * If the id is null, a new image is created in any case.
+	 * @param id: short name for the file
+	 * @param title
+	 * @param description
+	 * @param data: binary data of the image
+	 * @param filename (used for display and download)
+	 * @param mimeType MIME-Type of the Image (e.g. image/png)
+	 * @return the Image object representing the image on the server
+	 */
+	public Image uploadOrReplaceImage(String id, String title, String description, byte[] data, String filename, String mimeType) {
+		//same behavior as uploadImage without an id
+		if (id == null) {
+			return uploadImage(id, title, description, data, filename, mimeType);
+		}
+		Image oldImg = (Image) getContentItem(id);
+		if (oldImg == null) {
+			return uploadImage(id, title, description, data, filename, mimeType);
+		} else {
+			oldImg.replace(title, description, data, filename, mimeType);
+			return oldImg;
+		}
 	}
 
 	@Override
