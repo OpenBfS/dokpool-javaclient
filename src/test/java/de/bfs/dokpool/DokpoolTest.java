@@ -176,6 +176,10 @@ public class DokpoolTest {
 		creatorsList.add(USER);
 		docProperties.put("creators", creatorsList);
 
+		List<String> eventList = new ArrayList<String>();
+		eventList.add("routinemode");
+		docProperties.put("scenarios", eventList);
+
 		log.info("Creating new document at " + myGroupFolder.getPathWithPlonesite() + "/" + DOCID);
 		Document d = myGroupFolder.createDPDocument(DOCID, docProperties);
 

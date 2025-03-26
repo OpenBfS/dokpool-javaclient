@@ -243,7 +243,7 @@ public class Folder extends BaseObject {
 
 			
 			if (createJS.get("docType") == null) {
-				createJS.set("docType", "doksysdok");
+				createJS.set("docType", "other_document");
 			}
 
 			invalidateContentsNode();
