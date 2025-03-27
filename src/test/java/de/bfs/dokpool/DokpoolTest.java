@@ -222,6 +222,56 @@ public class DokpoolTest {
 	}
 
 	/**
+	 * Test doksys document creation.
+	 *
+	 */
+	@Test
+	public void doksysTest() throws Exception {
+		String doksysDocId = DOCID+"-doksys";
+
+		DocumentPool mainDocpool = obtainDocumentPoolREST();
+
+		Folder myGroupFolder = mainDocpool.getGroupFolder(GROUPFOLDER).get();
+		boolean docExists = false;
+		Document oldDoc = null;
+		try {
+			oldDoc = (Document) myGroupFolder.getContentItem(doksysDocId);
+			log.info("Object exists: " +  oldDoc.getPathWithPlonesite());
+			docExists = true;
+		} catch (NullPointerException e) {
+			log.info("Object does not exist: " +  myGroupFolder.getPathWithPlonesite() + "/" + doksysDocId);
+		}
+		if (docExists) {
+			oldDoc.delete();
+		}
+
+		Map<String, Object> docProperties = new HashMap<String, Object>();
+		docProperties.put("title", "DoksysTestDocument");
+		docProperties.put("description", "Created by mvn test.");
+		docProperties.put("text", "This is just a Doksys Test and can be deleted.");
+		docProperties.put("local_behaviors", new String[] { "doksys"});
+		// docProperties.put("Status", "plausibel");
+		docProperties.put("TrajectoryStartLocation", "somewhere");
+		docProperties.put("TrajectoryEndLocation", "somewhere else");
+		// docProperties.put("Dom", new String[] {"Gamma-ODL"});
+		docProperties.put("SamplingBegin", "2025-03-27T13:50:53.000Z");
+		docProperties.put("Duration", "1d");
+		// docProperties.put("Purpose", new String[] {"Standard-Info Bundesmessnetze"});
+		docProperties.put("LegalBase", new String[] {"AVV IMIS"});
+		// docProperties.put("MeasuringProgram", new String[] { "Routinemessprogramm"});
+		docProperties.put("SamplingEnd", "2025-03-27T13:50:53.000Z");
+		// docProperties.put("NetworkOperator", new String[] { "Z"});
+		docProperties.put("TrajectoryEndTime", "2025-03-27T13:50:53.000Z");
+		docProperties.put("TrajectoryStartTime", "2025-03-27T13:50:53.000Z");
+		// docProperties.put("OperationMode", "Übung");
+		// docProperties.put("SampleType", new String[] {"Gamma-Ortsdosisleistung"});
+
+		Document d = myGroupFolder.createDPDocument(doksysDocId, docProperties);
+		log.info(d.getPathAfterPlonesite());
+
+	}
+
+	/**
 	 * Document handling parts of old main Test method.
 	 *
 	 * @throws Exception
