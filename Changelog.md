@@ -2,9 +2,16 @@
 
 ## Version 3.x
 
+### 3.2 *2025-03-27*
+
+ - enrure image/ mimetype for images
+ - restructure RODOS checks, also check during document updates 
+ - allow replacing files and images 
+
+
 ### 3.1 *2025-01-27*
 
- - evrything from 2.2.0 -> 2.3.0 (testing, REST-API,  minimum Dokpool Release is now 2.0.0)
+ - everything from 2.2.0 -> 2.3.0 (testing, REST-API,  minimum Dokpool Release is now 2.0.0)
  - use version ranges up to the next major version for non-plugin dependencies
  - remove dependency on commons-logging
  - remove dependency on SpringBoot
