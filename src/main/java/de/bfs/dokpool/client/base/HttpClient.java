@@ -1,3 +1,10 @@
+/* Copyright (C) 2015-2025 by Bundesamt fuer Strahlenschutz
+ *
+ * This file is Free Software under the GNU GPL (v>=3)
+ * and comes with ABSOLUTELY NO WARRANTY!
+ * See LICENSE for details.
+ */
+
 package de.bfs.dokpool.client.base;
 
 import java.nio.charset.StandardCharsets;
@@ -39,14 +46,19 @@ import org.apache.hc.core5.http.NameValuePair;
  */
 public class HttpClient {
 
+    //utility classes, no instances
+    private HttpClient() {}
+
     private static final DocpoolBaseService.Log log = new DocpoolBaseService.Log(DocpoolBaseService.class);
 
     public class Headers {
+        private Headers() {}
         public static final String AUTHORIZATION = "Authorization";
         public static final String ACCEPT = "Accept";
     }
 
     public class MimeTypes {
+        private MimeTypes() {}
         public static final String JSON = "application/json";
         /* Plone-REST-API does not actually use the application/json-patch+json format,
          * but expects normal JSON with only the updated attributes set, see
@@ -105,7 +117,7 @@ public class HttpClient {
     }
 
     public static boolean tlsLogging = false;
-    private final static void logTLS(HttpClientContext clientContext) {
+    private static void logTLS(HttpClientContext clientContext) {
         final SSLSession sslSession = clientContext.getSSLSession();
         if (sslSession != null) {
             try {
@@ -117,7 +129,7 @@ public class HttpClient {
         }
     }
 
-    public final static Response doGetRequest(final String proto, final String host, String port, final String url, Map<String,String> headers) throws Exception {
+    public static final Response doGetRequest(final String proto, final String host, String port, final String url, Map<String,String> headers) throws Exception {
         // Use a try-with-resources, as CloseableHttpClient should be closed():
         try (CloseableHttpClient httpclient = HttpClients.custom().disableRedirectHandling().build()) {
 
@@ -144,7 +156,7 @@ public class HttpClient {
         }
     }
 
-    public final static Response doDeleteRequest(final String proto, final String host, String port, final String url, Map<String,String> headers) throws Exception {
+    public static final Response doDeleteRequest(final String proto, final String host, String port, final String url, Map<String,String> headers) throws Exception {
         try (CloseableHttpClient httpclient = HttpClients.custom().disableRedirectHandling().build()) {
 
             final int portInt = intPortFromPortOrProtocol(port,proto);
@@ -170,7 +182,7 @@ public class HttpClient {
         }
     }
 
-    public final static Response doPostRequest(final String proto, final String host, String port, final String url, Map<String,String> headers, Map<String,String> parameters, String contentType, byte[] data) throws Exception {
+    public static final Response doPostRequest(final String proto, final String host, String port, final String url, Map<String,String> headers, Map<String,String> parameters, String contentType, byte[] data) throws Exception {
         try (CloseableHttpClient httpclient = HttpClients.custom().disableRedirectHandling().build()) {
             final int portInt = intPortFromPortOrProtocol(port,proto);
             final HttpHost target = new HttpHost(proto, host, portInt);
@@ -212,7 +224,7 @@ public class HttpClient {
         }
     }
 
-    public final static Response doPutRequest(final String proto, final String host, String port, final String url, Map<String,String> headers, String contentType, byte[] data) throws Exception {
+    public static final Response doPutRequest(final String proto, final String host, String port, final String url, Map<String,String> headers, String contentType, byte[] data) throws Exception {
         try (CloseableHttpClient httpclient = HttpClients.custom().disableRedirectHandling().build()) {
             final int portInt = intPortFromPortOrProtocol(port,proto);
             final HttpHost target = new HttpHost(proto, host, portInt);
@@ -242,7 +254,7 @@ public class HttpClient {
         }
     }
 
-    public final static Response doPatchRequest(final String proto, final String host, String port, final String url, Map<String,String> headers, String contentType, byte[] data) throws Exception {
+    public static final Response doPatchRequest(final String proto, final String host, String port, final String url, Map<String,String> headers, String contentType, byte[] data) throws Exception {
         try (CloseableHttpClient httpclient = HttpClients.custom().disableRedirectHandling().build()) {
             final int portInt = intPortFromPortOrProtocol(port,proto);
             final HttpHost target = new HttpHost(proto, host, portInt);

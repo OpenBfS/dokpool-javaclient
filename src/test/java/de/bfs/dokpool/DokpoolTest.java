@@ -1,15 +1,43 @@
+/* Copyright (C) 2015-2025 by Bundesamt fuer Strahlenschutz
+ *
+ * This file is Free Software under the GNU GPL (v>=3)
+ * and comes with ABSOLUTELY NO WARRANTY!
+ * See LICENSE for details.
+ */
+
 /**
  * @authors fuf-ber - German Federal Office for Radiation Protection www.bfs.de
  */
 
 package de.bfs.dokpool;
 
-import java.util.*;
-import org.junit.*;
-import de.bfs.dokpool.client.base.*;
-import de.bfs.dokpool.client.content.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
-import java.lang.reflect.Method;
+import org.junit.Test;
+import org.junit.Assert;
+
+import de.bfs.dokpool.client.base.DocpoolBaseService;
+import de.bfs.dokpool.client.base.BaseObject;
+import de.bfs.dokpool.client.base.HttpClient;
+import de.bfs.dokpool.client.base.JSON;
+
+import de.bfs.dokpool.client.content.Document;
+import de.bfs.dokpool.client.content.DocumentPool;
+import de.bfs.dokpool.client.content.DocType;
+import de.bfs.dokpool.client.content.Event;
+import de.bfs.dokpool.client.content.File;
+import de.bfs.dokpool.client.content.Folder;
+import de.bfs.dokpool.client.content.Group;
+import de.bfs.dokpool.client.content.Image;
+import de.bfs.dokpool.client.content.Scenario;
+import de.bfs.dokpool.client.content.User;
+
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -17,7 +45,7 @@ import java.time.Instant;
 
 public class DokpoolTest {
     private static final DocpoolBaseService.Log log = new DocpoolBaseService.Log(DokpoolTest.class);
-    private static final String envOrEmpty(String envVar) {
+    private static String envOrEmpty(String envVar) {
         String env = System.getenv(envVar);
         return (env != null ? env: "");
     }
@@ -151,7 +179,7 @@ public class DokpoolTest {
         } catch (NullPointerException e) {
             log.info("Could not find any valid TransferFolder for Dokpool " + mainDocpool.getPathWithPlonesite());
         }
-        
+
 
         boolean docExists = false;
         Document oldDoc = null;
@@ -195,7 +223,7 @@ public class DokpoolTest {
             throw new Exception("UploadOrReplace to an existing file should work, but we got a null value.");
         }
         String newTitle = "No, read me!";
-        readme.replace(newTitle, "readme from file", fileData,"README.txt" , "text/plain");
+        readme.replace(newTitle, "readme from file", fileData,"README.txt", "text/plain");
         if (!readme.getStringAttribute("title").equals(newTitle)) {
             throw new Exception("File metadata replacement did not work.");
         }
@@ -249,7 +277,7 @@ public class DokpoolTest {
         docProperties.put("title", "DoksysTestDocument");
         docProperties.put("description", "Created by mvn test.");
         docProperties.put("text", "This is just a Doksys Test and can be deleted.");
-        docProperties.put("local_behaviors", new String[] { "doksys"});
+        docProperties.put("local_behaviors", new String[] {"doksys"});
         // docProperties.put("Status", "plausibel");
         docProperties.put("TrajectoryStartLocation", "somewhere");
         docProperties.put("TrajectoryEndLocation", "somewhere else");
@@ -321,12 +349,12 @@ public class DokpoolTest {
         properties.put("TrajectoryEndTime", Date.from(Instant.now()));
         //OperationMode is a required REST argument for behavior doksys, but createObject adds it if missing
         // properties.put("OperationMode", "Routine");
-        properties.put("scenarios", new String[] { "scenario1", null, EVENTUID, EVENT });
+        properties.put("scenarios", new String[] {"scenario1", null, EVENTUID, EVENT});
         String randId = "generic" + r.nextInt();
         BaseObject bo = groupFolder.createObject(randId, properties, "DPDocument");
         // BaseObject bo = groupFolder.createCopyOf(groupFolder.getContentItem(DOCID));
         properties.clear();
-        properties.put("scenarios", new String[] { "routinemode", "scenario2", null });
+        properties.put("scenarios", new String[] {"routinemode", "scenario2", null});
         bo.update(properties);
         log.info(bo.getStringAttribute("created_by"));
         log.info(bo.getDateAttribute("effective"));
@@ -550,7 +578,7 @@ public class DokpoolTest {
         Map<String,Object> rootMap = root.toMap();
         JSON.Node root2 = new JSON.Node(rootMap);
         Assert.assertEquals("{\"arr\":[{\"arr\":[0,1,2,\"three\"],\"num\":7.3},0,1,2,\"three\"],\"num\":7.3,\"arr2\":[{\"arr\":[0,1,2,\"three\"],\"num\":7.3},0,1,2,\"three\"]}",root2.toJSON());
-        
+
         Map<String,Object> hmap = new HashMap<String,Object>();
         Map<String,Object> mthree = new HashMap<String,Object>();
         hmap.put("one","1");

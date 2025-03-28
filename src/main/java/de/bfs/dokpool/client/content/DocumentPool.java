@@ -1,6 +1,16 @@
+/* Copyright (C) 2015-2025 by Bundesamt fuer Strahlenschutz
+ *
+ * This file is Free Software under the GNU GPL (v>=3)
+ * and comes with ABSOLUTELY NO WARRANTY!
+ * See LICENSE for details.
+ */
+
 package de.bfs.dokpool.client.content;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import de.bfs.dokpool.client.base.DocpoolBaseService;
 import de.bfs.dokpool.client.base.JSON;
@@ -302,7 +312,7 @@ public class DocumentPool extends Folder {
 
     /**
      * Creates a new user.
-     * 
+     *
      * This version sets the email address to "ihotline@bfs.de".
      * @param dp the primary dokpool for the new user (e.g. "hessen").
      * @deprecated Please also provide an actual email adress if you can.
@@ -387,5 +397,4 @@ public class DocumentPool extends Folder {
         List<Folder> groupFolders = getGroupFolders();
         return groupFolders.stream().filter(folder -> folder.getId().equals(name)).findFirst();
     }
-    
 }

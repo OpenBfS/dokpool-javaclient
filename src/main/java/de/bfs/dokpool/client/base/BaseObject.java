@@ -1,3 +1,10 @@
+/* Copyright (C) 2015-2025 by Bundesamt fuer Strahlenschutz
+ *
+ * This file is Free Software under the GNU GPL (v>=3)
+ * and comes with ABSOLUTELY NO WARRANTY!
+ * See LICENSE for details.
+ */
+
 package de.bfs.dokpool.client.base;
 
 import java.time.ZoneOffset;
@@ -35,7 +42,7 @@ public class BaseObject {
         this.privateService = service.privateService;
         this.pathAfterPlonesite = path;
         if (alldata != null) {
-            data = (Map<String,Object>)alldata[0];
+            data = (Map<String,Object>) alldata[0];
         }
     }
 
@@ -94,7 +101,7 @@ public class BaseObject {
                 JSON.Node rspNode = privateService.nodeFromGetRequest(pathAfterPlonesite);
                 if (rspNode.errorInfo != null) {
                     log.info(rspNode.errorInfo.toString());
-                    data = new HashMap<String,Object> ();
+                    data = new HashMap<String,Object>();
                 } else {
                     data = rspNode.toMap();
                 }
@@ -124,7 +131,7 @@ public class BaseObject {
         }
         //data or data.get(name) may still be null
         if (data != null) {
-            return data.get(name);            
+            return data.get(name);
         } else {
             return null;
         }
@@ -142,7 +149,7 @@ public class BaseObject {
         }
         return data;
     }
-    
+
     /**
      * Helper to get value of a string valued attribute.
      * @param name: the name of the attribute
@@ -151,13 +158,13 @@ public class BaseObject {
     public String getStringAttribute(String name) {
         return (String) getAttribute(name);
     }
-    
+
     //TODO: Dates will be likely be Strings, so we can simplify this in a REST-only world.
     public Date getDateAttribute(String name) {
         if (getAttribute(name) != null) {
             Object dateObject = getAttribute(name);
             if (dateObject instanceof Date) {
-                return (Date)dateObject;
+                return (Date) dateObject;
             } else {
                 try {
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("[yyyy-MM-dd'T'HH:mm:ss[.SSS][XXX]]", Locale.ENGLISH).withZone(ZoneOffset.UTC);
@@ -169,12 +176,11 @@ public class BaseObject {
                     return null;
                 }
             }
-        }
-        else {
+        } else {
             return null;
-        }        
+        }
     }
-    
+
     public List<String> getStringsAttribute(String name) {
         if (getAttribute(name) != null) {
             List<String> values = new ArrayList<>();
@@ -183,7 +189,7 @@ public class BaseObject {
                 Object[] results = (Object[]) resultsObj;
                 for (Object result: results) {
                     if (result instanceof String) {
-                        values.add((String)result);
+                        values.add((String) result);
                     } else {
                         //add a String representation as a last resort
                         values.add(result.toString());
@@ -194,28 +200,27 @@ public class BaseObject {
                 List<Object> results = (List<Object>) resultsObj;
                 for (Object result: results) {
                     if (result instanceof String) {
-                        values.add((String)result);
+                        values.add((String) result);
                     } else {
                         //add a String representation as a last resort
                         values.add(result.toString());
                     }
                 }
             }
-            return values;        
-        }
-        else {
+            return values;
+        } else {
             return new ArrayList<>();
         }
     }
-    
+
     public String getId() {
         return getStringAttribute("id");
     }
-        
+
     public String getTitle() {
         return getStringAttribute("title");
     }
-    
+
     public String getDescription() {
         return getStringAttribute("description");
     }
@@ -245,7 +250,7 @@ public class BaseObject {
         try {
             String endpoint = "/@workflow";
             JSON.Node transNode = new JSON.Node("{}");
-            switch(transition) {
+            switch (transition) {
                 case "publish":
                     transNode
                         .set("action","publish")
@@ -254,6 +259,7 @@ public class BaseObject {
                     endpoint = endpoint + "/publish";
                     break;
                 case "retract":
+                default:
                     transNode
                         .set("action","retract")
                         .set("review_state", "private")
@@ -298,11 +304,12 @@ public class BaseObject {
                 case "scenarios":
                     attributes.put(entry.getKey(),eventIdsToUids(ensureObjectIsList(entry.getValue())));
                     break;
+                default:
             }
         }
     }
 
-    protected List<Object> eventIdsToUids (List<Object> eventIds) {
+    protected List<Object> eventIdsToUids(List<Object> eventIds) {
         List<Object> ret = new ArrayList<Object>();
         //we assume the event ids refer to events of the current BasePbject's Dokpool
         String dpId = dokpoolId();
@@ -350,7 +357,7 @@ public class BaseObject {
                 return false;
             }
             return true;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             log.error(exceptionToString(ex));
             return false;
         }
@@ -398,6 +405,6 @@ public class BaseObject {
             return null;
         }
     }
-    
-    
+
+
 }

@@ -1,3 +1,10 @@
+/* Copyright (C) 2015-2025 by Bundesamt fuer Strahlenschutz
+ *
+ * This file is Free Software under the GNU GPL (v>=3)
+ * and comes with ABSOLUTELY NO WARRANTY!
+ * See LICENSE for details.
+ */
+
 package de.bfs.dokpool.client.content;
 
 import java.util.ArrayList;
@@ -58,7 +65,7 @@ public class Folder extends BaseObject {
 
     /**
      * Get a subfolder.
-     * 
+     *
      * @param subpath:
      *            the relative path of the subfolder
      * @return the subfolder
@@ -80,7 +87,7 @@ public class Folder extends BaseObject {
 
     /**
      * Return all folder contents, can be filtered by type.
-     * 
+     *
      * @param type:
      *            the Plone type name or null
      * @return folder contents, possibly filtered by type
@@ -114,7 +121,7 @@ public class Folder extends BaseObject {
      * Return the content item with ID `id`.
      * The return value can be casted to a descendant of
      * BaseObject based on the `@type` value.
-     * 
+     *
      * @param id the id of the requested item
      * @return object representing the contentsItem with id `id`.
      */
@@ -126,7 +133,7 @@ public class Folder extends BaseObject {
                         String portal_type = itemNode.get("@type").toString();
                         portal_type = portal_type == null ? "" : portal_type;
                         String path = service.pathWithoutPrefix(itemNode);
-                        switch(portal_type) {
+                        switch (portal_type) {
                             case "SimpleFolder":
                             case "ELANTransferFolder":
                                 return new Folder(service, path, itemNode.toMap());
@@ -177,7 +184,7 @@ public class Folder extends BaseObject {
 
     /**
      * Create a new document within this folder.
-     * 
+     *
      * @param id:
      *            the short name for the document (must be unique within the folder)
      * @param title
@@ -187,6 +194,7 @@ public class Folder extends BaseObject {
      * @param behaviors
      * @return the newly created document
      */
+    @SuppressWarnings("checkstyle:leftcurly")
     public Document createDPDocument(String id, String title, String description, String text, String docType,
             String[] behaviors) {
         Map<String, Object> attributes = new HashMap<String, Object>();
@@ -214,7 +222,7 @@ public class Folder extends BaseObject {
             }
             JSON.Node localBehaviors = createJS.get("local_behaviors");
             if (localBehaviors == null) {
-                localBehaviors = (new JSON.Node ("[]")).append("elan");
+                localBehaviors = (new JSON.Node("[]")).append("elan");
                 createJS.set("local_behaviors", localBehaviors);
             }
             if (localBehaviors.arrayHasValue("doksys")) {
@@ -241,7 +249,7 @@ public class Folder extends BaseObject {
                 }
             }
 
-            
+
             if (createJS.get("docType") == null) {
                 createJS.set("docType", "other_document");
             }
@@ -325,6 +333,7 @@ public class Folder extends BaseObject {
         }
     }
 
+    @SuppressWarnings("checkstyle:leftcurly")
     public Document createAppSpecificDocument(String id, String title, String description, String text, String docType,
             String[] behaviors, Map<String, Object> elanProperties, Map<String, Object> doksysProperties,
             Map<String, Object> rodosProperties, Map<String, Object> reiProperties) {
@@ -348,6 +357,7 @@ public class Folder extends BaseObject {
                 assert(!mapEmptyOrNull(reiProperties));
                 attributes.putAll(reiProperties);
                 break;
+            default:
             }
         }
         if (title != null) { attributes.put("title", title); }

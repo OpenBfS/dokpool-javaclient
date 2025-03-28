@@ -1,3 +1,10 @@
+/* Copyright (C) 2015-2025 by Bundesamt fuer Strahlenschutz
+ *
+ * This file is Free Software under the GNU GPL (v>=3)
+ * and comes with ABSOLUTELY NO WARRANTY!
+ * See LICENSE for details.
+ */
+
 package de.bfs.dokpool.client.content;
 
 import java.util.Base64;
@@ -106,7 +113,7 @@ public class Document extends Folder {
 
     protected static String mimeTypeFromFilename(String filename) {
         String ext = filename.substring(filename.lastIndexOf(".")+1).toLowerCase();
-        switch(ext) {
+        switch (ext) {
             case "bmp":
                 return "image/bmp";
             case "eps":
@@ -127,8 +134,9 @@ public class Document extends Folder {
             case "tif":
             case "tiff":
                 return "image/tiff";
+            default:
+                return "text/plain";
         }
-        return "text/plain";
     }
 
     protected static String ensureImageMimeType(String mimeType) {
@@ -347,7 +355,4 @@ public class Document extends Folder {
         }
         return sMap;
     }
-
-    
-
 }

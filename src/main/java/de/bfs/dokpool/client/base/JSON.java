@@ -1,6 +1,12 @@
+/* Copyright (C) 2015-2025 by Bundesamt fuer Strahlenschutz
+ *
+ * This file is Free Software under the GNU GPL (v>=3)
+ * and comes with ABSOLUTELY NO WARRANTY!
+ * See LICENSE for details.
+ */
+
 package de.bfs.dokpool.client.base;
 
-import java.lang.Exception;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -31,7 +37,7 @@ public class JSON {
 
     public static class Node implements Iterable<Node> {
         private JsonNode jacksonNode;
-        
+
         //This is just a convenience property to pass on error information alongside a node (e.g. HTTP Status code)
         public Object errorInfo = null;
 
@@ -41,7 +47,7 @@ public class JSON {
             }
             try {
                 jacksonNode = mapper.readTree(json);
-            } catch(JsonProcessingException jpe) {
+            } catch (JsonProcessingException jpe) {
                 throw new Exception("JSON processing error.");
             }
             if (jacksonNode == null) {
@@ -91,7 +97,7 @@ public class JSON {
                         throw new Exception();
                     }
                 }
-            } catch(Exception ex) {
+            } catch (Exception ex) {
                 throw new Exception("JSON creation error.", ex);
             }
         }
@@ -137,7 +143,7 @@ public class JSON {
                         throw new Exception();
                     }
                 }
-            } catch(Exception ex) {
+            } catch (Exception ex) {
                 throw new Exception("JSON creation error.");
             }
         }
@@ -162,7 +168,7 @@ public class JSON {
         public boolean arrayHasValue(Object val) throws Exception {
             try {
                 ArrayNode arrayNode = ((ArrayNode) jacksonNode);
-                for(JsonNode node : arrayNode) {
+                for (JsonNode node : arrayNode) {
                     Object nodeVal = (new Node(node)).toObject();
                     if (nodeVal == null && val == null){
                         return true;
@@ -190,7 +196,7 @@ public class JSON {
             ArrayNode flatArrayNode = (ArrayNode) flatArray.jacksonNode;
             try {
                 ArrayNode arrayNode = ((ArrayNode) jacksonNode);
-                for(JsonNode node : arrayNode) {
+                for (JsonNode node : arrayNode) {
                     flatArrayNode.add(node.get(childId));
                 }
             } catch (ClassCastException cce) {
@@ -210,7 +216,7 @@ public class JSON {
         public boolean arrayHasValue(double d) throws Exception {
             return arrayHasValue(Double.valueOf(d));
         }
-        
+
         /**
          * Set the child node with given id if the current node is an object.
          * This creates a **deep copy** of the child.
@@ -461,9 +467,9 @@ public class JSON {
             return jacksonNode.asBoolean();
         }
 
-        
+
         public Object toObject() throws Exception {
-            switch(type()) {
+            switch (type()) {
                 case "object":
                     return toMap();
                 case "array":
@@ -489,7 +495,7 @@ public class JSON {
             ArrayList<Object> al = new ArrayList<>();
             try {
                 ArrayNode arrayNode = ((ArrayNode) jacksonNode);
-                for(JsonNode node : arrayNode) {
+                for (JsonNode node : arrayNode) {
                     al.add((new Node(node)).toObject());
                 }
             } catch (ClassCastException cce) {
@@ -502,7 +508,7 @@ public class JSON {
             HashMap<String,Object> hm = new HashMap<>();
             try {
                 ObjectNode objectNode = ((ObjectNode) jacksonNode);
-                for(Iterator<Map.Entry<String,JsonNode>> it = objectNode.fields(); it.hasNext();) {
+                for (Iterator<Map.Entry<String,JsonNode>> it = objectNode.fields(); it.hasNext();) {
                     Map.Entry<String,JsonNode> entry = it.next();
                     hm.put(entry.getKey(),new Node(entry.getValue()).toObject());
                  }
@@ -515,7 +521,7 @@ public class JSON {
         public String toJSON() throws Exception {
             try {
                 return mapper.writeValueAsString(jacksonNode);
-            } catch(JsonProcessingException jpe) {
+            } catch (JsonProcessingException jpe) {
                 throw new Exception("JSON processing error.");
             }
         }

@@ -1,3 +1,10 @@
+/* Copyright (C) 2015-2025 by Bundesamt fuer Strahlenschutz
+ *
+ * This file is Free Software under the GNU GPL (v>=3)
+ * and comes with ABSOLUTELY NO WARRANTY!
+ * See LICENSE for details.
+ */
+
 package de.bfs.dokpool.client.base;
 
 
@@ -197,7 +204,7 @@ public class DocpoolBaseService {
     }
 
     /**
-     * 
+     *
      * @return A Map with authentication and accept (JSON) headers.
      */
     private Map<String,String> defaultHeaders() {
@@ -245,7 +252,7 @@ public class DocpoolBaseService {
         HttpClient.Response rsp = HttpClient.doPostRequest(proto,host,port,patchUrl,defaultHeaders(),null,HttpClient.MimeTypes.JSON,patchData);
         return addErrorInfo(new JSON.Node(rsp.content), rsp);
     }
-    
+
     private JSON.Node deleteRequest(String endpoint) throws Exception {
         String path = urlPrefix + endpoint;
         HttpClient.Response rsp = HttpClient.doDeleteRequest(proto,host,port,path,defaultHeaders());
@@ -255,7 +262,7 @@ public class DocpoolBaseService {
     /**
      * Get all ESDs available to the current user.
      * Calls the endpoint /@get_documentpools.
-     * 
+     *
      * @return a list of Dokpools
      */
     public List<DocumentPool> getDocumentPools() {
@@ -265,7 +272,7 @@ public class DocpoolBaseService {
     /**
      * Get all ESDs available to a user.
      * Calls the endpoint /@get_documentpools.
-     * 
+     *
      * @param user The user for whom we want to get the Dokpools.
      * @return a list of Dokpools
      */
@@ -291,11 +298,11 @@ public class DocpoolBaseService {
     }
 
     /**
-     * 
+     *
      * Calls the endpoint /@get_primary_documentpool.
      * @return the ESD, which the user is a member of - or the first available ESD
      *         for global users.
-     * 
+     *
      */
     public DocumentPool getPrimaryDocumentPool() {
         return getPrimaryDocumentPool("");
@@ -308,7 +315,7 @@ public class DocpoolBaseService {
      *             if empty or null, this will return the primary Dokpool for the login user.
      * @return the ESD, which the user is a member of - or the first available ESD
      *         for global users.
-     * 
+     *
      */
     public DocumentPool getPrimaryDocumentPool(String user) {
         user = (user == null || user == "") ? "" : ("/"+user);
@@ -357,7 +364,7 @@ public class DocpoolBaseService {
     }
 
     public static class Log {
-        
+
         private final String namePrefix;
         private final java.lang.System.Logger logger;
 

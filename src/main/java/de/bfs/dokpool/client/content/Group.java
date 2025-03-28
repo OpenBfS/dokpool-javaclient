@@ -1,3 +1,10 @@
+/* Copyright (C) 2015-2025 by Bundesamt fuer Strahlenschutz
+ *
+ * This file is Free Software under the GNU GPL (v>=3)
+ * and comes with ABSOLUTELY NO WARRANTY!
+ * See LICENSE for details.
+ */
+
 package de.bfs.dokpool.client.content;
 
 import java.util.HashSet;
@@ -9,7 +16,7 @@ import de.bfs.dokpool.client.base.DocpoolBaseService;
 import de.bfs.dokpool.client.base.JSON;
 
 public class Group extends BaseObject {
-    
+
     private String groupId = "";
     private String dp = "";
     private String title = "";
@@ -18,7 +25,7 @@ public class Group extends BaseObject {
     private List<String> allowedDocTypes;
 
     protected Group(DocpoolBaseService service, String path, String groupId, String title, String description, String dp) {
-        super(service, path, (Object[])null);
+        super(service, path, (Object[]) null);
         this.groupId = groupId;
         this.title = title;
         this.description = description;
@@ -80,19 +87,19 @@ public class Group extends BaseObject {
             log.error(exceptionToString(ex));
         }
     }
-    
+
     public String getGroupId() {
         return groupId;
     }
-    
+
     public String getEsd() {
         return dp;
     }
-    
+
     public String getTitle() {
         return title;
     }
-    
+
     public String getDescription() {
         return description;
     }
