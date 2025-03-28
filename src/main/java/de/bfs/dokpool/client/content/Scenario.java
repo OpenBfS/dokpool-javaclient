@@ -10,11 +10,11 @@ import de.bfs.dokpool.client.base.DocpoolBaseService;
  *
  */
 public class Scenario extends BaseObject {
-	public Scenario(DocpoolBaseService service, String path, Object[] data) {
-		super(service, path, data);
-	}
+    public Scenario(DocpoolBaseService service, String path, Object[] data) {
+        super(service, path, data);
+    }
 
-	public Scenario(DocpoolBaseService service, String path, Map<String,Object> data) {
-		super(service, path, data);
-	}
+    public Scenario(DocpoolBaseService service, String path, Map<String,Object> data) {
+        super(service, path, data);
+    }
 }

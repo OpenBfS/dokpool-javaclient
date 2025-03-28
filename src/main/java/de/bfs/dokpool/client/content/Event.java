@@ -10,11 +10,11 @@ import java.util.Map;
  *
  */
 public class Event extends BaseObject {
-	public Event(DocpoolBaseService service, String path, Object[] data) {
-		super(service, path, data);
-	}
+    public Event(DocpoolBaseService service, String path, Object[] data) {
+        super(service, path, data);
+    }
 
-	public Event(DocpoolBaseService service, String path, Map<String,Object> data) {
-		super(service, path, data);
-	}
+    public Event(DocpoolBaseService service, String path, Map<String,Object> data) {
+        super(service, path, data);
+    }
 }
