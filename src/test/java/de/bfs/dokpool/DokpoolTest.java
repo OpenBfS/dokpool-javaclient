@@ -289,21 +289,23 @@ public class DokpoolTest {
         docProperties.put("description", "Created by mvn test.");
         docProperties.put("text", "This is just a Doksys Test and can be deleted.");
         docProperties.put("local_behaviors", new String[] {"doksys"});
-        // docProperties.put("Status", "plausibel");
+        docProperties.put("Status", "plausibel");
         docProperties.put("TrajectoryStartLocation", "somewhere");
         docProperties.put("TrajectoryEndLocation", "somewhere else");
         docProperties.put("Dom", new String[] {"Gamma-ODL"});
         docProperties.put("SamplingBegin", "2025-03-27T13:50:53.000Z");
         docProperties.put("Duration", "1d");
-        // docProperties.put("Purpose", new String[] {"Standard-Info Bundesmessnetze"});
-        docProperties.put("LegalBase", new String[] {"AVV IMIS"});
-        // docProperties.put("MeasuringProgram", new String[] { "Routinemessprogramm"});
+        //Purpose is expected to be single value, but we deliver an array to test conversion:
+        docProperties.put("Purpose", new String[] {"Standard-Info Bundesmessnetze"});
+        //LegalBase is expected to be an array, but we deliver a string to test conversion:
+        docProperties.put("LegalBase", "AVV IMIS");
+        docProperties.put("MeasuringProgram", "Routinemessprogramm");
         docProperties.put("SamplingEnd", "2025-03-27T13:50:53.000Z");
-        // docProperties.put("NetworkOperator", new String[] { "Z"});
+        docProperties.put("NetworkOperator", new String[] {"Hamburg", "Z"});
         docProperties.put("TrajectoryEndTime", "2025-03-27T13:50:53.000Z");
         docProperties.put("TrajectoryStartTime", "2025-03-27T13:50:53.000Z");
         docProperties.put("OperationMode", "Übung");
-        // docProperties.put("SampleType", new String[] {"Gamma-Ortsdosisleistung"});
+        docProperties.put("SampleType", new String[] {"Gamma-Ortsdosisleistung"});
 
         Document d = myGroupFolder.createDPDocument(doksysDocId, docProperties);
         log.log(INFO, d.getPathAfterPlonesite());
