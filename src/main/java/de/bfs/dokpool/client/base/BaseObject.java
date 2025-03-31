@@ -26,6 +26,8 @@ public class BaseObject {
     protected static final java.lang.System.Logger log = System.getLogger(BaseObject.class.getName());
     protected static final java.lang.System.Logger.Level ERROR = java.lang.System.Logger.Level.ERROR;
     protected static final java.lang.System.Logger.Level INFO = java.lang.System.Logger.Level.INFO;
+    protected static final java.lang.System.Logger.Level WARNING = java.lang.System.Logger.Level.WARNING;
+
     protected Object NTS(Object mayBeNull) {
         return mayBeNull != null ? mayBeNull : "null";
     }

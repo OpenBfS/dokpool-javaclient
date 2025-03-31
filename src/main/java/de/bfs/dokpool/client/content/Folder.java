@@ -226,9 +226,7 @@ public class Folder extends BaseObject {
                 createJS.set("local_behaviors", localBehaviors);
             }
             if (localBehaviors.arrayHasValue("doksys")) {
-                if (createJS.get("OperationMode") == null) {
-                    createJS.set("OperationMode", "Routine");
-                }
+                Document.doksysCheck(createJS, true);
             }
             if (localBehaviors.arrayHasValue("rodos")) {
                 Document.rodosCheck(createJS, true);
