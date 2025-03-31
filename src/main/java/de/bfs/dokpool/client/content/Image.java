@@ -54,12 +54,12 @@ public class Image extends BaseObject {
             ;
             JSON.Node rspNode = privateService.patchRequestWithNode(pathAfterPlonesite, createJS);
             if (rspNode.errorInfo != null) {
-                log.info(rspNode.errorInfo.toString());
+                log.log(INFO, rspNode.errorInfo.toString());
                 return false;
             }
             return true;
         } catch (Exception ex) {
-            log.error(exceptionToString(ex));
+            log.log(ERROR, exceptionToString(ex));
             return false;
         }
     }

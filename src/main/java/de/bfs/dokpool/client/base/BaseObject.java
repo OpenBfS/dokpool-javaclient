@@ -18,13 +18,17 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-
 /**
  * Base class for all API objects. Contains helper methods for all types.
  *
  */
 public class BaseObject {
-    protected final DocpoolBaseService.Log log = new DocpoolBaseService.Log(this.getClass());
+    protected static final java.lang.System.Logger log = System.getLogger(BaseObject.class.getName());
+    protected static final java.lang.System.Logger.Level ERROR = java.lang.System.Logger.Level.ERROR;
+    protected static final java.lang.System.Logger.Level INFO = java.lang.System.Logger.Level.INFO;
+    protected Object NTS(Object mayBeNull) {
+        return mayBeNull != null ? mayBeNull : "null";
+    }
 
     protected DocpoolBaseService service = null;
     protected DocpoolBaseService.PrivateDocpoolBaseService privateService;
@@ -100,13 +104,13 @@ public class BaseObject {
             try {
                 JSON.Node rspNode = privateService.nodeFromGetRequest(pathAfterPlonesite);
                 if (rspNode.errorInfo != null) {
-                    log.info(rspNode.errorInfo.toString());
+                    log.log(INFO, rspNode.errorInfo.toString());
                     data = new HashMap<String,Object>();
                 } else {
                     data = rspNode.toMap();
                 }
             } catch (Exception ex) {
-                log.error(exceptionToString(ex));
+                log.log(ERROR, exceptionToString(ex));
             }
             dataComplete = true;
         }
@@ -171,8 +175,8 @@ public class BaseObject {
                     ZonedDateTime zdt = formatter.parse((String) dateObject, ZonedDateTime ::from);
                     return Date.from(zdt.toInstant());
                 } catch (java.time.format.DateTimeParseException pe) {
-                    log.error("Malformed Date: "+ (String) dateObject);
-                    log.error(exceptionToString(pe));
+                    log.log(ERROR, "Malformed Date: "+ (String) dateObject);
+                    log.log(ERROR, exceptionToString(pe));
                     return null;
                 }
             }
@@ -232,12 +236,12 @@ public class BaseObject {
         try {
             JSON.Node rspNode = privateService.nodeFromGetRequest(pathAfterPlonesite+"/@workflow");
             if (rspNode.errorInfo != null) {
-                log.info(rspNode.errorInfo.toString());
+                log.log(INFO, rspNode.errorInfo.toString());
                 return null;
             }
             return rspNode.get("state").get("id").toString();
         } catch (Exception ex) {
-            log.error(exceptionToString(ex));
+            log.log(ERROR, exceptionToString(ex));
             return null;
         }
     }
@@ -269,10 +273,10 @@ public class BaseObject {
             }
             JSON.Node rspNode = privateService.postRequestWithNode(pathAfterPlonesite+endpoint, transNode);
             if (rspNode.errorInfo != null) {
-                log.info(rspNode.errorInfo.toString());
+                log.log(INFO, rspNode.errorInfo.toString());
             }
         } catch (Exception ex) {
-            log.error(exceptionToString(ex));
+            log.log(ERROR, exceptionToString(ex));
         }
 
     }
@@ -287,7 +291,7 @@ public class BaseObject {
             return list;
         } else {
             String clazz = o != null ? o.getClass().toString() : "null";
-            log.error("Cannot convert to list, object has class: " + clazz);
+            log.log(ERROR, "Cannot convert to list, object has class: " + clazz);
             return null;
         }
 
@@ -322,7 +326,7 @@ public class BaseObject {
                     uid = evId;
                     ret.add(uid);
                 } else {
-                    log.error("Could not get event uid for event with id: " + evId);
+                    log.log(ERROR, "Could not get event uid for event with id: " + evId);
                 }
             } else {
                 ret.add(uid);
@@ -349,16 +353,16 @@ public class BaseObject {
         attributeCompatibilityAdjustment(attributes);
         try {
             JSON.Node attrNode = new JSON.Node(attributes);
-            log.info("update: " + attrNode.toJSON());
+            log.log(INFO, "update: " + attrNode.toJSON());
             checkAttrNodeUpdate(attrNode);
             JSON.Node rspNode = privateService.patchRequestWithNode(pathAfterPlonesite, attrNode);
             if (rspNode.errorInfo != null) {
-                log.info(rspNode.errorInfo.toString());
+                log.log(INFO, rspNode.errorInfo.toString());
                 return false;
             }
             return true;
         } catch (Exception ex) {
-            log.error(exceptionToString(ex));
+            log.log(ERROR, exceptionToString(ex));
             return false;
         }
     }
@@ -383,12 +387,12 @@ public class BaseObject {
         try {
             JSON.Node rspNode = privateService.deleteRequest(pathAfterPlonesite);
             if (rspNode.errorInfo != null) {
-                log.info(rspNode.errorInfo.toString());
+                log.log(INFO, rspNode.errorInfo.toString());
                 return false;
             }
             return true;
         } catch (Exception ex) {
-            log.error(exceptionToString(ex));
+            log.log(ERROR, exceptionToString(ex));
             return false;
         }
     }
@@ -401,7 +405,7 @@ public class BaseObject {
         try {
             return node.toMap();
         } catch (Exception ex) {
-            log.error(exceptionToString(ex));
+            log.log(ERROR, exceptionToString(ex));
             return null;
         }
     }

@@ -43,8 +43,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
 
+import static java.lang.System.Logger.Level.ERROR;
+import static java.lang.System.Logger.Level.INFO;
+import static java.lang.System.Logger.Level.WARNING;;
+
 public class DokpoolTest {
-    private static final DocpoolBaseService.Log log = new DocpoolBaseService.Log(DokpoolTest.class);
+    protected static final java.lang.System.Logger log = System.getLogger(DokpoolTest.class.getName());
     private static String envOrEmpty(String envVar) {
         String env = System.getenv(envVar);
         return (env != null ? env: "");
@@ -76,25 +80,32 @@ public class DokpoolTest {
     //     }
     // }
 
+    /**
+     * null to string (identity else).
+     */
+    private Object NTS(Object mayBeNull) {
+        return mayBeNull != null ? mayBeNull : "null";
+    }
+
     public static DocumentPool obtainDocumentPoolREST() throws Exception {
-        log.info("URL: " + PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE + " User:" + USER + " Password:" + PW);
+        log.log(INFO, "URL: " + PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE + " User:" + USER + " Password:" + PW);
         DocpoolBaseService docpoolBaseService = new DocpoolBaseService(PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE, USER, PW);
         List<DocumentPool> myDocpools = docpoolBaseService.getDocumentPools();
         DocumentPool mainDocpool = docpoolBaseService.getPrimaryDocumentPool();
 
-        log.info("Number of Dokppols: " + myDocpools.size());
-        log.info("Main Dokpool: " + mainDocpool.getPathWithPlonesite());
+        log.log(INFO, "Number of Dokppols: " + myDocpools.size());
+        log.log(INFO, "Main Dokpool: " + mainDocpool.getPathWithPlonesite());
 
         for (DocumentPool sDocpool : myDocpools) {
             if (sDocpool.getPathWithPlonesite().matches("/" + PLONESITE + "/" + DOKPOOL)) {
                 mainDocpool = sDocpool;
-                log.info("Main Dokpool is now: " + mainDocpool.getPathWithPlonesite());
+                log.log(INFO, "Main Dokpool is now: " + mainDocpool.getPathWithPlonesite());
                 break;
             }
         }
 
         // new Folder(docpoolBaseService, "/bund/content/Groups/bund_zdb/java-docpool-test-doc", (Object[])null).setWorkflowStatus("retract");
-        // log.info(new Folder(docpoolBaseService, "/bund/content/Groups/bund_zdb/java-docpool-test-doc", (Object[])null).getWorkflowStatus());
+        // log.log(INFO, new Folder(docpoolBaseService, "/bund/content/Groups/bund_zdb/java-docpool-test-doc", (Object[])null).getWorkflowStatus());
         return mainDocpool;
     }
 
@@ -104,46 +115,46 @@ public class DokpoolTest {
      */
     @Test
     public void documentTestREST() throws Exception {
-        log.info("=== TEST: documentTest ======");
+        log.log(INFO, "=== TEST: documentTest ======");
         DocumentPool mainDocpool = obtainDocumentPoolREST();
-        log.info(mainDocpool.getWorkflowStatus());
+        log.log(INFO, mainDocpool.getWorkflowStatus());
 
-        log.info("numer of events: " + mainDocpool.getEvents().size());
-        log.info("numer of active events: " + mainDocpool.getActiveEvents().size());
+        log.log(INFO, "numer of events: " + mainDocpool.getEvents().size());
+        log.log(INFO, "numer of active events: " + mainDocpool.getActiveEvents().size());
         List<Event> events = mainDocpool.getEvents();
         try {
             Event ev = events.get(0);
-            log.info("First event from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
+            log.log(INFO, "First event from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
         } catch (NullPointerException e) {
-            log.info("Could not find any events for " + mainDocpool.getPathWithPlonesite());
+            log.log(INFO, "Could not find any events for " + mainDocpool.getPathWithPlonesite());
         }
 
         events = mainDocpool.getActiveEvents();
         try {
             Event ev = events.get(0);
-            log.info("First active event from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
+            log.log(INFO, "First active event from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
         } catch (NullPointerException e) {
-            log.info("Could not find any active events for " + mainDocpool.getPathWithPlonesite());
+            log.log(INFO, "Could not find any active events for " + mainDocpool.getPathWithPlonesite());
         }
 
         List<Scenario> scenarios = mainDocpool.getScenarios();
         try {
             Scenario ev = scenarios.get(0);
-            log.info("First scenario from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
+            log.log(INFO, "First scenario from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
         } catch (NullPointerException | IndexOutOfBoundsException e) {
-            log.info("Could not find any scenarios for " + mainDocpool.getPathWithPlonesite());
+            log.log(INFO, "Could not find any scenarios for " + mainDocpool.getPathWithPlonesite());
         }
 
         scenarios = mainDocpool.getActiveScenarios();
         try {
             Scenario ev = scenarios.get(0);
-            log.info("First active scenario from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
+            log.log(INFO, "First active scenario from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
         } catch (NullPointerException | IndexOutOfBoundsException e) {
-            log.info("Could not find any active scenarios for " + mainDocpool.getPathWithPlonesite());
+            log.log(INFO, "Could not find any active scenarios for " + mainDocpool.getPathWithPlonesite());
         }
 
-        log.info("My very own user folder: " + mainDocpool.getUserFolder());
-        log.info("The user folder of some well known user: " + mainDocpool.getUserFolder(MEMBER));
+        log.log(INFO, "My very own user folder: " + mainDocpool.getUserFolder());
+        log.log(INFO, "The user folder of some well known user: " + mainDocpool.getUserFolder(MEMBER));
 
 
         Folder myGroupFolder = null;
@@ -153,31 +164,31 @@ public class DokpoolTest {
             throw new NullPointerException("Could not find any valid GroupFolder for Dokpool " + mainDocpool.getPathWithPlonesite());
         }
 
-        log.info("Group folder path (first from Dokpool): " + myGroupFolder.getPathWithPlonesite());
+        log.log(INFO, "Group folder path (first from Dokpool): " + myGroupFolder.getPathWithPlonesite());
 
         try {
             myGroupFolder = mainDocpool.getFolder("content/Groups/" + GROUPFOLDER);
-            log.info("Group folder now set from from env: " +  myGroupFolder.getPathWithPlonesite());
+            log.log(INFO, "Group folder now set from from env: " +  myGroupFolder.getPathWithPlonesite());
             myGroupFolder = mainDocpool.getGroupFolder(GROUPFOLDER).get();
-            log.info("Group folder set from from env again: " +  myGroupFolder.getPathWithPlonesite());
+            log.log(INFO, "Group folder set from from env again: " +  myGroupFolder.getPathWithPlonesite());
         } catch (NullPointerException e) {
-            log.warn("Could not find DOKPOOL_GROUPFOLDER: " + mainDocpool.getPathWithPlonesite() + "/content/Groups/" + GROUPFOLDER);
-            log.info("Group folder remains: " +  myGroupFolder.getPathWithPlonesite());
+            log.log(WARNING, "Could not find DOKPOOL_GROUPFOLDER: " + mainDocpool.getPathWithPlonesite() + "/content/Groups/" + GROUPFOLDER);
+            log.log(INFO, "Group folder remains: " +  myGroupFolder.getPathWithPlonesite());
         }
 
         List<Object> contentList = myGroupFolder.getContents(null);
         for (Object contentItem : contentList) {
-            log.info("group folder item id: " + ((BaseObject) contentItem).getId());
+            log.log(INFO, "group folder item id: " + ((BaseObject) contentItem).getId());
         }
 
         Folder myTransferFolder = null;
         try {
             List<Folder> tfFolders = mainDocpool.getTransferFolders();
-            log.info("number of transfer folders: " + tfFolders.size());
+            log.log(INFO, "number of transfer folders: " + tfFolders.size());
             myTransferFolder = tfFolders.get(0);
-            log.info("Transfer folder path (first from Dokpool): " + myTransferFolder.getPathWithPlonesite());
+            log.log(INFO, "Transfer folder path (first from Dokpool): " + myTransferFolder.getPathWithPlonesite());
         } catch (NullPointerException e) {
-            log.info("Could not find any valid TransferFolder for Dokpool " + mainDocpool.getPathWithPlonesite());
+            log.log(INFO, "Could not find any valid TransferFolder for Dokpool " + mainDocpool.getPathWithPlonesite());
         }
 
 
@@ -185,10 +196,10 @@ public class DokpoolTest {
         Document oldDoc = null;
         try {
             oldDoc = (Document) myGroupFolder.getContentItem(DOCID);
-            log.info("Object exists: " +  oldDoc.getPathWithPlonesite());
+            log.log(INFO, "Object exists: " +  oldDoc.getPathWithPlonesite());
             docExists = true;
         } catch (NullPointerException e) {
-            log.info("Object does not exist: " +  myGroupFolder.getPathWithPlonesite() + "/" + DOCID);
+            log.log(INFO, "Object does not exist: " +  myGroupFolder.getPathWithPlonesite() + "/" + DOCID);
         }
         if (docExists) {
             oldDoc.delete();
@@ -208,7 +219,7 @@ public class DokpoolTest {
         eventList.add("routinemode");
         docProperties.put("scenarios", eventList);
 
-        log.info("Creating new document at " + myGroupFolder.getPathWithPlonesite() + "/" + DOCID);
+        log.log(INFO, "Creating new document at " + myGroupFolder.getPathWithPlonesite() + "/" + DOCID);
         Document d = myGroupFolder.createDPDocument(DOCID, docProperties);
 
         byte[] fileData = ("Readme, I'm a string!").getBytes();
@@ -239,12 +250,12 @@ public class DokpoolTest {
         }
 
 
-        log.info(d.getContentItem("image"));
-        log.info(d.getContentItem("imaggee"));
+        log.log(INFO, d.getContentItem("image"));
+        log.log(INFO, d.getContentItem("imaggee") != null ? d.getContentItem("imaggee"): "null");
 
-        log.info(d.getPathAfterPlonesite());
-        log.info("modified: " + d.getDateAttribute("modified"));
-        log.info("mdate: " + d.getDateAttribute("mdate"));
+        log.log(INFO, d.getPathAfterPlonesite());
+        log.log(INFO, "modified: " + d.getDateAttribute("modified"));
+        log.log(INFO, "mdate: " + d.getDateAttribute("mdate"));
 
         d.setWorkflowStatus("publish");
     }
@@ -264,10 +275,10 @@ public class DokpoolTest {
         Document oldDoc = null;
         try {
             oldDoc = (Document) myGroupFolder.getContentItem(doksysDocId);
-            log.info("Object exists: " +  oldDoc.getPathWithPlonesite());
+            log.log(INFO, "Object exists: " +  oldDoc.getPathWithPlonesite());
             docExists = true;
         } catch (NullPointerException e) {
-            log.info("Object does not exist: " +  myGroupFolder.getPathWithPlonesite() + "/" + doksysDocId);
+            log.log(INFO, "Object does not exist: " +  myGroupFolder.getPathWithPlonesite() + "/" + doksysDocId);
         }
         if (docExists) {
             oldDoc.delete();
@@ -295,7 +306,7 @@ public class DokpoolTest {
         // docProperties.put("SampleType", new String[] {"Gamma-Ortsdosisleistung"});
 
         Document d = myGroupFolder.createDPDocument(doksysDocId, docProperties);
-        log.info(d.getPathAfterPlonesite());
+        log.log(INFO, d.getPathAfterPlonesite());
 
     }
 
@@ -306,35 +317,35 @@ public class DokpoolTest {
      */
     @Test
     public void miscObjectTestREST() throws Exception {
-        log.info("=== TEST: miscObjectTest REST ======");
-        log.info("URL: " + PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE + " User:" + USER + " Password:" + PW);
+        log.log(INFO, "=== TEST: miscObjectTest REST ======");
+        log.log(INFO, "URL: " + PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE + " User:" + USER + " Password:" + PW);
         DocpoolBaseService docpoolBaseService = new DocpoolBaseService(PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE, USER, PW);
 
         List<DocumentPool> documentpools = docpoolBaseService.getDocumentPools();
         if (documentpools.isEmpty()) {
-            log.warn("No DocumentPools found!");
+            log.log(WARNING, "No DocumentPools found!");
         }
 
         DocumentPool myDocumentPool = null;
         for (DocumentPool sDocpool : documentpools) {
             if (sDocpool.getPathWithPlonesite().matches("/" + PLONESITE + "/" + DOKPOOL)) {
                 myDocumentPool = sDocpool;
-                log.info("Main Dokpool is now: " + myDocumentPool.getPathWithPlonesite());
+                log.log(INFO, "Main Dokpool is now: " + myDocumentPool.getPathWithPlonesite());
                 break;
             }
         }
-        log.info(myDocumentPool.getTitle());
-        log.info(myDocumentPool.getDescription());
+        log.log(INFO, myDocumentPool.getTitle());
+        log.log(INFO, myDocumentPool.getDescription());
         List<DocType> types = myDocumentPool.getTypes();
         for (DocType t : types) {
-            log.info(t.getId());
-            log.info(t.getTitle());
+            log.log(INFO, t.getId());
+            log.log(INFO, t.getTitle());
         }
 
         Folder groupFolder = myDocumentPool.getGroupFolder(GROUPFOLDER).get();
         Random r = new Random();
-        log.info(groupFolder);
-        log.info(groupFolder.getTitle());
+        log.log(INFO, groupFolder);
+        log.log(INFO, groupFolder.getTitle());
         List<Object> documents = groupFolder.getContents(null);
         List<Folder> tf = myDocumentPool.getTransferFolders();
         Map<String, Object> properties = new HashMap<String, Object>();
@@ -356,8 +367,8 @@ public class DokpoolTest {
         properties.clear();
         properties.put("scenarios", new String[] {"routinemode", "scenario2", null});
         bo.update(properties);
-        log.info(bo.getStringAttribute("created_by"));
-        log.info(bo.getDateAttribute("effective"));
+        log.log(INFO, NTS(bo.getStringAttribute("created_by")));
+        log.log(INFO, NTS(bo.getDateAttribute("effective")));
         bo.delete();
 
         Map<String, Object> elanProperties = new HashMap<String, Object>();
@@ -378,9 +389,9 @@ public class DokpoolTest {
             rodosProperties,
             null
         );
-        log.info("title: " + d.getTitle());
-        log.info("status: " + d.getWorkflowStatus());
-        log.info("behaviors: " + d.getStringsAttribute("local_behaviors"));
+        log.log(INFO, "title: " + d.getTitle());
+        log.log(INFO, "status: " + d.getWorkflowStatus());
+        log.log(INFO, "behaviors: " + d.getStringsAttribute("local_behaviors"));
 
         rodosProperties = new HashMap<String, Object>();
         rodosProperties.put("PrognosisForm", "invalid value");
@@ -404,9 +415,9 @@ public class DokpoolTest {
             null,
             reiProperties
         );
-        log.info("title: " + d.getTitle());
-        log.info("status: " + d.getWorkflowStatus());
-        log.info("behaviors: " + d.getStringsAttribute("local_behaviors"));
+        log.log(INFO, "title: " + d.getTitle());
+        log.log(INFO, "status: " + d.getWorkflowStatus());
+        log.log(INFO, "behaviors: " + d.getStringsAttribute("local_behaviors"));
         d.delete();
     }
 
@@ -416,32 +427,32 @@ public class DokpoolTest {
      */
     @Test
     public void userManagementTestREST() throws Exception {
-        log.info("=== TEST: userManagementTest REST ======");
+        log.log(INFO, "=== TEST: userManagementTest REST ======");
         Random r = new Random();
         DocumentPool myDocumentPool = obtainDocumentPoolREST();
         User user = myDocumentPool.createUser("javaTestUser"+r.nextInt(), "testuserPW", "Test User Full Name", myDocumentPool.getPathAfterPlonesite());
         if (user == null) {
-            log.error("No User created!");
+            log.log(ERROR, "No User created!");
         } else {
-            log.info("User " + user.getUserId() + " created.");
+            log.log(INFO, "User " + user.getUserId() + " created.");
         }
         Group group = myDocumentPool.createGroup("javaTestGroup"+r.nextInt(), "Test Group Full Name","for java tests", myDocumentPool.getPathAfterPlonesite());
         if (group == null) {
-            log.error("No group created.");
+            log.log(ERROR, "No group created.");
         } else {
-            log.info("Group " + group.getGroupId() + " created.");
+            log.log(INFO, "Group " + group.getGroupId() + " created.");
         }
         group.addUser(user, myDocumentPool.getPathAfterPlonesite());
         String[] docTypes = {"airactivity", "ifinprojection", "protectiveactions"};
         //not implemented for REST:
         group.setAllowedDocTypes(docTypes);
         List<String> gDoctypes = group.getAllowedDocTypes();
-        log.info("docTypes " + docTypes);
-        log.info("gDocTypes " + gDoctypes);
+        log.log(INFO, "docTypes " + docTypes);
+        log.log(INFO, "gDocTypes " + gDoctypes);
         if (gDoctypes != null && gDoctypes.equals(Arrays.asList(docTypes))) {
-            log.info("Group properties were successfully set.");
+            log.log(INFO, "Group properties were successfully set.");
         } else {
-            log.error("Error while setting group properties.");
+            log.log(ERROR, "Error while setting group properties.");
         }
     }
 
@@ -455,18 +466,18 @@ public class DokpoolTest {
         Map<String,String> headers = new HashMap<String,String>();
         headers.put(HttpClient.Headers.ACCEPT,HttpClient.MimeTypes.PLAIN);
         HttpClient.Response rsp = HttpClient.doGetRequest(PROTO,HOST,PORT,HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE),headers);
-        log.info(rsp.content.length());
+        log.log(INFO, rsp.content.length());
         HashMap<String,String> postPar = new HashMap<>();
         postPar.put("__ac_name", USER);
         postPar.put("__ac_password", PW);
         rsp = HttpClient.doPostRequest(PROTO,HOST,PORT,HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/login_form"),headers,postPar,null,null);
-        log.info(rsp.content.length());
+        log.log(INFO, rsp.content.length());
         rsp = HttpClient.doPutRequest(PROTO,HOST,PORT,HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/testupload"),headers,"text/plain",("hellö!").getBytes(StandardCharsets.UTF_8));
-        log.info(rsp.content.length());
+        log.log(INFO, rsp.content.length());
         rsp = HttpClient.doPatchRequest(PROTO,HOST,PORT,HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/testupload"),headers,"text/plain",("hellö nöchma!").getBytes(StandardCharsets.UTF_8));
-        log.info(rsp.content.length());
+        log.log(INFO, rsp.content.length());
         rsp = HttpClient.doDeleteRequest(PROTO,HOST,PORT,HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/testupload"),headers);
-        log.info(rsp.content.length());
+        log.log(INFO, rsp.content.length());
     }
 
     /**
@@ -499,13 +510,13 @@ public class DokpoolTest {
         for (String ep : endpoints) {
             path = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE + ep);
             rsp = HttpClient.doGetRequest(PROTO,HOST,PORT,path,headers);
-            log.info(rsp.content.length());
+            log.log(INFO, rsp.content.length());
         }
-        // log.info(rsp != null?rsp.content:"");
+        // log.log(INFO, rsp != null?rsp.content:"");
         JSON.Node pendingRoot = new JSON.Node(rsp.content);
         pendingRoot.get("items");
         if (pendingRoot != null && pendingRoot.get("items") != null && pendingRoot.get("items").get(0) != null) {
-            log.info(pendingRoot.get("items").get(0).get("@id").toJSON());
+            log.log(INFO, NTS(pendingRoot.get("items").get(0).get("@id").toJSON()));
         }
         String createUrl = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/"+DOKPOOL+"/content/Groups/"+ GROUPFOLDER);
         JSON.Node createJS = new JSON.Node("{}")
@@ -518,7 +529,7 @@ public class DokpoolTest {
         ;
         byte[] createData = createJS.toJSON().getBytes();
         rsp = HttpClient.doPostRequest(PROTO,HOST,PORT,createUrl,headers,null,HttpClient.MimeTypes.JSON,createData);
-        log.info(rsp.content);
+        log.log(INFO, rsp.content);
 
         String patchUrl = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/"+DOKPOOL+"/content/Groups/"+ GROUPFOLDER+"/"+DOCID);
         JSON.Node patchJS = new JSON.Node("{}")
@@ -527,12 +538,12 @@ public class DokpoolTest {
         ;
         byte[] patchData = patchJS.toJSON().getBytes();
         rsp = HttpClient.doPatchRequest(PROTO,HOST,PORT,patchUrl,headers,HttpClient.MimeTypes.JSON,patchData);
-        log.info(rsp.content);
+        log.log(INFO, rsp.content);
         Assert.assertEquals(204, rsp.status);
 
         String deleteUrl = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/"+DOKPOOL+"/content/Groups/"+ GROUPFOLDER+"/copy_of_"+DOCID);
         rsp = HttpClient.doDeleteRequest(PROTO,HOST,PORT,deleteUrl,headers);
-        log.info(rsp.content);
+        log.log(INFO, rsp.content);
 
         String copySrcUrl = patchUrl;
         String copyTgtUrl = createUrl+"/@copy";
@@ -542,7 +553,7 @@ public class DokpoolTest {
         ;
         byte[] copyData = copyJS.toJSON().getBytes();
         rsp = HttpClient.doPostRequest(PROTO,HOST,PORT,copyTgtUrl,headers,null,HttpClient.MimeTypes.JSON,copyData);
-        log.info(rsp.content);
+        log.log(INFO, rsp.content);
 
         //does not work: id cannot be changed this way, neither in Plone 5 nor 6
         String renameUrl = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/"+DOKPOOL+"/content/Groups/"+ GROUPFOLDER+"/copy_of_"+DOCID);
@@ -551,7 +562,7 @@ public class DokpoolTest {
         ;
         byte[] renameData = renameJS.toJSON().getBytes();
         rsp = HttpClient.doPatchRequest(PROTO,HOST,PORT,renameUrl,headers,HttpClient.MimeTypes.JSON,renameData);
-        log.info(rsp.content);
+        log.log(INFO, rsp.content);
         Assert.assertEquals(204, rsp.status);
     }
 
@@ -561,20 +572,20 @@ public class DokpoolTest {
     @Test
     public void jsonTest() throws Exception {
         JSON.Node root = new JSON.Node("{ \"num\": 7.3, \"arr\": [0,1,2,\"three\"] }");
-        log.info("root type: "+root.type());
+        log.log(INFO, "root type: "+root.type());
         JSON.Node num = root.get("num");
-        log.info("num type: "+num.type() + " num: " + num.toDouble());
+        log.log(INFO, "num type: "+num.type() + " num: " + num.toDouble());
         JSON.Node arr = root.get("arr");
-        log.info("arr type: "+arr.type());
-        log.info("arr JSON: "+arr.toJSON());
+        log.log(INFO, "arr type: "+arr.type());
+        log.log(INFO, "arr JSON: "+arr.toJSON());
         JSON.Node three = arr.get(3);
-        log.info("three type: "+three.type());
+        log.log(INFO, "three type: "+three.type());
         //set creates deep copys before adding
         arr.insert(-1,root);
-        log.info("root JSON: "+root.toJSON());
+        log.log(INFO, "root JSON: "+root.toJSON());
         root.set("arr2",arr);
         Assert.assertEquals("{\"num\":7.3,\"arr\":[{\"num\":7.3,\"arr\":[0,1,2,\"three\"]},0,1,2,\"three\"],\"arr2\":[{\"num\":7.3,\"arr\":[0,1,2,\"three\"]},0,1,2,\"three\"]}",root.toJSON());
-        log.info("root JSON: "+root.toJSON());
+        log.log(INFO, "root JSON: "+root.toJSON());
         Map<String,Object> rootMap = root.toMap();
         JSON.Node root2 = new JSON.Node(rootMap);
         Assert.assertEquals("{\"arr\":[{\"arr\":[0,1,2,\"three\"],\"num\":7.3},0,1,2,\"three\"],\"num\":7.3,\"arr2\":[{\"arr\":[0,1,2,\"three\"],\"num\":7.3},0,1,2,\"three\"]}",root2.toJSON());
@@ -584,10 +595,10 @@ public class DokpoolTest {
         hmap.put("one","1");
         hmap.put("two","2");
         mthree.put("four","4");
-        hmap.put("three",mthree);
+        hmap.put("three",NTS(mthree));
         hmap.put("date",Date.from(Instant.ofEpochSecond(1234678910)));
         JSON.Node hmapnode = new JSON.Node(hmap);
-        log.info("root JSON: "+hmapnode.toJSON());
+        log.log(INFO, "root JSON: "+hmapnode.toJSON());
         Assert.assertEquals("{\"date\":\"2009-02-15T06:21:50.000Z\",\"one\":\"1\",\"two\":\"2\",\"three\":{\"four\":\"4\"}}", hmapnode.toJSON());
     }
 

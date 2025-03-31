@@ -25,6 +25,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import static java.lang.System.Logger.Level.ERROR;
+import static java.lang.System.Logger.Level.INFO;
+
 
 /**
  * This class will be a wrapper around Jackson's API as we also use org.json in the IRIX stack.
@@ -32,7 +35,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class JSON {
 
-    private static final DocpoolBaseService.Log log = new DocpoolBaseService.Log(JSON.class);
+    private static final java.lang.System.Logger log = System.getLogger(HttpClient.class.getName());
     private static final ObjectMapper mapper = new ObjectMapper();
 
     public static class Node implements Iterable<Node> {
@@ -93,7 +96,7 @@ public class JSON {
                         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("[yyyy-MM-dd'T'HH:mm:ss[.SSS][XXX]]", Locale.ENGLISH).withZone(ZoneOffset.UTC);
                         set(entry.getKey(),valZDT.format(formatter));
                     } else {
-                        log.error("JSON: unsupported Object of class: " + val.getClass() + val.getClass());
+                        log.log(ERROR, "JSON: unsupported Object of class: " + val.getClass() + val.getClass());
                         throw new Exception();
                     }
                 }
@@ -139,7 +142,7 @@ public class JSON {
                         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("[yyyy-MM-dd'T'HH:mm:ss[.SSS][XXX]]", Locale.ENGLISH).withZone(ZoneOffset.UTC);
                         append(valZDT.format(formatter));
                     } else {
-                        log.error("JSON: unsupported Object of class: " + val.getClass() + val.getClass());
+                        log.log(ERROR, "JSON: unsupported Object of class: " + val.getClass() + val.getClass());
                         throw new Exception();
                     }
                 }

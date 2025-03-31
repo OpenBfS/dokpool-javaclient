@@ -59,12 +59,12 @@ public class Group extends BaseObject {
             );
             JSON.Node rspNode = privateService.patchRequestWithNode("/@groups/"+groupId, patchJS);
             if (rspNode.errorInfo != null) {
-                log.info(rspNode.errorInfo.toString());
+                log.log(INFO, rspNode.errorInfo.toString());
                 return;
             }
             members.add(user);
         } catch (Exception ex) {
-            log.error(exceptionToString(ex));
+            log.log(ERROR, exceptionToString(ex));
         }
     }
 
@@ -79,12 +79,12 @@ public class Group extends BaseObject {
             );
             JSON.Node rspNode = privateService.patchRequestWithNode("/@groups/"+groupId, patchJS);
             if (rspNode.errorInfo != null) {
-                log.info(rspNode.errorInfo.toString());
+                log.log(INFO, rspNode.errorInfo.toString());
                 return;
             }
             members.remove(user);
         } catch (Exception ex) {
-            log.error(exceptionToString(ex));
+            log.log(ERROR, exceptionToString(ex));
         }
     }
 

@@ -73,7 +73,8 @@ If you plan to use VSCode, add this to your `.vscode/settings.json`:
     "java.test.config": {
         "name": "dokpoolTestConfig",
         "workingDirectory": "${workspaceFolder}",
-        "envFile" : "${workspaceFolder}/.testenv"
+        "envFile" : "${workspaceFolder}/.testenv",
+        "vmArgs": ["-Djava.util.logging.config.file=src/test/resources/logging.properties"]
     }
 }
 ```

@@ -49,11 +49,11 @@ public class Folder extends BaseObject {
             try {
                 contentsNode = privateService.nodeFromGetRequest(pathAfterPlonesite,"metadata_fields=id");
                 if (contentsNode.errorInfo != null) {
-                    log.info(contentsNode.errorInfo.toString());
+                    log.log(INFO, contentsNode.errorInfo.toString());
                     return null;
                 }
             } catch (Exception ex) {
-                log.error(exceptionToString(ex));
+                log.log(ERROR, exceptionToString(ex));
             }
         }
         return contentsNode;
@@ -75,12 +75,12 @@ public class Folder extends BaseObject {
         try {
             JSON.Node subpathNode = privateService.nodeFromGetRequest(pathAfterPlonesite + subpath);
             if (subpathNode.errorInfo != null) {
-                log.info(subpathNode.errorInfo.toString());
+                log.log(INFO, subpathNode.errorInfo.toString());
                 return null;
             }
             return new Folder(service, service.pathWithoutPrefix(subpathNode), subpathNode.toMap());
         } catch (Exception ex) {
-            log.error(exceptionToString(ex));
+            log.log(ERROR, exceptionToString(ex));
             return null;
         }
     }
@@ -150,7 +150,7 @@ public class Folder extends BaseObject {
                     }
                 }
             } catch (Exception ex) {
-                log.error(exceptionToString(ex));
+                log.log(ERROR, exceptionToString(ex));
             }
         }
         return null;
@@ -245,7 +245,7 @@ public class Folder extends BaseObject {
                         (createJS.get("Period") == null) || (createJS.get("Origins") == null) ||
                         (createJS.get("PDFVersion") == null)
                 ) {
-                    log.error("Authority, ReiLegalBases, NuclearInstallations, Year, Period, Origins and PDFVersion are mandatory for REI with no sensible default.");
+                    log.log(ERROR, "Authority, ReiLegalBases, NuclearInstallations, Year, Period, Origins and PDFVersion are mandatory for REI with no sensible default.");
                 }
             }
 
@@ -257,13 +257,13 @@ public class Folder extends BaseObject {
             invalidateContentsNode();
             JSON.Node rspNode = privateService.postRequestWithNode(pathAfterPlonesite, createJS);
             if (rspNode.errorInfo != null) {
-                log.info(rspNode.errorInfo.toString());
+                log.log(INFO, rspNode.errorInfo.toString());
                 return null;
             }
             String newpath = service.pathWithoutPrefix(rspNode);
             return new Document(service, newpath, (Object[]) null);
         } catch (Exception ex) {
-            log.error(exceptionToString(ex));
+            log.log(ERROR, exceptionToString(ex));
             return null;
         }
     }
@@ -271,7 +271,7 @@ public class Folder extends BaseObject {
     public BaseObject createObject(String id, Map<String, Object> attributes, String type) {
         try {
             if (type == null) {
-                log.error("Objects need a type (e.g. DPDocument).");
+                log.log(ERROR, "Objects need a type (e.g. DPDocument).");
                 return null;
             }
             //if you ask for a DPDocument, we call the specialized method to ensure mandatory attributes are set
@@ -285,13 +285,13 @@ public class Folder extends BaseObject {
             invalidateContentsNode();
             JSON.Node rspNode = privateService.postRequestWithNode(pathAfterPlonesite, createJS);
             if (rspNode.errorInfo != null) {
-                log.info(rspNode.errorInfo.toString());
+                log.log(INFO, rspNode.errorInfo.toString());
                 return null;
             }
             String newpath = service.pathWithoutPrefix(rspNode);
             return new BaseObject(service, newpath, (Object[]) null);
         } catch (Exception ex) {
-            log.error(exceptionToString(ex));
+            log.log(ERROR, exceptionToString(ex));
             return null;
         }
     }
@@ -321,14 +321,14 @@ public class Folder extends BaseObject {
             invalidateContentsNode();
             JSON.Node rspNode = privateService.postRequestWithNode(pathAfterPlonesite + "/@copy", copyJS);
             if (rspNode.errorInfo != null) {
-                log.info(rspNode.errorInfo.toString());
+                log.log(INFO, rspNode.errorInfo.toString());
                 return null;
             }
             return bo.getClass().getConstructor(DocpoolBaseService.class, String.class, Object[].class).newInstance(
                 service, service.pathWithoutPrefix(rspNode.get(0).get("target").toString()), (Object[]) null
             );
         } catch (Exception ex) {
-            log.error(exceptionToString(ex));
+            log.log(ERROR, exceptionToString(ex));
             return null;
         }
     }

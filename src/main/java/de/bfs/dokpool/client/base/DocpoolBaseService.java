@@ -24,6 +24,9 @@ import java.util.Map;
 import de.bfs.dokpool.client.base.HttpClient.Headers;
 import de.bfs.dokpool.client.content.DocumentPool;
 
+import static java.lang.System.Logger.Level.ERROR;
+import static java.lang.System.Logger.Level.INFO;
+
 
 /**
  * The root class to access REST-API services for DOKPOOL.
@@ -31,7 +34,11 @@ import de.bfs.dokpool.client.content.DocumentPool;
  *
  */
 public class DocpoolBaseService {
-    private final DocpoolBaseService.Log log = new DocpoolBaseService.Log(DocpoolBaseService.class);
+    private final java.lang.System.Logger log = System.getLogger(DocpoolBaseService.class.getName());
+
+    protected Object NTS(Object mayBeNull) {
+        return mayBeNull != null ? mayBeNull : "null";
+    }
 
     private String proto;
     private String host;
@@ -82,7 +89,7 @@ public class DocpoolBaseService {
             this.username = username;
             this.password = password;
         } catch (MalformedURLException mue) {
-            log.fatal("Incorrect URL provided!", mue);
+            log.log(/*fatal*/ERROR, "Incorrect URL provided!", mue);
         }
         this.urlPrefix = HttpClient.composeUrl(this.proto,this.host,this.port,"/"+ this.plonesite);
         this.urlPrefixLength = urlPrefix.length();
@@ -139,7 +146,7 @@ public class DocpoolBaseService {
             }
             return rsp.headers.get("Location").substring(urlPrefixLength);
         } catch (Exception ex) {
-            log.error(exceptionToString(ex));
+            log.log(ERROR, exceptionToString(ex));
             return null;
         }
     }
@@ -155,13 +162,13 @@ public class DocpoolBaseService {
                 int uidStart = atid.indexOf("@@dview?d=")+10;
                 int uidEnd = atid.indexOf("&", uidStart);
                 uid = atid.substring(uidStart, uidEnd);
-                log.info("uid from dview: "+ uid);
+                log.log(INFO, "uid from dview: "+ uid);
             }
             String path = uidToPathAfterPlonesite(uid);
             if (path == null) {
-                log.error("UID " + uid + " cannot be resolved");
+                log.log(ERROR, "UID " + uid + " cannot be resolved");
             } else {
-                log.info("path from UID: " + path);
+                log.log(INFO, "path from UID: " + path);
             }
             return path;
         }
@@ -219,7 +226,7 @@ public class DocpoolBaseService {
         String path = urlPrefix + endpoint;
         HttpClient.Response    rsp;
         rsp = HttpClient.doGetRequest(proto,host,port,path+queryString,defaultHeaders());
-        log.info("response content length: " + rsp.content.length());
+        log.log(INFO, "response content length: " + rsp.content.length());
         JSON.Node node = new JSON.Node(rsp.content);
         if (node != null && node.get("batching") != null) {
             long itemsTotal = node.get("items_total").toLong();
@@ -229,7 +236,7 @@ public class DocpoolBaseService {
                 queryString += "&b_size=" + itemsTotal;
             }
             rsp = HttpClient.doGetRequest(proto,host,port,path+queryString,defaultHeaders());
-            log.info("response content length: " + rsp.content.length());
+            log.log(INFO, "response content length: " + rsp.content.length());
             node = new JSON.Node(rsp.content);
         }
         return addErrorInfo(node,rsp);
@@ -283,11 +290,11 @@ public class DocpoolBaseService {
         try {
             node = nodeFromGetRequest(ep);
             if (node.errorInfo != null) {
-                log.info(node.errorInfo.toString());
+                log.log(INFO, node.errorInfo.toString());
                 return null;
             }
         } catch (Exception ex) {
-            log.error(exceptionToString(ex));
+            log.log(ERROR, exceptionToString(ex));
             return null;
         }
         List<DocumentPool> dpList = new ArrayList<>();
@@ -324,12 +331,12 @@ public class DocpoolBaseService {
         try {
             rspNode = nodeFromGetRequest(ep);
             if (rspNode.errorInfo != null) {
-                log.info(rspNode.errorInfo.toString());
+                log.log(INFO, rspNode.errorInfo.toString());
                 return null;
             }
             return new DocumentPool(this, pathWithoutPrefix(rspNode), rspNode.toMap());
         } catch (Exception ex) {
-            log.error(exceptionToString(ex));
+            log.log(ERROR, exceptionToString(ex));
             return null;
         }
     }
@@ -360,48 +367,6 @@ public class DocpoolBaseService {
         }
         public JSON.Node deleteRequest(String endpoint) throws Exception {
             return service.deleteRequest(endpoint);
-        }
-    }
-
-    public static class Log {
-
-        private final String namePrefix;
-        private final java.lang.System.Logger logger;
-
-        public Log(Class<?> clazz) {
-            namePrefix = clazz.getName().substring(clazz.getName().lastIndexOf(".")+1) + ": ";
-            logger = System.getLogger(clazz.getName());
-        }
-
-        public void fatal(String msg, Throwable ex) {
-            logger.log(java.lang.System.Logger.Level.ERROR, namePrefix + msg, ex);
-        }
-
-        public void error(String msg, Throwable ex)  {
-            logger.log(java.lang.System.Logger.Level.ERROR, namePrefix + msg, ex);
-        }
-
-        public void error(String msg) {
-            logger.log(java.lang.System.Logger.Level.ERROR, namePrefix + msg);
-        }
-
-        public void info(String msg, Throwable ex) {
-            logger.log(java.lang.System.Logger.Level.INFO, namePrefix + msg, ex);
-        }
-
-        public void info(String msg) {
-            logger.log(java.lang.System.Logger.Level.INFO, namePrefix + msg);
-        }
-
-        public void info(Object o) {
-            if (o == null) {
-                o = "null";
-            }
-            logger.log(java.lang.System.Logger.Level.INFO, o);
-        }
-
-        public void warn(String msg) {
-            logger.log(java.lang.System.Logger.Level.WARNING, namePrefix + msg);
         }
     }
 

@@ -38,6 +38,8 @@ import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.apache.hc.core5.http.message.StatusLine;
 import org.apache.hc.core5.http.NameValuePair;
 
+import static java.lang.System.Logger.Level.ERROR;
+import static java.lang.System.Logger.Level.INFO;
 
 
 /**
@@ -49,7 +51,7 @@ public class HttpClient {
     //utility classes, no instances
     private HttpClient() {}
 
-    private static final DocpoolBaseService.Log log = new DocpoolBaseService.Log(DocpoolBaseService.class);
+    private static final java.lang.System.Logger log = System.getLogger(HttpClient.class.getName());
 
     public class Headers {
         private Headers() {}
@@ -121,9 +123,9 @@ public class HttpClient {
         final SSLSession sslSession = clientContext.getSSLSession();
         if (sslSession != null) {
             try {
-                log.info("Peer: " + sslSession.getPeerPrincipal());
-                log.info("TLS protocol: " + sslSession.getProtocol());
-                log.info("TLS cipher suite: " + sslSession.getCipherSuite());
+                log.log(INFO, "Peer: " + sslSession.getPeerPrincipal());
+                log.log(INFO, "TLS protocol: " + sslSession.getProtocol());
+                log.log(INFO, "TLS cipher suite: " + sslSession.getCipherSuite());
             } catch (final SSLPeerUnverifiedException ignore) {
             }
         }
@@ -138,11 +140,11 @@ public class HttpClient {
             final HttpGet httpget = new HttpGet(url);
             addHeadersToRequest(httpget,headers);
 
-            log.info("Executing request " + httpget.getMethod() + " " + httpget.getUri());
+            log.log(INFO, "Executing request " + httpget.getMethod() + " " + httpget.getUri());
 
             final HttpClientContext clientContext = HttpClientContext.create();
             Response response = httpclient.execute(target, httpget, clientContext, rsp -> {
-                log.info(httpget + "->" + new StatusLine(rsp));
+                log.log(INFO, httpget + "->" + new StatusLine(rsp));
                 if (proto.equals("https") && tlsLogging) {
                     logTLS(clientContext);
                 }
@@ -164,11 +166,11 @@ public class HttpClient {
             final HttpDelete httpdel = new HttpDelete(url);
             addHeadersToRequest(httpdel,headers);
 
-            log.info("Executing request " + httpdel.getMethod() + " " + httpdel.getUri());
+            log.log(INFO, "Executing request " + httpdel.getMethod() + " " + httpdel.getUri());
 
             final HttpClientContext clientContext = HttpClientContext.create();
             Response response = httpclient.execute(target, httpdel, clientContext, rsp -> {
-                log.info(httpdel + "->" + new StatusLine(rsp));
+                log.log(INFO, httpdel + "->" + new StatusLine(rsp));
                 if (proto.equals("https") && tlsLogging) {
                     logTLS(clientContext);
                 }
@@ -189,7 +191,7 @@ public class HttpClient {
             final HttpPost httppost = new HttpPost(url);
             addHeadersToRequest(httppost,headers);
 
-            log.info("Executing request " + httppost.getMethod() + " " + httppost.getUri());
+            log.log(INFO, "Executing request " + httppost.getMethod() + " " + httppost.getUri());
 
             if (parameters != null) {
                 List<NameValuePair> paramList = new ArrayList<>();
@@ -202,7 +204,7 @@ public class HttpClient {
             if (data != null) {
                 httppost.setHeader("Content-type", contentType);
                 ByteArrayEntity dataEntity = new ByteArrayEntity(data,ContentType.create(contentType));
-                log.info("Request data: " + first1000(EntityUtils.toString(dataEntity)));
+                log.log(INFO, "Request data: " + first1000(EntityUtils.toString(dataEntity)));
                 httppost.setEntity(dataEntity);
             }
 
@@ -210,7 +212,7 @@ public class HttpClient {
             // final BasicCookieStore cookieStore = new BasicCookieStore();
             // clientContext.setCookieStore(cookieStore);
             Response response = httpclient.execute(target, httppost, clientContext, rsp -> {
-                log.info(httppost + "->" + new StatusLine(rsp));
+                log.log(INFO, httppost + "->" + new StatusLine(rsp));
                 if (proto.equals("https") && tlsLogging) {
                     logTLS(clientContext);
                 }
@@ -235,12 +237,12 @@ public class HttpClient {
             ByteArrayEntity putEntity = new ByteArrayEntity(data,ContentType.create(contentType));
             httpput.setEntity(putEntity);
 
-            log.info("Executing request " + httpput.getMethod() + " " + httpput.getUri());
-            log.info("Request data: " + first1000(EntityUtils.toString(putEntity)));
+            log.log(INFO, "Executing request " + httpput.getMethod() + " " + httpput.getUri());
+            log.log(INFO, "Request data: " + first1000(EntityUtils.toString(putEntity)));
 
             final HttpClientContext clientContext = HttpClientContext.create();
             Response response = httpclient.execute(target, httpput, clientContext, rsp -> {
-                log.info(httpput + "->" + new StatusLine(rsp));
+                log.log(INFO, httpput + "->" + new StatusLine(rsp));
                 if (proto.equals("https") && tlsLogging) {
                     logTLS(clientContext);
                 }
@@ -265,12 +267,12 @@ public class HttpClient {
             ByteArrayEntity patchEntity = new ByteArrayEntity(data,ContentType.create(contentType));
             httppatch.setEntity(patchEntity);
 
-            log.info("Executing request " + httppatch.getMethod() + " " + httppatch.getUri());
-            log.info("Request data: " + first1000(EntityUtils.toString(patchEntity)));
+            log.log(INFO, "Executing request " + httppatch.getMethod() + " " + httppatch.getUri());
+            log.log(INFO, "Request data: " + first1000(EntityUtils.toString(patchEntity)));
 
             final HttpClientContext clientContext = HttpClientContext.create();
             Response response = httpclient.execute(target, httppatch, clientContext, rsp -> {
-                log.info(httppatch + "->" + new StatusLine(rsp));
+                log.log(INFO, httppatch + "->" + new StatusLine(rsp));
                 if (proto.equals("https") && tlsLogging) {
                     logTLS(clientContext);
                 }

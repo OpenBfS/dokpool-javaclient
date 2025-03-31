@@ -58,13 +58,13 @@ public class Document extends Folder {
             invalidateContentsNode();
             JSON.Node rspNode = privateService.postRequestWithNode(pathAfterPlonesite, createJS);
             if (rspNode.errorInfo != null) {
-                log.info(rspNode.errorInfo.toString());
+                log.log(INFO, rspNode.errorInfo.toString());
                 return null;
             }
             String newpath = service.pathWithoutPrefix(rspNode);
             return new File(service, newpath, (Object[]) null);
         } catch (Exception ex) {
-            log.error(exceptionToString(ex));
+            log.log(ERROR, exceptionToString(ex));
             return null;
         }
     }
@@ -177,13 +177,13 @@ public class Document extends Folder {
             invalidateContentsNode();
             JSON.Node rspNode = privateService.postRequestWithNode(pathAfterPlonesite, createJS);
             if (rspNode.errorInfo != null) {
-                log.info(rspNode.errorInfo.toString());
+                log.log(INFO, rspNode.errorInfo.toString());
                 return null;
             }
             String newpath = service.pathWithoutPrefix(rspNode);
             return new Image(service, newpath, rspNode.toMap());
         } catch (Exception ex) {
-            log.error(exceptionToString(ex));
+            log.log(ERROR, exceptionToString(ex));
             return null;
         }
     }
