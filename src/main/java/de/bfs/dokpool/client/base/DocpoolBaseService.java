@@ -30,7 +30,6 @@ import static java.lang.System.Logger.Level.INFO;
 
 /**
  * The root class to access REST-API services for DOKPOOL.
- * XMLRPC has been renamed with suffix X.
  *
  */
 public class DocpoolBaseService {
