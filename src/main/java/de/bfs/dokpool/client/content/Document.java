@@ -7,7 +7,9 @@
 
 package de.bfs.dokpool.client.content;
 
+import java.time.Instant;
 import java.util.Base64;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -257,24 +259,33 @@ public class Document extends Folder {
     }
 
 
-    protected static class ChoiceAttribute {
+    protected static class Attribute {
         public final String name;
-        public final boolean isArray;
         public final boolean mandatory;
+        public final Object defaultValue;
+
+        Attribute(String name, boolean mandatory, Object defaultValue) {
+            this.name = name;
+            this.mandatory = mandatory;
+            this.defaultValue = defaultValue;
+        }
+    }
+
+    protected static class ChoiceAttribute extends Attribute {
+        // public final String name;
+        public final boolean isArray;
+        // public final boolean mandatory;
         public final Set<String> values;
         public final Map<String,String> synonyms;
-        public final Object defaultValue;
 
         ChoiceAttribute(String name, boolean isArray, boolean mandatory, Object defaultValue, Set<String> values) {
             this(name, isArray, mandatory, defaultValue, values, null);
         }
 
         ChoiceAttribute(String name, boolean isArray, boolean mandatory, Object defaultValue, Set<String> values, Map<String,String> synonyms) {
-            this.name = name;
+            super(name, mandatory, defaultValue);
             this.isArray = isArray;
-            this.mandatory = mandatory;
             this.values = values;
-            this.defaultValue = defaultValue;
             this.synonyms = synonyms;
         }
     }
@@ -368,8 +379,32 @@ public class Document extends Folder {
         }
     }
 
+    private static void dateCheck(Attribute[] dateAttrs, JSON.Node attrNode, boolean addMandatory) throws Exception {
+        for (Attribute attr : dateAttrs) {
+            // log.log(INFO, "attr" + attr.name + attrNode.get(attr.name).toJSON());
+            JSON.Node childNode = attrNode.get(attr.name);
+            String isVal = childNode != null ? childNode.toString() : null;
+            if (isVal != null && JSON.stringToDate(isVal) == null) {
+                log.log(WARNING, "attribute \"" + attr.name +
+                    "\": removed invalid date value \"" + isVal.toString() + "\"");
+                isVal = null;
+                attrNode.remove(attr.name);
+            }
+            if (addMandatory && attr.mandatory && isVal == null) {
+                if (attr.defaultValue.toString().equals("now")) {
+                    attrNode.set(attr.name, JSON.dateToString(Date.from(Instant.now())));
+                } else {
+                    attrNode.set(attr.name, attr.defaultValue.toString());
+                }
+                log.log(WARNING, "missing attribute \"" + attr.name +
+                    "\" set to default value \"" + attrNode.get(attr.name).toString() + "\"");
+            }
+        }
+    }
+
     protected static void doksysCheck(JSON.Node attrNode, boolean addMandatory) throws Exception {
         choiceCheck(AttributeSpec.doksysChoices, attrNode, addMandatory);
+        dateCheck(AttributeSpec.doksysDates, attrNode, addMandatory);
     }
 
     protected static void rodosCheck(JSON.Node attrNode, boolean addMandatory) throws Exception {

@@ -10,6 +10,7 @@ package de.bfs.dokpool.client.content;
 import java.util.Map;
 import java.util.Set;
 
+import de.bfs.dokpool.client.content.Document.Attribute;
 import de.bfs.dokpool.client.content.Document.ChoiceAttribute;
 
 /**
@@ -19,6 +20,13 @@ import de.bfs.dokpool.client.content.Document.ChoiceAttribute;
 class AttributeSpec {
 
     private AttributeSpec() {}
+
+    protected static final Attribute[] doksysDates = new Attribute[] {
+        new Attribute("SamplingBegin", false, null),
+        new Attribute("SamplingEnd", false, null),
+        new Attribute("TrajectoryStartTime", false, null),
+        new Attribute("TrajectoryEndTime", false, null)
+    };
 
     protected static final ChoiceAttribute[] doksysChoices = new ChoiceAttribute[] {
         new ChoiceAttribute("OperationMode", false, true, "Routine", Set.of(

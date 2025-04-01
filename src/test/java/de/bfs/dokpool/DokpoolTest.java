@@ -293,14 +293,15 @@ public class DokpoolTest {
         docProperties.put("TrajectoryStartLocation", "somewhere");
         docProperties.put("TrajectoryEndLocation", "somewhere else");
         docProperties.put("Dom", new String[] {"Gamma-ODL"});
-        docProperties.put("SamplingBegin", "2025-03-27T13:50:53.000Z");
+        //this date is not valid and will be removed:
+        docProperties.put("SamplingBegin", "202X-03-27T13:50:53.000Z");
+        docProperties.put("SamplingEnd", "2025-03-27T13:50:53.000Z");
         docProperties.put("Duration", "1d");
         //Purpose is expected to be single value, but we deliver an array to test conversion:
         docProperties.put("Purpose", new String[] {"Standard-Info Bundesmessnetze"});
         //LegalBase is expected to be an array, but we deliver a string to test conversion:
         docProperties.put("LegalBase", "AVV IMIS");
         docProperties.put("MeasuringProgram", "Routinemessprogramm");
-        docProperties.put("SamplingEnd", "2025-03-27T13:50:53.000Z");
         //Z shall be replaced by "BfS (ODL)"
         docProperties.put("NetworkOperator", new String[] {"Hamburg", "Z"});
         docProperties.put("TrajectoryEndTime", "2025-03-27T13:50:53.000Z");

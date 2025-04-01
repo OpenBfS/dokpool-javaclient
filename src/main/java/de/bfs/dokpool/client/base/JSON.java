@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static java.lang.System.Logger.Level.ERROR;
 import static java.lang.System.Logger.Level.INFO;
+import static java.lang.System.Logger.Level.WARNING;
 
 
 /**
@@ -38,7 +39,7 @@ public class JSON {
     private static final java.lang.System.Logger log = System.getLogger(HttpClient.class.getName());
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    // private JSON() {}
+    private JSON() {}
 
     public static Date stringToDate(String dateStr) {
         try {
@@ -46,8 +47,8 @@ public class JSON {
             ZonedDateTime zdt = formatter.parse((String) dateStr, ZonedDateTime ::from);
             return Date.from(zdt.toInstant());
         } catch (java.time.format.DateTimeParseException pe) {
-            log.log(ERROR, "Malformed Date: "+ dateStr);
-            log.log(ERROR, DocpoolBaseService.exceptionToString(pe));
+            log.log(WARNING, "malformed date: "+ dateStr);
+            // log.log(WARNING, DocpoolBaseService.exceptionToString(pe));
             return null;
         }
     }
