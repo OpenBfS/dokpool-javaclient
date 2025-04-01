@@ -7,15 +7,11 @@
 
 package de.bfs.dokpool.client.base;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -172,15 +168,7 @@ public class BaseObject {
             if (dateObject instanceof Date) {
                 return (Date) dateObject;
             } else {
-                try {
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("[yyyy-MM-dd'T'HH:mm:ss[.SSS][XXX]]", Locale.ENGLISH).withZone(ZoneOffset.UTC);
-                    ZonedDateTime zdt = formatter.parse((String) dateObject, ZonedDateTime ::from);
-                    return Date.from(zdt.toInstant());
-                } catch (java.time.format.DateTimeParseException pe) {
-                    log.log(ERROR, "Malformed Date: "+ (String) dateObject);
-                    log.log(ERROR, exceptionToString(pe));
-                    return null;
-                }
+                return JSON.stringToDate((String) dateObject);
             }
         } else {
             return null;

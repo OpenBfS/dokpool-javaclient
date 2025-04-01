@@ -38,6 +38,26 @@ public class JSON {
     private static final java.lang.System.Logger log = System.getLogger(HttpClient.class.getName());
     private static final ObjectMapper mapper = new ObjectMapper();
 
+    private JSON() {}
+
+    public static Date stringToDate(String dateStr) {
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("[yyyy-MM-dd'T'HH:mm:ss[.SSS][XXX]]", Locale.ENGLISH).withZone(ZoneOffset.UTC);
+            ZonedDateTime zdt = formatter.parse((String) dateStr, ZonedDateTime ::from);
+            return Date.from(zdt.toInstant());
+        } catch (java.time.format.DateTimeParseException pe) {
+            log.log(ERROR, "Malformed Date: "+ dateStr);
+            log.log(ERROR, DocpoolBaseService.exceptionToString(pe));
+            return null;
+        }
+    }
+
+    public static String dateToString(Date date) {
+        ZonedDateTime valZDT = ZonedDateTime.ofInstant(date.toInstant(),ZoneOffset.UTC);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("[yyyy-MM-dd'T'HH:mm:ss[.SSS][XXX]]", Locale.ENGLISH).withZone(ZoneOffset.UTC);
+        return valZDT.format(formatter);
+    }
+
     public static class Node implements Iterable<Node> {
         private JsonNode jacksonNode;
 
@@ -90,11 +110,7 @@ public class JSON {
                         Boolean valBool = (Boolean) val;
                         set(entry.getKey(),valBool.booleanValue());
                     } else if (val instanceof Date) {
-                        //TODO: Date handling Code also exists in BaseObject. It should only be in a single place.
-                        Date valDate = (Date) val;
-                        ZonedDateTime valZDT = ZonedDateTime.ofInstant(valDate.toInstant(),ZoneOffset.UTC);
-                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("[yyyy-MM-dd'T'HH:mm:ss[.SSS][XXX]]", Locale.ENGLISH).withZone(ZoneOffset.UTC);
-                        set(entry.getKey(),valZDT.format(formatter));
+                        set(entry.getKey(),dateToString((Date) val));
                     } else {
                         log.log(ERROR, "JSON: unsupported Object of class: " + val.getClass() + val.getClass());
                         throw new Exception();
@@ -136,11 +152,7 @@ public class JSON {
                         Boolean valBool = (Boolean) val;
                         append(valBool.booleanValue());
                     } else if (val instanceof Date) {
-                        //TODO: Date handling Code also exists in BaseObject. It should only be in a single place.
-                        Date valDate = (Date) val;
-                        ZonedDateTime valZDT = ZonedDateTime.ofInstant(valDate.toInstant(),ZoneOffset.UTC);
-                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("[yyyy-MM-dd'T'HH:mm:ss[.SSS][XXX]]", Locale.ENGLISH).withZone(ZoneOffset.UTC);
-                        append(valZDT.format(formatter));
+                        append(dateToString((Date) val));
                     } else {
                         log.log(ERROR, "JSON: unsupported Object of class: " + val.getClass() + val.getClass());
                         throw new Exception();
