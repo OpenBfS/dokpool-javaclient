@@ -256,6 +256,12 @@ public class Document extends Folder {
                 !oldLocalBehaviors.arrayHasValue("rodos");
             rodosCheck(attrNode, bahaviorAdded);
         }
+
+        if (newLocalBehaviors.arrayHasValue("rei") || oldLocalBehaviors.arrayHasValue("rei")) {
+            boolean bahaviorAdded = newLocalBehaviors.arrayHasValue("rei") &&
+                !oldLocalBehaviors.arrayHasValue("rei");
+            reiCheck(attrNode, bahaviorAdded);
+        }
     }
 
 
@@ -367,7 +373,7 @@ public class Document extends Folder {
                 //     attrNode.remove(attr.name);
                 // }
             }
-            if (addMandatory && attr.mandatory && isVal == null) {
+            if (addMandatory && attr.mandatory && attr.defaultValue != null && isVal == null) {
                 log.log(WARNING, "missing attribute \"" + attr.name +
                     "\" set to default value \"" + attr.defaultValue + "\"");
                 if (attr.defaultValue instanceof JSON.Node) {
@@ -375,6 +381,8 @@ public class Document extends Folder {
                 } else {
                     attrNode.set(attr.name, attr.defaultValue.toString());
                 }
+            } else if (addMandatory && attr.mandatory && attr.defaultValue == null && isVal == null) {
+                log.log(ERROR, "missing attribute \"" + attr.name + "\" with no sensible default (likely rejected bey Dokpool).");
             }
         }
     }
@@ -390,7 +398,7 @@ public class Document extends Folder {
                 isVal = null;
                 attrNode.remove(attr.name);
             }
-            if (addMandatory && attr.mandatory && isVal == null) {
+            if (addMandatory && attr.mandatory && attr.defaultValue != null && isVal == null) {
                 if (attr.defaultValue.toString().equals("now")) {
                     attrNode.set(attr.name, JSON.dateToString(Date.from(Instant.now())));
                 } else {
@@ -398,6 +406,8 @@ public class Document extends Folder {
                 }
                 log.log(WARNING, "missing attribute \"" + attr.name +
                     "\" set to default value \"" + attrNode.get(attr.name).toString() + "\"");
+            } else if (addMandatory && attr.mandatory && attr.defaultValue == null && isVal == null) {
+                log.log(ERROR, "missing attribute \"" + attr.name + "\" with no sensible default (likely rejected bey Dokpool).");
             }
         }
     }
@@ -409,6 +419,10 @@ public class Document extends Folder {
 
     protected static void rodosCheck(JSON.Node attrNode, boolean addMandatory) throws Exception {
         choiceCheck(AttributeSpec.rodosChoices, attrNode, addMandatory);
+    }
+
+    protected static void reiCheck(JSON.Node attrNode, boolean addMandatory) throws Exception {
+        choiceCheck(AttributeSpec.reiChoices, attrNode, addMandatory);
     }
 
     /*

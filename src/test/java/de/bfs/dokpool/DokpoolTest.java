@@ -411,7 +411,7 @@ public class DokpoolTest {
         reiProperties.put("Year", "2020");
         reiProperties.put("Period","Q4");
         reiProperties.put("Origins", "Strahlenschutzverantwortlicher");
-        reiProperties.put("PDFVersion", "PDF/A-1b");
+        reiProperties.put("PDFVersion", "PDF-Version thar does not exist");
         d = groupFolder.createAppSpecificDocument(randId, "New from Java",
             "Description from Java", "<p>Text from Java!</p>","reireport", new String[] {"rei"},
             null,

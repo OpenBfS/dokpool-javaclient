@@ -567,5 +567,13 @@ public class JSON {
         }
 
     }
+
+    public static Node nullNode(){
+        try {
+            return new Node("null");
+        } catch (Exception ex) {
+            return null;
+        }
+    }
 }
 

@@ -235,18 +235,9 @@ public class Folder extends BaseObject {
                 }
             }
             if (localBehaviors.arrayHasValue("rei")) {
-                if (createJS.get("MStIDs") == null) {
-                    createJS.set("MStIDs", new JSON.Node("null"));
-                }
+                Document.reiCheck(createJS, true);
                 if (createJS.get("docType") == null) {
                     createJS.set("docType", "reireport");
-                }
-                if ((createJS.get("Authority") == null) || (createJS.get("ReiLegalBases") == null) ||
-                        (createJS.get("NuclearInstallations") == null) || (createJS.get("Year") == null) ||
-                        (createJS.get("Period") == null) || (createJS.get("Origins") == null) ||
-                        (createJS.get("PDFVersion") == null)
-                ) {
-                    log.log(ERROR, "Authority, ReiLegalBases, NuclearInstallations, Year, Period, Origins and PDFVersion are mandatory for REI with no sensible default.");
                 }
             }
 

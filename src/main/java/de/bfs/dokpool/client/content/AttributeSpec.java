@@ -7,9 +7,11 @@
 
 package de.bfs.dokpool.client.content;
 
+import java.time.Year;
 import java.util.Map;
 import java.util.Set;
 
+import de.bfs.dokpool.client.base.JSON;
 import de.bfs.dokpool.client.content.Document.Attribute;
 import de.bfs.dokpool.client.content.Document.ChoiceAttribute;
 
@@ -20,6 +22,14 @@ import de.bfs.dokpool.client.content.Document.ChoiceAttribute;
 class AttributeSpec {
 
     private AttributeSpec() {}
+
+    private static String[] yearsSince1987;
+    static {
+        yearsSince1987 = new String[Year.now().getValue()-1986];
+        for (int year = 1987; year <= Year.now().getValue(); year++) {
+            yearsSince1987[year-1987] = String.valueOf(year);
+        }
+    }
 
     protected static final Attribute[] doksysDates = new Attribute[] {
         new Attribute("SamplingBegin", false, null),
@@ -1673,4 +1683,252 @@ class AttributeSpec {
             "Einzelrechnung"
         )),
     };
+
+    protected static final ChoiceAttribute[] reiChoices = new ChoiceAttribute[] {
+
+        new ChoiceAttribute("Authority", false, true, "", Set.of(
+            "de_bw",
+            "de_by",
+            "de_be",
+            "de_bb",
+            "de_hb",
+            "de_el",
+            "de_hh",
+            "de_he",
+            "de_mv",
+            "de_ni",
+            "de_nw",
+            "de_rp",
+            "de_sl",
+            "de_sn",
+            "de_st",
+            "de_sh",
+            "de_th"
+        )),
+
+        new ChoiceAttribute("MStIDs", true, true, JSON.nullNode(), Set.of(
+            "00000",
+            "00001",
+            "01002",
+            "01010",
+            "01011",
+            "01020",
+            "01051",
+            "01071",
+            "01081",
+            "01181",
+            "01551",
+            "03020",
+            "03040",
+            "03060",
+            "03102",
+            "03132",
+            "03141",
+            "03151",
+            "03161",
+            "03171",
+            "03191",
+            "03201",
+            "03211",
+            "03221",
+            "03231",
+            "03561",
+            "03571",
+            "04020",
+            "04032",
+            "05020",
+            "05030",
+            "05040",
+            "05050",
+            "05060",
+            "05080",
+            "05090",
+            "05091",
+            "05092",
+            "05141",
+            "05151",
+            "05161",
+            "05171",
+            "05181",
+            "06060",
+            "06101",
+            "06122",
+            "06501",
+            "07002",
+            "07010",
+            "07020",
+            "07030",
+            "07040",
+            "07071",
+            "07081",
+            "08002",
+            "08010",
+            "08031",
+            "08041",
+            "08061",
+            "08082",
+            "08101",
+            "08111",
+            "08121",
+            "08131",
+            "08201",
+            "08210",
+            "08221",
+            "08511",
+            "08521",
+            "09030",
+            "09051",
+            "09052",
+            "09081",
+            "09082",
+            "09111",
+            "09121",
+            "09122",
+            "09123",
+            "09131",
+            "09141",
+            "09151",
+            "09161",
+            "09162",
+            "09171",
+            "09181",
+            "09192",
+            "09231",
+            "09300",
+            "09521",
+            "09531",
+            "09541",
+            "10010",
+            "10030",
+            "10042",
+            "11010",
+            "11020",
+            "11042",
+            "11061",
+            "12010",
+            "12032",
+            "12041",
+            "13002",
+            "13010",
+            "13031",
+            "13032",
+            "13033",
+            "14002",
+            "14010",
+            "14032",
+            "14040",
+            "14041",
+            "15010",
+            "18001",
+            "18002",
+            "18003"
+        )),
+
+        new ChoiceAttribute("NuclearInstallations", true, true, null, Set.of(
+            "UCHL",
+            "UELA",
+            "UELM",
+            "UFRC",
+            "UFRF",
+            "U01A",
+            "U01B",
+            "U01C",
+            "U01D",
+            "U01I",
+            "U01K",
+            "U01L",
+            "U01M",
+            "U03A",
+            "U03B",
+            "U03C",
+            "U03E",
+            "U03G",
+            "U03K",
+            "U03L",
+            "U03P",
+            "U03S",
+            "U03U",
+            "U03Z",
+            "U05B",
+            "U05F",
+            "U05G",
+            "U05K",
+            "U05T",
+            "U05U",
+            "U06B",
+            "U07M",
+            "U07U",
+            "U08H",
+            "U08K",
+            "U08M",
+            "U08N",
+            "U08O",
+            "U08P",
+            "U08W",
+            "U09A",
+            "U09B",
+            "U09C",
+            "U09D",
+            "U09E",
+            "U09F",
+            "U09G",
+            "U09H",
+            "U09I",
+            "U09J",
+            "U09K",
+            "U11B",
+            "U12R",
+            "U13A",
+            "U13B",
+            "U14R",
+            "U15M"
+        )),
+
+        new ChoiceAttribute("Origins", false, true, null, Set.of(
+            "Strahlenschutzverantwortlicher",
+            "unabhaengige Messstelle"
+        )),
+
+        new ChoiceAttribute("PDFVersion", false, true, "keine Angabe", Set.of(
+            "keine Angabe",
+            "PDF/A-1b",
+            "PDF/A-1a",
+            "PDF/A-2a",
+            "PDF/A-2b",
+            "PDF/A-2u",
+            "PDF/A-3a",
+            "PDF/A-3b",
+            "PDF/A-3u"
+        )),
+
+        new ChoiceAttribute("Period", false, true, null, Set.of("Y",
+            "H1",
+            "H2",
+            "Q1",
+            "Q2",
+            "Q3",
+            "Q4",
+            "M1",
+            "M2",
+            "M3",
+            "M4",
+            "M5",
+            "M6",
+            "M7",
+            "M8",
+            "M9",
+            "M10",
+            "M11",
+            "M12"
+        )),
+
+        new ChoiceAttribute("ReiLegalBases", true, true, null, Set.of(
+            "REI-E",
+            "REI-I"
+        )),
+
+        new ChoiceAttribute("Year", false, true, null, Set.of(yearsSince1987)),
+    };
+
+
 }
