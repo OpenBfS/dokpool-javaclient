@@ -45,24 +45,40 @@ See the [test class](src/test/java/de/bfs/dokpool/DokpoolTest.java) for more exa
 
 To create dokpool-client simply build it with:
 
-    mvn package -DskipTests
+```bash
+mvn package -DskipTests
+```
 
 and find from:
 
-    target/dokpool-client.jar
+```bash
+target/dokpool-client.jar
+```
+
+If your build fails because of checkstyle, then run:
+
+```bash
+grep 'severity="error"' target/checkstyle-result.xml
+```
 
 To create the api docs within folder apidocs run:
 
-    mvn javadoc:javadoc
+```bash
+mvn javadoc:javadoc
+```
 
 Test with
 
-    cp .testenv.example .testenv #adapt to dokpool instance
-    bash -c 'set -o allexport && source .testenv && mvn test'
+```bash
+cp .testenv.example .testenv #adapt to dokpool instance
+bash -c 'set -o allexport && source .testenv && mvn test'
+```
 
 If you plan to use IDEA J then do
 
-    cat .testenv |  tr '\n' ';'
+```bash
+cat .testenv |  tr '\n' ';'
+```
 
 and copy the output to the Environment variable entry in Run -> Edit Configurations (should open the JUnit config).
 

@@ -38,7 +38,7 @@ public class JSON {
     private static final java.lang.System.Logger log = System.getLogger(HttpClient.class.getName());
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    private JSON() {}
+    // private JSON() {}
 
     public static Date stringToDate(String dateStr) {
         try {
