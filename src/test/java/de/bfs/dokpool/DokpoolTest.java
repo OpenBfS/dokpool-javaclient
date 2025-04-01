@@ -301,6 +301,7 @@ public class DokpoolTest {
         docProperties.put("LegalBase", "AVV IMIS");
         docProperties.put("MeasuringProgram", "Routinemessprogramm");
         docProperties.put("SamplingEnd", "2025-03-27T13:50:53.000Z");
+        //Z shall be replaced by "BfS (ODL)"
         docProperties.put("NetworkOperator", new String[] {"Hamburg", "Z"});
         docProperties.put("TrajectoryEndTime", "2025-03-27T13:50:53.000Z");
         docProperties.put("TrajectoryStartTime", "2025-03-27T13:50:53.000Z");

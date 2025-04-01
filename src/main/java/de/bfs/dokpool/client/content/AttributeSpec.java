@@ -7,6 +7,7 @@
 
 package de.bfs.dokpool.client.content;
 
+import java.util.Map;
 import java.util.Set;
 
 import de.bfs.dokpool.client.content.Document.ChoiceAttribute;
@@ -1337,6 +1338,42 @@ class AttributeSpec {
             "DWD",
             "auslaend. Messnetze",
             "BfS (ODL)"
+        ), Map.ofEntries(
+            Map.entry("A","BfS (Spuren)"),
+            Map.entry("B","vTI"),
+            Map.entry("D","BfS/ZdB"),
+            Map.entry("E","BfE"),
+            Map.entry("I","BfS (LSt. AB)"),
+            Map.entry("L","BfS (LSt. TW ...)"),
+            Map.entry("M","BMUB"),
+            Map.entry("N","MRI"),
+            Map.entry("S","Sonstige"),
+            Map.entry("T","PTB"),
+            Map.entry("U","BfS (ABI)"),
+            Map.entry("W","DWD"),
+            Map.entry("Z","BfS (ODL)"),
+            Map.entry("01","Schleswig-Holstein"),
+            Map.entry("02","Hamburg"),
+            Map.entry("03","Niedersachsen"),
+            Map.entry("04","Bremen"),
+            Map.entry("05","Nordrhein-Westfalen"),
+            Map.entry("06","Hessen"),
+            Map.entry("07","Rheinland-Pfalz"),
+            Map.entry("08","Baden-Wuerttemberg"),
+            Map.entry("09","Bayern"),
+            Map.entry("10","Saarland"),
+            Map.entry("11","Berlin"),
+            Map.entry("12","Brandenburg"),
+            Map.entry("13","Mecklenburg-Vorpommern"),
+            Map.entry("14","Sachsen"),
+            Map.entry("15","Sachsen-Anhalt"),
+            Map.entry("16","Thueringen"),
+            Map.entry("18","Endlager (Bundesaufsicht)"),
+            Map.entry("19","ZdB-Testnetz"),
+            Map.entry("17","Bundeswehr"),
+            Map.entry("G","BfG"),
+            Map.entry("H","BSH"),
+            Map.entry("X","auslaend. Messnetze")
         )),
 
         new ChoiceAttribute("Purpose", false, false, null, Set.of(

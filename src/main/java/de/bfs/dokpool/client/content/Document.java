@@ -262,14 +262,20 @@ public class Document extends Folder {
         public final boolean isArray;
         public final boolean mandatory;
         public final Set<String> values;
+        public final Map<String,String> synonyms;
         public final Object defaultValue;
 
         ChoiceAttribute(String name, boolean isArray, boolean mandatory, Object defaultValue, Set<String> values) {
+            this(name, isArray, mandatory, defaultValue, values, null);
+        }
+
+        ChoiceAttribute(String name, boolean isArray, boolean mandatory, Object defaultValue, Set<String> values, Map<String,String> synonyms) {
             this.name = name;
             this.isArray = isArray;
             this.mandatory = mandatory;
             this.values = values;
             this.defaultValue = defaultValue;
+            this.synonyms = synonyms;
         }
     }
 
@@ -306,10 +312,17 @@ public class Document extends Folder {
             JSON.Node childNode = nodeTypeFittingToChoice(attrNode, attr);
             Object isVal = childNode != null ? childNode.toString() : null;
             if (isVal != null && !attr.isArray && !attr.values.contains(isVal)) {
-                log.log(WARNING, "attribute \"" + attr.name +
-                    "\": removed invalid value \"" + isVal.toString() + "\"");
-                isVal = null;
-                attrNode.remove(attr.name);
+                if (attr.synonyms != null && attr.synonyms.containsKey(isVal)) {
+                    String synVal = attr.synonyms.get(isVal);
+                    log.log(WARNING, "attribute \"" + attr.name +
+                        "\": value \"" + isVal.toString() + "\" replaced by \"" + synVal + "\"");
+                    attrNode.set(attr.name, synVal);
+                } else {
+                    log.log(WARNING, "attribute \"" + attr.name +
+                        "\": removed invalid value \"" + isVal.toString() + "\"");
+                    isVal = null;
+                    attrNode.remove(attr.name);
+                }
             } else if (isVal != null && attr.isArray) {
                 boolean rewrite = false;
                 // int valid = 0;
@@ -318,8 +331,16 @@ public class Document extends Folder {
                     String entry = entryNode.toString();
                     if (!attr.values.contains(entry)) {
                         rewrite = true;
-                        log.log(WARNING, "attribute \"" + attr.name +
-                            "\": removed invalid array entry \"" + entry + "\"");
+                        if (attr.synonyms != null && attr.synonyms.containsKey(entry)) {
+                            String synEntry = attr.synonyms.get(entry);
+                            log.log(WARNING, "attribute \"" + attr.name +
+                                "\": array entry \"" + entry + "\" replaced by \"" + synEntry + "\"");
+                            repl.append(synEntry);
+                            // valid++;
+                        } else {
+                            log.log(WARNING, "attribute \"" + attr.name +
+                                "\": removed invalid array entry \"" + entry + "\"");
+                        }
                     } else {
                         repl.append(entry);
                         // valid++;
