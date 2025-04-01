@@ -10,6 +10,7 @@ package de.bfs.dokpool.client.content;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
 
 import de.bfs.dokpool.client.base.BaseObject;
 import de.bfs.dokpool.client.base.DocpoolBaseService;
@@ -25,7 +26,7 @@ public class Group extends BaseObject {
     private List<String> allowedDocTypes;
 
     protected Group(DocpoolBaseService service, String path, String groupId, String title, String description, String dp) {
-        super(service, path, (Object[]) null);
+        super(service, path, (Map<String,Object>) null);
         this.groupId = groupId;
         this.title = title;
         this.description = description;

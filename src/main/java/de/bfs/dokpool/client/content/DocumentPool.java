@@ -21,6 +21,7 @@ import de.bfs.dokpool.client.base.JSON;
  */
 public class DocumentPool extends Folder {
 
+    @Deprecated
     public DocumentPool(DocpoolBaseService service, String path, Object[] data) {
         super(service, path, data);
     }

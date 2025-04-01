@@ -17,6 +17,7 @@ import java.util.Map;
  *
  */
 public class Event extends BaseObject {
+    @Deprecated
     public Event(DocpoolBaseService service, String path, Object[] data) {
         super(service, path, data);
     }

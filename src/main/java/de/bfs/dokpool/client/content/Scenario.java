@@ -17,6 +17,7 @@ import de.bfs.dokpool.client.base.DocpoolBaseService;
  *
  */
 public class Scenario extends BaseObject {
+    @Deprecated
     public Scenario(DocpoolBaseService service, String path, Object[] data) {
         super(service, path, data);
     }

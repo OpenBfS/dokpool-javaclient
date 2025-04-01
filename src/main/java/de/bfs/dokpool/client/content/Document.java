@@ -22,6 +22,7 @@ import de.bfs.dokpool.client.base.JSON;
  *
  */
 public class Document extends Folder {
+    @Deprecated
     public Document(DocpoolBaseService service, String path, Object[] alldata) {
         super(service, path, alldata);
     }
@@ -64,7 +65,7 @@ public class Document extends Folder {
                 return null;
             }
             String newpath = service.pathWithoutPrefix(rspNode);
-            return new File(service, newpath, (Object[]) null);
+            return new File(service, newpath, (Map<String,Object>) null);
         } catch (Exception ex) {
             log.log(ERROR, exceptionToString(ex));
             return null;

@@ -19,6 +19,7 @@ import de.bfs.dokpool.client.base.JSON;
  *
  */
 public class Image extends BaseObject {
+    @Deprecated
     public Image(DocpoolBaseService service, String path, Object[] alldata) {
         super(service, path, alldata);
     }

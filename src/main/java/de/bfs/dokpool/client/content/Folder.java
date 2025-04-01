@@ -30,6 +30,7 @@ public class Folder extends BaseObject {
     }
 
     @SuppressWarnings("unchecked")
+    @Deprecated
     public Folder(DocpoolBaseService service, String path, Object[] alldata) {
         super(service, path, alldata);
         if (alldata != null) {
@@ -101,13 +102,13 @@ public class Folder extends BaseObject {
                 String path = service.pathWithoutPrefix(itemNode);
                 if ((type == null) || (type.equals(portal_type))) {
                     if (portal_type.equals("SimpleFolder") || portal_type.equals("ELANTransferFolder")) {
-                        res.add(new Folder(service, path, (Object[]) null));
+                        res.add(new Folder(service, path, (Map<String,Object>) null));
                     } else if (portal_type.equals("DPDocument") || portal_type.equals("InfoDocument")) {
-                        res.add(new Document(service, path, (Object[]) null));
+                        res.add(new Document(service, path, (Map<String,Object>) null));
                     } else if (portal_type.equals("File")) {
-                        res.add(new File(service, path, (Object[]) null));
+                        res.add(new File(service, path, (Map<String,Object>) null));
                     } else if (portal_type.equals("Image")) {
-                        res.add(new Image(service, path, (Object[]) null));
+                        res.add(new Image(service, path, (Map<String,Object>) null));
                     }
                 }
             }
@@ -253,7 +254,7 @@ public class Folder extends BaseObject {
                 return null;
             }
             String newpath = service.pathWithoutPrefix(rspNode);
-            return new Document(service, newpath, (Object[]) null);
+            return new Document(service, newpath, (Map<String,Object>) null);
         } catch (Exception ex) {
             log.log(ERROR, exceptionToString(ex));
             return null;
@@ -281,7 +282,7 @@ public class Folder extends BaseObject {
                 return null;
             }
             String newpath = service.pathWithoutPrefix(rspNode);
-            return new BaseObject(service, newpath, (Object[]) null);
+            return new BaseObject(service, newpath, (Map<String,Object>) null);
         } catch (Exception ex) {
             log.log(ERROR, exceptionToString(ex));
             return null;
@@ -295,7 +296,7 @@ public class Folder extends BaseObject {
      * same subclass (e.g. Document, Event, Image) as the argument bo.
      */
     public BaseObject createCopyOf(String srcPath) {
-        return createCopyOf(new BaseObject(service, srcPath,  (Object[]) null));
+        return createCopyOf(new BaseObject(service, srcPath,  (Map<String,Object>) null));
     }
 
     /**
@@ -317,7 +318,7 @@ public class Folder extends BaseObject {
                 return null;
             }
             return bo.getClass().getConstructor(DocpoolBaseService.class, String.class, Object[].class).newInstance(
-                service, service.pathWithoutPrefix(rspNode.get(0).get("target").toString()), (Object[]) null
+                service, service.pathWithoutPrefix(rspNode.get(0).get("target").toString()), (Map<String,Object>) null
             );
         } catch (Exception ex) {
             log.log(ERROR, exceptionToString(ex));
@@ -365,7 +366,7 @@ public class Folder extends BaseObject {
      * @return true if deletion succeeds, false otherwise
      */
     public boolean deleteObject(String id) {
-        return (new BaseObject(service, pathAfterPlonesite + "/" + id, (Object[]) null)).delete();
+        return (new BaseObject(service, pathAfterPlonesite + "/" + id, (Map<String,Object>) null)).delete();
     }
 
 }

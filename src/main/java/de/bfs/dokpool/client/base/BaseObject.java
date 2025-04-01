@@ -38,6 +38,7 @@ public class BaseObject {
     protected boolean dataComplete = false;
     protected Map<String,Object> metadata = null;
 
+    @Deprecated
     @SuppressWarnings("unchecked")
     public BaseObject(DocpoolBaseService service, String path, Object[] alldata) {
         this.service = service;
