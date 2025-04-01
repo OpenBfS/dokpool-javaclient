@@ -1659,4 +1659,18 @@ class AttributeSpec {
             "nicht geprueft"
         )),
     };
+
+    protected static final ChoiceAttribute[] rodosChoices = new ChoiceAttribute[] {
+        new ChoiceAttribute("PrognosisType", false, true, "Sonstige Ausbreitungsrechnung", Set.of(
+            "Sonstige Ausbreitungsrechnung",
+            "Potenziell betroffene Gebiete",
+            "RODOS Prognose",
+            "DWD Ausbreitungsrechnung ab Quelle",
+            "LASAIR/LASAT"
+        )),
+        new ChoiceAttribute("PrognosisForm", false, false, null, Set.of(
+            "Routinerechnung",
+            "Einzelrechnung"
+        )),
+    };
 }

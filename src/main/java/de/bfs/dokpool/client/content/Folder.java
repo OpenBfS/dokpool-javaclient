@@ -230,6 +230,9 @@ public class Folder extends BaseObject {
             }
             if (localBehaviors.arrayHasValue("rodos")) {
                 Document.rodosCheck(createJS, true);
+                if (createJS.get("docType") == null) {
+                    createJS.set("docType", "rodosprojection");
+                }
             }
             if (localBehaviors.arrayHasValue("rei")) {
                 if (createJS.get("MStIDs") == null) {

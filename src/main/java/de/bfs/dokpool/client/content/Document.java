@@ -408,32 +408,7 @@ public class Document extends Folder {
     }
 
     protected static void rodosCheck(JSON.Node attrNode, boolean addMandatory) throws Exception {
-        final Set<String> validPrognosisType = Set.of(
-            "Sonstige Ausbreitungsrechnung",
-            "Potenziell betroffene Gebiete",
-            "RODOS Prognose",
-            "DWD Ausbreitungsrechnung ab Quelle",
-            "LASAIR/LASAT"
-        );
-        final Set<String> validPrognosisForm = Set.of(
-            "Routinerechnung",
-            "Einzelrechnung"
-        );
-        String ptype = attrNode.get("PrognosisType") != null ?
-            attrNode.get("PrognosisType").toString() : null;
-        if (addMandatory && ptype == null) {
-            attrNode.set("PrognosisType", "Sonstige Ausbreitungsrechnung");
-        } else if (ptype != null && !validPrognosisType.contains(ptype)) {
-            attrNode.remove("PrognosisType");
-        }
-        String pform = attrNode.get("PrognosisForm") != null ?
-            attrNode.get("PrognosisForm").toString() : null;
-        if (pform != null && !validPrognosisForm.contains(pform)) {
-            attrNode.remove("PrognosisForm");
-        }
-        if (attrNode.get("docType") == null) {
-            attrNode.set("docType", "rodosprojection");
-        }
+        choiceCheck(AttributeSpec.rodosChoices, attrNode, addMandatory);
     }
 
     /*
