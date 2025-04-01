@@ -1706,7 +1706,7 @@ class AttributeSpec {
             "de_th"
         )),
 
-        new ChoiceAttribute("MStIDs", true, true, JSON.nullNode(), Set.of(
+        new ChoiceAttribute("MStIDs", true, true, new JSON.Node("null"), Set.of(
             "00000",
             "00001",
             "01002",

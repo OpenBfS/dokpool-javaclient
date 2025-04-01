@@ -33,6 +33,7 @@ import static java.lang.System.Logger.Level.WARNING;
 /**
  * This class will be a wrapper around Jackson's API as we also use org.json in the IRIX stack.
  * Method names are similar, but we only have a single instantiated nested class Node.
+ * All methods may throw an instance of (a subclass of) **DokpoolRuntimeException**.
  */
 public class JSON {
 
@@ -59,27 +60,36 @@ public class JSON {
         return valZDT.format(formatter);
     }
 
+    private static class JSONRuntimeException extends DokpoolRuntimeException {
+        JSONRuntimeException(String msg, Exception cause) {
+            super(msg, cause);
+        }
+        JSONRuntimeException(String msg) {
+            super(msg, null);
+        }
+    }
+
     public static class Node implements Iterable<Node> {
         private JsonNode jacksonNode;
 
         //This is just a convenience property to pass on error information alongside a node (e.g. HTTP Status code)
         public Object errorInfo = null;
 
-        public Node(String json) throws Exception {
+        public Node(String json) {
             if (json == null) {
                 throw new NullPointerException();
             }
             try {
                 jacksonNode = mapper.readTree(json);
             } catch (JsonProcessingException jpe) {
-                throw new Exception("JSON processing error.");
+                throw new JSONRuntimeException("JSON processing error.");
             }
             if (jacksonNode == null) {
-                throw new Exception("JSON processing error.");
+                throw new JSONRuntimeException("JSON processing error.");
             }
         }
 
-        public Node(Map<String,Object> map) throws Exception {
+        public Node(Map<String,Object> map) {
             try {
                 jacksonNode = mapper.readTree("{}");
                 for (Map.Entry<String,Object> entry : map.entrySet()) {
@@ -114,15 +124,15 @@ public class JSON {
                         set(entry.getKey(),dateToString((Date) val));
                     } else {
                         log.log(ERROR, "JSON: unsupported Object of class: " + val.getClass() + val.getClass());
-                        throw new Exception();
+                        throw new JSONRuntimeException("JSON: unsupported Object of class: " + val.getClass() + val.getClass());
                     }
                 }
             } catch (Exception ex) {
-                throw new Exception("JSON creation error.", ex);
+                throw new JSONRuntimeException("JSON creation error.", ex);
             }
         }
 
-        public Node(List<Object> vec) throws Exception {
+        public Node(List<Object> vec) {
             try {
                 jacksonNode = mapper.readTree("[]");
                 for (Object val : vec) {
@@ -156,11 +166,11 @@ public class JSON {
                         append(dateToString((Date) val));
                     } else {
                         log.log(ERROR, "JSON: unsupported Object of class: " + val.getClass() + val.getClass());
-                        throw new Exception();
+                        throw new JSONRuntimeException("JSON: unsupported Object of class: " + val.getClass() + val.getClass());
                     }
                 }
             } catch (Exception ex) {
-                throw new Exception("JSON creation error.");
+                throw new JSONRuntimeException("JSON creation error.");
             }
         }
 
@@ -181,7 +191,7 @@ public class JSON {
             return gotNode != null ? new Node(gotNode) : null;
         }
 
-        public boolean arrayHasValue(Object val) throws Exception {
+        public boolean arrayHasValue(Object val) {
             try {
                 ArrayNode arrayNode = ((ArrayNode) jacksonNode);
                 for (JsonNode node : arrayNode) {
@@ -196,7 +206,7 @@ public class JSON {
                     }
                 }
             } catch (ClassCastException cce) {
-                throw new Exception("JSON node is not an array.");
+                throw new JSONRuntimeException("JSON node is not an array.");
             }
             return false;
         }
@@ -207,7 +217,7 @@ public class JSON {
          * @return an array where every element is element[childId] of the input array.
          * @throws Exception
          */
-        public JSON.Node flattenArray(String childId) throws Exception {
+        public JSON.Node flattenArray(String childId) {
             JSON.Node flatArray = new JSON.Node("[]");
             ArrayNode flatArrayNode = (ArrayNode) flatArray.jacksonNode;
             try {
@@ -216,20 +226,20 @@ public class JSON {
                     flatArrayNode.add(node.get(childId));
                 }
             } catch (ClassCastException cce) {
-                throw new Exception("JSON node cannot be flattened by common id.");
+                throw new JSONRuntimeException("JSON node cannot be flattened by common id.");
             }
             return flatArray;
         }
 
-        public boolean arrayHasValue(long i) throws Exception {
+        public boolean arrayHasValue(long i) {
             return arrayHasValue(Long.valueOf(i));
         }
 
-        public boolean arrayHasValue(boolean b) throws Exception {
+        public boolean arrayHasValue(boolean b) {
             return arrayHasValue(Boolean.valueOf(b));
         }
 
-        public boolean arrayHasValue(double d) throws Exception {
+        public boolean arrayHasValue(double d) {
             return arrayHasValue(Double.valueOf(d));
         }
 
@@ -239,47 +249,47 @@ public class JSON {
          * @param childId the id the child shalle have afterwards.
          * @param child The node to insert.
          */
-        public Node set(String childId, Node child) throws Exception {
+        public Node set(String childId, Node child) {
             try {
                 ((ObjectNode) jacksonNode).set(childId, child.jacksonNode.deepCopy());
             } catch (ClassCastException cce) {
-                throw new Exception("JSON node is not an object.");
+                throw new JSONRuntimeException("JSON node is not an object.");
             }
             return this;
         }
 
-        public Node set(String childId, String str) throws Exception {
+        public Node set(String childId, String str) {
             try {
                 ((ObjectNode) jacksonNode).put(childId, str);
             } catch (ClassCastException cce) {
-                throw new Exception("JSON node is not an object.");
+                throw new JSONRuntimeException("JSON node is not an object.");
             }
             return this;
         }
 
-        public Node set(String childId, double d) throws Exception {
+        public Node set(String childId, double d) {
             try {
                 ((ObjectNode) jacksonNode).put(childId, d);
             } catch (ClassCastException cce) {
-                throw new Exception("JSON node is not an object.");
+                throw new JSONRuntimeException("JSON node is not an object.");
             }
             return this;
         }
 
-        public Node set(String childId, long i) throws Exception {
+        public Node set(String childId, long i) {
             try {
                 ((ObjectNode) jacksonNode).put(childId, i);
             } catch (ClassCastException cce) {
-                throw new Exception("JSON node is not an object.");
+                throw new JSONRuntimeException("JSON node is not an object.");
             }
             return this;
         }
 
-        public Node set(String childId, boolean b) throws Exception {
+        public Node set(String childId, boolean b) {
             try {
                 ((ObjectNode) jacksonNode).put(childId, b);
             } catch (ClassCastException cce) {
-                throw new Exception("JSON node is not an object.");
+                throw new JSONRuntimeException("JSON node is not an object.");
             }
             return this;
         }
@@ -291,7 +301,7 @@ public class JSON {
          * @param childId the id the child shalle have afterwards.
          * @param child The node to insert.
          */
-        public Node setNonNull(String childId, Node c) throws Exception {
+        public Node setNonNull(String childId, Node c) {
             if (c != null) {
                 return set(childId, c);
             }
@@ -303,7 +313,7 @@ public class JSON {
          * @param childId the id the child shalle have afterwards.
          * @param str
          */
-        public Node setNonNull(String childId, String str) throws Exception {
+        public Node setNonNull(String childId, String str) {
             if (str != null) {
                 return set(childId, str);
             }
@@ -316,11 +326,11 @@ public class JSON {
          * @return the node itself
          * @throws Exception
          */
-        public Node remove(String childId) throws Exception {
+        public Node remove(String childId) {
             try {
                 ((ObjectNode) jacksonNode).remove(childId);
             } catch (ClassCastException cce) {
-                throw new Exception("JSON node is not an object.");
+                throw new JSONRuntimeException("JSON node is not an object.");
             }
             return this;
         }
@@ -331,11 +341,11 @@ public class JSON {
          * @return the node itself
          * @throws Exception
          */
-        public Node remove(int index) throws Exception {
+        public Node remove(int index) {
             try {
                 ((ArrayNode) jacksonNode).remove(index);
             } catch (ClassCastException cce) {
-                throw new Exception("JSON node is not an array.");
+                throw new JSONRuntimeException("JSON node is not an array.");
             }
             return this;
         }
@@ -346,11 +356,11 @@ public class JSON {
          * @param index Position, if negative prepends, if &gt;= size(), the node will be appended.
          * @param child The node to insert.
          */
-        public Node insert(int index, Node child) throws Exception {
+        public Node insert(int index, Node child) {
             try {
                 ((ArrayNode) jacksonNode).insert(index, child.jacksonNode.deepCopy());
             } catch (ClassCastException cce) {
-                throw new Exception("JSON node is not an array.");
+                throw new JSONRuntimeException("JSON node is not an array.");
             }
             return this;
         }
@@ -360,11 +370,11 @@ public class JSON {
          * @param index Position, if negative prepends, if &gt;= size(), the node will be appended.
          * @param d The double to insert.
          */
-        public Node insert(int index, double d) throws Exception {
+        public Node insert(int index, double d) {
             try {
                 ((ArrayNode) jacksonNode).insert(index, d);
             } catch (ClassCastException cce) {
-                throw new Exception("JSON node is not an array.");
+                throw new JSONRuntimeException("JSON node is not an array.");
             }
             return this;
         }
@@ -374,11 +384,11 @@ public class JSON {
          * @param index Position, if negative prepends, if &gt;= size(), the node will be appended.
          * @param i The long integer to insert.
          */
-        public Node insert(int index, long i) throws Exception {
+        public Node insert(int index, long i) {
             try {
                 ((ArrayNode) jacksonNode).insert(index, i);
             } catch (ClassCastException cce) {
-                throw new Exception("JSON node is not an array.");
+                throw new JSONRuntimeException("JSON node is not an array.");
             }
             return this;
         }
@@ -388,11 +398,11 @@ public class JSON {
          * @param index Position, if negative prepends, if &gt;= size(), the node will be appended.
          * @param str The string to insert.
          */
-        public Node insert(int index, String str) throws Exception {
+        public Node insert(int index, String str) {
             try {
                 ((ArrayNode) jacksonNode).insert(index, str);
             } catch (ClassCastException cce) {
-                throw new Exception("JSON node is not an array.");
+                throw new JSONRuntimeException("JSON node is not an array.");
             }
             return this;
         }
@@ -402,11 +412,11 @@ public class JSON {
          * This creates a **deep copy** of the child.
          * @param child The node to insert.
          */
-        public Node append(Node child) throws Exception {
+        public Node append(Node child) {
             try {
                 ((ArrayNode) jacksonNode).add(child.jacksonNode.deepCopy());
             } catch (ClassCastException cce) {
-                throw new Exception("JSON node is not an array.");
+                throw new JSONRuntimeException("JSON node is not an array.");
             }
             return this;
         }
@@ -415,11 +425,11 @@ public class JSON {
          * Appends a double if node is an array.
          * @param d The double to insert.
          */
-        public Node append(double d) throws Exception {
+        public Node append(double d) {
             try {
                 ((ArrayNode) jacksonNode).add(d);
             } catch (ClassCastException cce) {
-                throw new Exception("JSON node is not an array.");
+                throw new JSONRuntimeException("JSON node is not an array.");
             }
             return this;
         }
@@ -428,11 +438,11 @@ public class JSON {
          * Appends a double if node is an array.
          * @param i The long integer to insert.
          */
-        public Node append(long i) throws Exception {
+        public Node append(long i) {
             try {
                 ((ArrayNode) jacksonNode).add(i);
             } catch (ClassCastException cce) {
-                throw new Exception("JSON node is not an array.");
+                throw new JSONRuntimeException("JSON node is not an array.");
             }
             return this;
         }
@@ -441,11 +451,11 @@ public class JSON {
          * Appends a string if node is an array.
          * @param str The string to insert.
          */
-        public Node append(String str) throws Exception {
+        public Node append(String str) {
             try {
                 ((ArrayNode) jacksonNode).add(str);
             } catch (ClassCastException cce) {
-                throw new Exception("JSON node is not an array.");
+                throw new JSONRuntimeException("JSON node is not an array.");
             }
             return this;
         }
@@ -454,11 +464,11 @@ public class JSON {
          * Appends a boolean if node is an array.
          * @param b The boolean to insert.
          */
-        public Node append(boolean b) throws Exception {
+        public Node append(boolean b) {
             try {
                 ((ArrayNode) jacksonNode).add(b);
             } catch (ClassCastException cce) {
-                throw new Exception("JSON node is not an array.");
+                throw new JSONRuntimeException("JSON node is not an array.");
             }
             return this;
         }
@@ -484,7 +494,7 @@ public class JSON {
         }
 
 
-        public Object toObject() throws Exception {
+        public Object toObject() {
             switch (type()) {
                 case "object":
                     return toMap();
@@ -507,7 +517,7 @@ public class JSON {
             }
         }
 
-        public ArrayList<Object> toList() throws Exception {
+        public ArrayList<Object> toList() {
             ArrayList<Object> al = new ArrayList<>();
             try {
                 ArrayNode arrayNode = ((ArrayNode) jacksonNode);
@@ -515,12 +525,12 @@ public class JSON {
                     al.add((new Node(node)).toObject());
                 }
             } catch (ClassCastException cce) {
-                throw new Exception("JSON node is not an array.");
+                throw new JSONRuntimeException("JSON node is not an array.");
             }
             return al;
         }
 
-        public Map<String,Object> toMap() throws Exception {
+        public Map<String,Object> toMap() {
             HashMap<String,Object> hm = new HashMap<>();
             try {
                 ObjectNode objectNode = ((ObjectNode) jacksonNode);
@@ -529,16 +539,16 @@ public class JSON {
                     hm.put(entry.getKey(),new Node(entry.getValue()).toObject());
                  }
             } catch (ClassCastException cce) {
-                throw new Exception("JSON node is not an object.");
+                throw new JSONRuntimeException("JSON node is not an object.");
             }
             return hm;
         }
 
-        public String toJSON() throws Exception {
+        public String toJSON() {
             try {
                 return mapper.writeValueAsString(jacksonNode);
             } catch (JsonProcessingException jpe) {
-                throw new Exception("JSON processing error.");
+                throw new JSONRuntimeException("JSON processing error.");
             }
         }
 
@@ -566,14 +576,6 @@ public class JSON {
             return it;
         }
 
-    }
-
-    public static Node nullNode(){
-        try {
-            return new Node("null");
-        } catch (Exception ex) {
-            return null;
-        }
     }
 }
 
