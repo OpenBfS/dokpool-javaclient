@@ -7,6 +7,7 @@
 
 package de.bfs.dokpool.client.content;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.Map;
 import de.bfs.dokpool.client.base.App;
 import de.bfs.dokpool.client.base.BaseObject;
 import de.bfs.dokpool.client.base.DocpoolBaseService;
+import de.bfs.dokpool.client.base.DokpoolRuntimeException;
 import de.bfs.dokpool.client.base.JSON;
 
 /**
@@ -80,8 +82,8 @@ public class Folder extends BaseObject {
                 return null;
             }
             return new Folder(service, service.pathWithoutPrefix(subpathNode), subpathNode.toMap());
-        } catch (Exception ex) {
-            log.log(ERROR, exceptionToString(ex));
+        } catch (DokpoolRuntimeException dre) {
+            log.log(ERROR, exceptionToString(dre), dre);
             return null;
         }
     }
@@ -255,8 +257,8 @@ public class Folder extends BaseObject {
             }
             String newpath = service.pathWithoutPrefix(rspNode);
             return new Document(service, newpath, (Map<String,Object>) null);
-        } catch (Exception ex) {
-            log.log(ERROR, exceptionToString(ex));
+        } catch (DokpoolRuntimeException dre) {
+            log.log(ERROR, exceptionToString(dre), dre);
             return null;
         }
     }
@@ -283,8 +285,8 @@ public class Folder extends BaseObject {
             }
             String newpath = service.pathWithoutPrefix(rspNode);
             return new BaseObject(service, newpath, (Map<String,Object>) null);
-        } catch (Exception ex) {
-            log.log(ERROR, exceptionToString(ex));
+        } catch (DokpoolRuntimeException dre) {
+            log.log(ERROR, exceptionToString(dre), dre);
             return null;
         }
     }
@@ -320,8 +322,11 @@ public class Folder extends BaseObject {
             return bo.getClass().getConstructor(DocpoolBaseService.class, String.class, Object[].class).newInstance(
                 service, service.pathWithoutPrefix(rspNode.get(0).get("target").toString()), (Map<String,Object>) null
             );
-        } catch (Exception ex) {
-            log.log(ERROR, exceptionToString(ex));
+        } catch (DokpoolRuntimeException dre) {
+            log.log(ERROR, exceptionToString(dre), dre);
+            return null;
+        } catch (NoSuchMethodException | InstantiationException |IllegalAccessException | InvocationTargetException ex) {
+            log.log(ERROR, "Could not create copy because of Java Class System error", ex);
             return null;
         }
     }

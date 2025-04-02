@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 
 import de.bfs.dokpool.client.base.DocpoolBaseService;
+import de.bfs.dokpool.client.base.DokpoolRuntimeException;
 import de.bfs.dokpool.client.base.JSON;
 
 /**
@@ -66,8 +67,8 @@ public class Document extends Folder {
             }
             String newpath = service.pathWithoutPrefix(rspNode);
             return new File(service, newpath, (Map<String,Object>) null);
-        } catch (Exception ex) {
-            log.log(ERROR, exceptionToString(ex));
+        } catch (DokpoolRuntimeException dre) {
+            log.log(ERROR, exceptionToString(dre), dre);
             return null;
         }
     }
@@ -185,8 +186,8 @@ public class Document extends Folder {
             }
             String newpath = service.pathWithoutPrefix(rspNode);
             return new Image(service, newpath, rspNode.toMap());
-        } catch (Exception ex) {
-            log.log(ERROR, exceptionToString(ex));
+        } catch (DokpoolRuntimeException dre) {
+            log.log(ERROR, exceptionToString(dre), dre);
             return null;
         }
     }
@@ -234,7 +235,7 @@ public class Document extends Folder {
     }
 
     @Override
-    protected void checkAttrNodeUpdate(JSON.Node attrNode) throws Exception {
+    protected void checkAttrNodeUpdate(JSON.Node attrNode) throws DokpoolRuntimeException {
         JSON.Node newLocalBehaviors = attrNode.get("local_behaviors");
         if (newLocalBehaviors == null) {
             newLocalBehaviors = new JSON.Node("[]");
@@ -297,7 +298,7 @@ public class Document extends Folder {
         }
     }
 
-    private static JSON.Node nodeTypeFittingToChoice(JSON.Node attrNode, ChoiceAttribute attr) throws Exception {
+    private static JSON.Node nodeTypeFittingToChoice(JSON.Node attrNode, ChoiceAttribute attr) throws DokpoolRuntimeException {
         JSON.Node in = attrNode.get(attr.name);
         if (in == null) {
             return null;
@@ -324,7 +325,7 @@ public class Document extends Folder {
     }
 
 
-    private static void choiceCheck(ChoiceAttribute[] choiceAttrs, JSON.Node attrNode, boolean addMandatory) throws Exception {
+    private static void choiceCheck(ChoiceAttribute[] choiceAttrs, JSON.Node attrNode, boolean addMandatory) throws DokpoolRuntimeException {
         for (ChoiceAttribute attr : choiceAttrs) {
             // log.log(INFO, "attr" + attr.name + attrNode.get(attr.name).toJSON());
             JSON.Node childNode = nodeTypeFittingToChoice(attrNode, attr);
@@ -388,7 +389,7 @@ public class Document extends Folder {
         }
     }
 
-    private static void dateCheck(Attribute[] dateAttrs, JSON.Node attrNode, boolean addMandatory) throws Exception {
+    private static void dateCheck(Attribute[] dateAttrs, JSON.Node attrNode, boolean addMandatory) throws DokpoolRuntimeException {
         for (Attribute attr : dateAttrs) {
             // log.log(INFO, "attr" + attr.name + attrNode.get(attr.name).toJSON());
             JSON.Node childNode = attrNode.get(attr.name);
@@ -413,16 +414,16 @@ public class Document extends Folder {
         }
     }
 
-    protected static void doksysCheck(JSON.Node attrNode, boolean addMandatory) throws Exception {
+    protected static void doksysCheck(JSON.Node attrNode, boolean addMandatory) throws DokpoolRuntimeException {
         choiceCheck(AttributeSpec.doksysChoices, attrNode, addMandatory);
         dateCheck(AttributeSpec.doksysDates, attrNode, addMandatory);
     }
 
-    protected static void rodosCheck(JSON.Node attrNode, boolean addMandatory) throws Exception {
+    protected static void rodosCheck(JSON.Node attrNode, boolean addMandatory) throws DokpoolRuntimeException {
         choiceCheck(AttributeSpec.rodosChoices, attrNode, addMandatory);
     }
 
-    protected static void reiCheck(JSON.Node attrNode, boolean addMandatory) throws Exception {
+    protected static void reiCheck(JSON.Node attrNode, boolean addMandatory) throws DokpoolRuntimeException {
         choiceCheck(AttributeSpec.reiChoices, attrNode, addMandatory);
     }
 

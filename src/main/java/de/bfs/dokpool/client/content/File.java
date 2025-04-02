@@ -12,6 +12,7 @@ import java.util.Map;
 
 import de.bfs.dokpool.client.base.BaseObject;
 import de.bfs.dokpool.client.base.DocpoolBaseService;
+import de.bfs.dokpool.client.base.DokpoolRuntimeException;
 import de.bfs.dokpool.client.base.JSON;
 
 /**
@@ -58,8 +59,8 @@ public class File extends BaseObject {
                 return false;
             }
             return true;
-        } catch (Exception ex) {
-            log.log(ERROR, exceptionToString(ex));
+        } catch (DokpoolRuntimeException dre) {
+            log.log(ERROR, exceptionToString(dre), dre);
             return false;
         }
     }

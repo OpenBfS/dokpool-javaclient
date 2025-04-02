@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import de.bfs.dokpool.client.base.DocpoolBaseService;
+import de.bfs.dokpool.client.base.DokpoolRuntimeException;
 import de.bfs.dokpool.client.base.JSON;
 
 /**
@@ -42,8 +43,8 @@ public class DocumentPool extends Folder {
                 log.log(INFO, typeListNode.errorInfo.toString());
                 return null;
             }
-        } catch (Exception ex) {
-            log.log(ERROR, exceptionToString(ex));
+        } catch (DokpoolRuntimeException dre) {
+            log.log(ERROR, exceptionToString(dre), dre);
             return null;
         }
         if (typeListNode != null) {
@@ -71,8 +72,8 @@ public class DocumentPool extends Folder {
                 return null;
             }
             itemsNode = rspNode.get("items");
-        } catch (Exception ex) {
-            log.log(ERROR, exceptionToString(ex));
+        } catch (DokpoolRuntimeException dre) {
+            log.log(ERROR, exceptionToString(dre), dre);
             return null;
         }
         if (itemsNode != null) {
@@ -100,8 +101,8 @@ public class DocumentPool extends Folder {
                 return null;
             }
             itemsNode = rspNode.get("items");
-        } catch (Exception ex) {
-            log.log(ERROR, exceptionToString(ex));
+        } catch (DokpoolRuntimeException dre) {
+            log.log(ERROR, exceptionToString(dre), dre);
             return null;
         }
         if (itemsNode != null) {
@@ -127,8 +128,8 @@ public class DocumentPool extends Folder {
                 return null;
             }
             itemsNode = rspNode.get("items");
-        } catch (Exception ex) {
-            log.log(ERROR, exceptionToString(ex));
+        } catch (DokpoolRuntimeException dre) {
+            log.log(ERROR, exceptionToString(dre), dre);
             return null;
         }
         if (itemsNode != null) {
@@ -154,8 +155,8 @@ public class DocumentPool extends Folder {
                 return null;
             }
             itemsNode = rspNode.get("items");
-        } catch (Exception ex) {
-            log.log(ERROR, exceptionToString(ex));
+        } catch (DokpoolRuntimeException dre) {
+            log.log(ERROR, exceptionToString(dre), dre);
             return null;
         }
         if (itemsNode != null) {
@@ -181,8 +182,8 @@ public class DocumentPool extends Folder {
                 return null;
             }
             return new Folder(service, service.pathWithoutPrefix(folderNode), folderNode.toMap());
-        } catch (Exception ex) {
-            log.log(ERROR, exceptionToString(ex));
+        } catch (DokpoolRuntimeException dre) {
+            log.log(ERROR, exceptionToString(dre), dre);
             return null;
         }
     }
@@ -204,8 +205,8 @@ public class DocumentPool extends Folder {
                 return null;
             }
             return new Folder(service, service.pathWithoutPrefix(folderNode), folderNode.toMap());
-        } catch (Exception ex) {
-            log.log(ERROR, exceptionToString(ex));
+        } catch (DokpoolRuntimeException dre) {
+            log.log(ERROR, exceptionToString(dre), dre);
             return null;
         }
     }
@@ -229,8 +230,8 @@ public class DocumentPool extends Folder {
                 res.add(new Folder(service, service.pathWithoutPrefix(gfNode), dataFromNode(gfNode)));
             }
             return res;
-        } catch (Exception ex) {
-            log.log(ERROR, exceptionToString(ex));
+        } catch (DokpoolRuntimeException dre) {
+            log.log(ERROR, exceptionToString(dre), dre);
             return null;
         }
     }
@@ -252,8 +253,8 @@ public class DocumentPool extends Folder {
                 res.add(new Folder(service, service.pathWithoutPrefix(gfNode), dataFromNode(gfNode)));
             }
             return res;
-        } catch (Exception ex) {
-            log.log(ERROR, exceptionToString(ex));
+        } catch (DokpoolRuntimeException dre) {
+            log.log(ERROR, exceptionToString(dre), dre);
             return null;
         }
     }
@@ -274,8 +275,8 @@ public class DocumentPool extends Folder {
                 res.add(new Folder(service, service.pathWithoutPrefix(tfNode), dataFromNode(tfNode)));
             }
             return res;
-        } catch (Exception ex) {
-            log.log(ERROR, exceptionToString(ex));
+        } catch (DokpoolRuntimeException dre) {
+            log.log(ERROR, exceptionToString(dre), dre);
             return null;
         }
     }
@@ -306,8 +307,8 @@ public class DocumentPool extends Folder {
                 return null;
             }
             return new User(service, service.pathWithoutPrefix(rspNode), userId, password, fullname, dp);
-        } catch (Exception ex) {
-            log.log(ERROR, exceptionToString(ex));
+        } catch (DokpoolRuntimeException dre) {
+            log.log(ERROR, exceptionToString(dre), dre);
             return null;
         }
     }
@@ -338,8 +339,8 @@ public class DocumentPool extends Folder {
                 return false;
             }
             return true;
-        } catch (Exception ex) {
-            log.log(ERROR, exceptionToString(ex));
+        } catch (DokpoolRuntimeException dre) {
+            log.log(ERROR, exceptionToString(dre), dre);
             return false;
         }
     }
@@ -371,8 +372,8 @@ public class DocumentPool extends Folder {
                 return null;
             }
             return new Group(service, service.pathWithoutPrefix(rspNode), groupId, title, description, dp);
-        } catch (Exception ex) {
-            log.log(ERROR, exceptionToString(ex));
+        } catch (DokpoolRuntimeException dre) {
+            log.log(ERROR, exceptionToString(dre), dre);
             return null;
         }
     }
@@ -390,8 +391,8 @@ public class DocumentPool extends Folder {
                 return false;
             }
             return true;
-        } catch (Exception ex) {
-            log.log(ERROR, exceptionToString(ex));
+        } catch (DokpoolRuntimeException dre) {
+            log.log(ERROR, exceptionToString(dre), dre);
             return false;
         }
     }

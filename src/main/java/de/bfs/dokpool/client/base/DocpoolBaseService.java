@@ -141,8 +141,8 @@ public class DocpoolBaseService {
                 return null;
             }
             return rsp.headers.get("Location").substring(urlPrefixLength);
-        } catch (Exception ex) {
-            log.log(ERROR, exceptionToString(ex));
+        } catch (DokpoolRuntimeException dre) {
+            log.log(ERROR, exceptionToString(dre), dre);
             return null;
         }
     }
@@ -175,6 +175,7 @@ public class DocpoolBaseService {
         return username;
     }
 
+    //TODO: we also log the execptions in mosy cases, so this might be no longer neeeded 
     /*package-private*/ static String exceptionToString(Exception ex) {
         Writer stBuffer = new StringWriter();
         PrintWriter stPrintWriter = new PrintWriter(stBuffer);
@@ -289,8 +290,8 @@ public class DocpoolBaseService {
                 log.log(INFO, node.errorInfo.toString());
                 return null;
             }
-        } catch (Exception ex) {
-            log.log(ERROR, exceptionToString(ex));
+        } catch (DokpoolRuntimeException dre) {
+            log.log(ERROR, exceptionToString(dre), dre);
             return null;
         }
         List<DocumentPool> dpList = new ArrayList<>();
@@ -331,8 +332,8 @@ public class DocpoolBaseService {
                 return null;
             }
             return new DocumentPool(this, pathWithoutPrefix(rspNode), rspNode.toMap());
-        } catch (Exception ex) {
-            log.log(ERROR, exceptionToString(ex));
+        } catch (DokpoolRuntimeException dre) {
+            log.log(ERROR, exceptionToString(dre), dre);
             return null;
         }
     }

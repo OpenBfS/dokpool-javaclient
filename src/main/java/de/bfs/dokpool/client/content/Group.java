@@ -14,6 +14,7 @@ import java.util.Map;
 
 import de.bfs.dokpool.client.base.BaseObject;
 import de.bfs.dokpool.client.base.DocpoolBaseService;
+import de.bfs.dokpool.client.base.DokpoolRuntimeException;
 import de.bfs.dokpool.client.base.JSON;
 
 public class Group extends BaseObject {
@@ -64,8 +65,8 @@ public class Group extends BaseObject {
                 return;
             }
             members.add(user);
-        } catch (Exception ex) {
-            log.log(ERROR, exceptionToString(ex));
+        } catch (DokpoolRuntimeException dre) {
+            log.log(ERROR, exceptionToString(dre), dre);
         }
     }
 
@@ -84,8 +85,8 @@ public class Group extends BaseObject {
                 return;
             }
             members.remove(user);
-        } catch (Exception ex) {
-            log.log(ERROR, exceptionToString(ex));
+        } catch (DokpoolRuntimeException dre) {
+            log.log(ERROR, exceptionToString(dre), dre);
         }
     }
 
