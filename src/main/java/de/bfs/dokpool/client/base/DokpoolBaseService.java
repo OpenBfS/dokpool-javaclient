@@ -48,7 +48,7 @@ public class DokpoolBaseService {
     public final boolean allowCaching;
     public static final boolean NOCACHING = false;
 
-    /*package-private*/ PrivateDocpoolBaseService privateService;
+    /*package-private*/ PrivateDokpoolBaseService privateService;
 
     /**
      * Get a service object.
@@ -74,7 +74,7 @@ public class DokpoolBaseService {
      */
     public DokpoolBaseService(String url, String username, String password, boolean caching) {
         //new REST-Code:
-        this.privateService = new PrivateDocpoolBaseService(this);
+        this.privateService = new PrivateDokpoolBaseService(this);
         try {
             URL urlObject = new URL(url);
             this.proto = urlObject.getProtocol();
@@ -118,7 +118,7 @@ public class DokpoolBaseService {
      * @param caching (default: true) whether or not to cache metadata and folder contents
      */
     public DokpoolBaseService(String proto, String host, String port, String plonesite, String username, String password, boolean caching) {
-        this.privateService = new PrivateDocpoolBaseService(this);
+        this.privateService = new PrivateDokpoolBaseService(this);
         this.urlPrefix = HttpClient.composeUrl(proto,host,port,"/"+ plonesite);
         this.urlPrefixLength = urlPrefix.length();
         this.proto = proto;
@@ -341,9 +341,9 @@ public class DokpoolBaseService {
     /**
      * This class only exists as a visibility hack across (sub)packages.
      */
-    public class PrivateDocpoolBaseService {
+    public class PrivateDokpoolBaseService {
         DokpoolBaseService service;
-        PrivateDocpoolBaseService(DokpoolBaseService service) {
+        PrivateDokpoolBaseService(DokpoolBaseService service) {
             this.service = service;
         }
 

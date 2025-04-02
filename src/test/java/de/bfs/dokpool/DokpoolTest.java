@@ -75,8 +75,8 @@ public class DokpoolTest {
 
     // private static class ObtainDPReturn {
     //     public DocumentPool dp;
-    //     public DocpoolBaseService service;
-    //     public ObtainDPReturn(DocumentPool dp, DocpoolBaseService service) {
+    //     public DokpoolBaseService service;
+    //     public ObtainDPReturn(DocumentPool dp, DokpoolBaseService service) {
     //         this.service = service;
     //         this.dp = dp;
     //     }
@@ -91,24 +91,22 @@ public class DokpoolTest {
 
     public static DocumentPool obtainDocumentPoolREST() throws Exception {
         log.log(INFO, "URL: " + PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE + " User:" + USER + " Password:" + PW);
-        DokpoolBaseService docpoolBaseService = new DokpoolBaseService(PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE, USER, PW);
-        List<DocumentPool> myDocpools = docpoolBaseService.getDocumentPools();
-        DocumentPool mainDocpool = docpoolBaseService.getPrimaryDocumentPool();
+        DokpoolBaseService dokpoolBaseService = new DokpoolBaseService(PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE, USER, PW);
+        List<DocumentPool> myDocPools = dokpoolBaseService.getDocumentPools();
+        DocumentPool mainDocPool = dokpoolBaseService.getPrimaryDocumentPool();
 
-        log.log(INFO, "Number of Dokppols: " + myDocpools.size());
-        log.log(INFO, "Main Dokpool: " + mainDocpool.getPathWithPlonesite());
+        log.log(INFO, "Number of document pools: " + myDocPools.size());
+        log.log(INFO, "Main document pool: " + mainDocPool.getPathWithPlonesite());
 
-        for (DocumentPool sDocpool : myDocpools) {
-            if (sDocpool.getPathWithPlonesite().matches("/" + PLONESITE + "/" + DOKPOOL)) {
-                mainDocpool = sDocpool;
-                log.log(INFO, "Main Dokpool is now: " + mainDocpool.getPathWithPlonesite());
+        for (DocumentPool sDocPool : myDocPools) {
+            if (sDocPool.getPathWithPlonesite().matches("/" + PLONESITE + "/" + DOKPOOL)) {
+                mainDocPool = sDocPool;
+                log.log(INFO, "Main Dokpool is now: " + mainDocPool.getPathWithPlonesite());
                 break;
             }
         }
 
-        // new Folder(docpoolBaseService, "/bund/content/Groups/bund_zdb/java-docpool-test-doc", (Object[])null).setWorkflowStatus("retract");
-        // log.log(INFO, new Folder(docpoolBaseService, "/bund/content/Groups/bund_zdb/java-docpool-test-doc", (Object[])null).getWorkflowStatus());
-        return mainDocpool;
+        return mainDocPool;
     }
 
     /**
@@ -118,63 +116,63 @@ public class DokpoolTest {
     @Test
     public void documentTestREST() throws Exception {
         log.log(INFO, "=== TEST: documentTest ======");
-        DocumentPool mainDocpool = obtainDocumentPoolREST();
-        log.log(INFO, mainDocpool.getWorkflowStatus());
+        DocumentPool mainDocPool = obtainDocumentPoolREST();
+        log.log(INFO, mainDocPool.getWorkflowStatus());
 
-        log.log(INFO, "numer of events: " + mainDocpool.getEvents().size());
-        log.log(INFO, "numer of active events: " + mainDocpool.getActiveEvents().size());
-        List<Event> events = mainDocpool.getEvents();
+        log.log(INFO, "numer of events: " + mainDocPool.getEvents().size());
+        log.log(INFO, "numer of active events: " + mainDocPool.getActiveEvents().size());
+        List<Event> events = mainDocPool.getEvents();
         try {
             Event ev = events.get(0);
             log.log(INFO, "First event from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
         } catch (NullPointerException e) {
-            log.log(INFO, "Could not find any events for " + mainDocpool.getPathWithPlonesite());
+            log.log(INFO, "Could not find any events for " + mainDocPool.getPathWithPlonesite());
         }
 
-        events = mainDocpool.getActiveEvents();
+        events = mainDocPool.getActiveEvents();
         try {
             Event ev = events.get(0);
             log.log(INFO, "First active event from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
         } catch (NullPointerException e) {
-            log.log(INFO, "Could not find any active events for " + mainDocpool.getPathWithPlonesite());
+            log.log(INFO, "Could not find any active events for " + mainDocPool.getPathWithPlonesite());
         }
 
-        List<Scenario> scenarios = mainDocpool.getScenarios();
+        List<Scenario> scenarios = mainDocPool.getScenarios();
         try {
             Scenario ev = scenarios.get(0);
             log.log(INFO, "First scenario from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
         } catch (NullPointerException | IndexOutOfBoundsException e) {
-            log.log(INFO, "Could not find any scenarios for " + mainDocpool.getPathWithPlonesite());
+            log.log(INFO, "Could not find any scenarios for " + mainDocPool.getPathWithPlonesite());
         }
 
-        scenarios = mainDocpool.getActiveScenarios();
+        scenarios = mainDocPool.getActiveScenarios();
         try {
             Scenario ev = scenarios.get(0);
             log.log(INFO, "First active scenario from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
         } catch (NullPointerException | IndexOutOfBoundsException e) {
-            log.log(INFO, "Could not find any active scenarios for " + mainDocpool.getPathWithPlonesite());
+            log.log(INFO, "Could not find any active scenarios for " + mainDocPool.getPathWithPlonesite());
         }
 
-        log.log(INFO, "My very own user folder: " + mainDocpool.getUserFolder());
-        log.log(INFO, "The user folder of some well known user: " + mainDocpool.getUserFolder(MEMBER));
+        log.log(INFO, "My very own user folder: " + mainDocPool.getUserFolder());
+        log.log(INFO, "The user folder of some well known user: " + mainDocPool.getUserFolder(MEMBER));
 
 
         Folder myGroupFolder = null;
         try {
-            myGroupFolder = mainDocpool.getGroupFolders().get(0);
+            myGroupFolder = mainDocPool.getGroupFolders().get(0);
         } catch (NullPointerException e) {
-            throw new NullPointerException("Could not find any valid GroupFolder for Dokpool " + mainDocpool.getPathWithPlonesite());
+            throw new NullPointerException("Could not find any valid GroupFolder for Dokpool " + mainDocPool.getPathWithPlonesite());
         }
 
         log.log(INFO, "Group folder path (first from Dokpool): " + myGroupFolder.getPathWithPlonesite());
 
         try {
-            myGroupFolder = mainDocpool.getFolder("content/Groups/" + GROUPFOLDER);
+            myGroupFolder = mainDocPool.getFolder("content/Groups/" + GROUPFOLDER);
             log.log(INFO, "Group folder now set from from env: " +  myGroupFolder.getPathWithPlonesite());
-            myGroupFolder = mainDocpool.getGroupFolder(GROUPFOLDER).get();
+            myGroupFolder = mainDocPool.getGroupFolder(GROUPFOLDER).get();
             log.log(INFO, "Group folder set from from env again: " +  myGroupFolder.getPathWithPlonesite());
         } catch (NullPointerException e) {
-            log.log(WARNING, "Could not find DOKPOOL_GROUPFOLDER: " + mainDocpool.getPathWithPlonesite() + "/content/Groups/" + GROUPFOLDER);
+            log.log(WARNING, "Could not find DOKPOOL_GROUPFOLDER: " + mainDocPool.getPathWithPlonesite() + "/content/Groups/" + GROUPFOLDER);
             log.log(INFO, "Group folder remains: " +  myGroupFolder.getPathWithPlonesite());
         }
 
@@ -185,12 +183,12 @@ public class DokpoolTest {
 
         Folder myTransferFolder = null;
         try {
-            List<Folder> tfFolders = mainDocpool.getTransferFolders();
+            List<Folder> tfFolders = mainDocPool.getTransferFolders();
             log.log(INFO, "number of transfer folders: " + tfFolders.size());
             myTransferFolder = tfFolders.get(0);
             log.log(INFO, "Transfer folder path (first from Dokpool): " + myTransferFolder.getPathWithPlonesite());
         } catch (NullPointerException e) {
-            log.log(INFO, "Could not find any valid TransferFolder for Dokpool " + mainDocpool.getPathWithPlonesite());
+            log.log(INFO, "Could not find any valid TransferFolder for Dokpool " + mainDocPool.getPathWithPlonesite());
         }
 
 
@@ -208,7 +206,7 @@ public class DokpoolTest {
         }
 
         Map<String, Object> docProperties = new HashMap<String, Object>();
-        docProperties.put("title", "JavaDocpoolTestDocument");
+        docProperties.put("title", "JavaDocPoolTestDocument");
         docProperties.put("description", "Created by mvn test.");
         docProperties.put("text", "This is just a Test and can be deleted.");
 
@@ -270,9 +268,9 @@ public class DokpoolTest {
     public void doksysTest() throws Exception {
         String doksysDocId = DOCID+"-doksys";
 
-        DocumentPool mainDocpool = obtainDocumentPoolREST();
+        DocumentPool mainDocPool = obtainDocumentPoolREST();
 
-        Folder myGroupFolder = mainDocpool.getGroupFolder(GROUPFOLDER).get();
+        Folder myGroupFolder = mainDocPool.getGroupFolder(GROUPFOLDER).get();
         boolean docExists = false;
         Document oldDoc = null;
         try {
@@ -325,17 +323,17 @@ public class DokpoolTest {
     public void miscObjectTestREST() throws Exception {
         log.log(INFO, "=== TEST: miscObjectTest REST ======");
         log.log(INFO, "URL: " + PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE + " User:" + USER + " Password:" + PW);
-        DokpoolBaseService docpoolBaseService = new DokpoolBaseService(PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE, USER, PW);
+        DokpoolBaseService dokpoolBaseService = new DokpoolBaseService(PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE, USER, PW);
 
-        List<DocumentPool> documentpools = docpoolBaseService.getDocumentPools();
+        List<DocumentPool> documentpools = dokpoolBaseService.getDocumentPools();
         if (documentpools.isEmpty()) {
             log.log(WARNING, "No DocumentPools found!");
         }
 
         DocumentPool myDocumentPool = null;
-        for (DocumentPool sDocpool : documentpools) {
-            if (sDocpool.getPathWithPlonesite().matches("/" + PLONESITE + "/" + DOKPOOL)) {
-                myDocumentPool = sDocpool;
+        for (DocumentPool sDocPool : documentpools) {
+            if (sDocPool.getPathWithPlonesite().matches("/" + PLONESITE + "/" + DOKPOOL)) {
+                myDocumentPool = sDocPool;
                 log.log(INFO, "Main Dokpool is now: " + myDocumentPool.getPathWithPlonesite());
                 break;
             }

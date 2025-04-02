@@ -48,7 +48,7 @@ public class JSON {
             return Date.from(zdt.toInstant());
         } catch (java.time.format.DateTimeParseException pe) {
             log.log(WARNING, "malformed date: "+ dateStr);
-            // log.log(WARNING, DocpoolBaseService.exceptionToString(pe));
+            // log.log(WARNING, DokpoolBaseService.exceptionToString(pe));
             return null;
         }
     }

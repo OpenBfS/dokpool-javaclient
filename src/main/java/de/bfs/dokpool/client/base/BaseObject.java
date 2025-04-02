@@ -29,7 +29,7 @@ public class BaseObject {
     }
 
     protected DokpoolBaseService service = null;
-    protected DokpoolBaseService.PrivateDocpoolBaseService privateService;
+    protected DokpoolBaseService.PrivateDokpoolBaseService privateService;
     //
     private String pathWithPlonesite = null;
     protected String pathAfterPlonesite = null;
