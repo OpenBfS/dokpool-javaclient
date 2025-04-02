@@ -54,7 +54,9 @@ public class DokpoolTest {
         return (env != null ? env: "");
     }
 
+    @SuppressWarnings("unused")
     private static final String ENCODING       = "UTF-8";
+    @SuppressWarnings("unused")
     private static final String PACKAGE        = "de.bfs.dokpool";
     private static final String PROTO          = envOrEmpty("DOKPOOL_PROTO");
     private static final String HOST           = envOrEmpty("DOKPOOL_HOST");
@@ -351,7 +353,9 @@ public class DokpoolTest {
         log.log(INFO, groupFolder);
         log.log(INFO, groupFolder.getTitle());
         List<Object> documents = groupFolder.getContents(null);
+        log.log(INFO, documents);
         List<Folder> tf = myDocumentPool.getTransferFolders();
+        log.log(INFO, tf);
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("title", "Generic Title");
         properties.put("description", "Generic Description");
