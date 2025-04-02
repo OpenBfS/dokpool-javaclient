@@ -8,7 +8,7 @@
 package de.bfs.dokpool.client.base;
 
 public class DokpoolRuntimeException extends RuntimeException {
-    DokpoolRuntimeException(String msg, Exception cause) {
+    DokpoolRuntimeException(String msg, Throwable cause) {
         super(msg, cause);
     }
 }

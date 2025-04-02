@@ -26,7 +26,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static java.lang.System.Logger.Level.ERROR;
-import static java.lang.System.Logger.Level.INFO;
 import static java.lang.System.Logger.Level.WARNING;
 
 
@@ -61,7 +60,7 @@ public class JSON {
     }
 
     private static class JSONRuntimeException extends DokpoolRuntimeException {
-        JSONRuntimeException(String msg, Exception cause) {
+        JSONRuntimeException(String msg, Throwable cause) {
             super(msg, cause);
         }
         JSONRuntimeException(String msg) {

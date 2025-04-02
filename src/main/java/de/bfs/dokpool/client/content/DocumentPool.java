@@ -33,6 +33,7 @@ public class DocumentPool extends Folder {
     /**
      * @return all DocTypes within this ESD
      */
+    @SuppressWarnings("unused")
     public List<DocType> getTypes() {
         JSON.Node typeListNode = null;
         try {
@@ -349,6 +350,7 @@ public class DocumentPool extends Folder {
      */
     public Group createGroup(String groupId, String title, String description, String dp) {
         try {
+            @SuppressWarnings("unused")
             String dpUid = null;
             if (dp != null && !dp.equals("")) {
                 dp = dp.startsWith("/") ? dp : "/"+dp;

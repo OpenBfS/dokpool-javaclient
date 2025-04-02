@@ -22,7 +22,6 @@ import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPatch;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.classic.methods.HttpPut;
-import org.apache.hc.client5.http.cookie.BasicCookieStore;
 import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
@@ -37,13 +36,17 @@ import org.apache.hc.core5.http.io.entity.ByteArrayEntity;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.apache.hc.core5.http.message.StatusLine;
 import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.http.ParseException;
 
 import static java.lang.System.Logger.Level.ERROR;
 import static java.lang.System.Logger.Level.INFO;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+
 
 /**
- * This class will be a wrapper around Apache HttpClient so a switch to the integrated Java Http Client (Java 11+)
+ * This class is a wrapper around Apache HttpClient so a switch to the integrated Java Http Client (Java 11+)
  * remains possible.
  */
 public class HttpClient {
@@ -52,6 +55,15 @@ public class HttpClient {
     private HttpClient() {}
 
     private static final java.lang.System.Logger log = System.getLogger(HttpClient.class.getName());
+
+    private static class HttpRuntimeException extends DokpoolRuntimeException {
+        HttpRuntimeException(String msg, Throwable cause) {
+            super(msg, cause);
+        }
+        HttpRuntimeException(String msg) {
+            super(msg, null);
+        }
+    }
 
     public class Headers {
         private Headers() {}
@@ -131,7 +143,7 @@ public class HttpClient {
         }
     }
 
-    public static final Response doGetRequest(final String proto, final String host, String port, final String url, Map<String,String> headers) throws Exception {
+    public static final Response doGetRequest(final String proto, final String host, String port, final String url, Map<String,String> headers) throws HttpRuntimeException {
         // Use a try-with-resources, as CloseableHttpClient should be closed():
         try (CloseableHttpClient httpclient = HttpClients.custom().disableRedirectHandling().build()) {
 
@@ -155,10 +167,15 @@ public class HttpClient {
             });
 
             return response;
+        } catch (IOException ioe) {
+            log.log(ERROR, "IO error while connecting to " + url);
+            throw new HttpRuntimeException("IO error while connecting to " + url, ioe);
+        } catch (URISyntaxException use) {
+            throw new HttpRuntimeException("bad url: " + url, use);
         }
     }
 
-    public static final Response doDeleteRequest(final String proto, final String host, String port, final String url, Map<String,String> headers) throws Exception {
+    public static final Response doDeleteRequest(final String proto, final String host, String port, final String url, Map<String,String> headers) throws HttpRuntimeException {
         try (CloseableHttpClient httpclient = HttpClients.custom().disableRedirectHandling().build()) {
 
             final int portInt = intPortFromPortOrProtocol(port,proto);
@@ -181,10 +198,15 @@ public class HttpClient {
             });
 
             return response;
+        } catch (IOException ioe) {
+            log.log(ERROR, "IO error while connecting to " + url);
+            throw new HttpRuntimeException("IO error while connecting to " + url, ioe);
+        } catch (URISyntaxException use) {
+            throw new HttpRuntimeException("bad url: " + url, use);
         }
     }
 
-    public static final Response doPostRequest(final String proto, final String host, String port, final String url, Map<String,String> headers, Map<String,String> parameters, String contentType, byte[] data) throws Exception {
+    public static final Response doPostRequest(final String proto, final String host, String port, final String url, Map<String,String> headers, Map<String,String> parameters, String contentType, byte[] data) throws HttpRuntimeException {
         try (CloseableHttpClient httpclient = HttpClients.custom().disableRedirectHandling().build()) {
             final int portInt = intPortFromPortOrProtocol(port,proto);
             final HttpHost target = new HttpHost(proto, host, portInt);
@@ -204,6 +226,7 @@ public class HttpClient {
             if (data != null) {
                 httppost.setHeader("Content-type", contentType);
                 ByteArrayEntity dataEntity = new ByteArrayEntity(data,ContentType.create(contentType));
+                //ParseException should not happen here:
                 log.log(INFO, "Request data: " + first1000(EntityUtils.toString(dataEntity)));
                 httppost.setEntity(dataEntity);
             }
@@ -223,10 +246,17 @@ public class HttpClient {
             });
 
             return response;
+        } catch (IOException ioe) {
+            log.log(ERROR, "IO error while connecting to " + url);
+            throw new HttpRuntimeException("IO error while connecting to " + url, ioe);
+        } catch (URISyntaxException use) {
+            throw new HttpRuntimeException("bad url: " + url, use);
+        } catch (ParseException pe) {
+            throw new HttpRuntimeException("error handling request data", pe);
         }
     }
 
-    public static final Response doPutRequest(final String proto, final String host, String port, final String url, Map<String,String> headers, String contentType, byte[] data) throws Exception {
+    public static final Response doPutRequest(final String proto, final String host, String port, final String url, Map<String,String> headers, String contentType, byte[] data) throws HttpRuntimeException {
         try (CloseableHttpClient httpclient = HttpClients.custom().disableRedirectHandling().build()) {
             final int portInt = intPortFromPortOrProtocol(port,proto);
             final HttpHost target = new HttpHost(proto, host, portInt);
@@ -253,10 +283,17 @@ public class HttpClient {
             });
 
             return response;
+        } catch (IOException ioe) {
+            log.log(ERROR, "IO error while connecting to " + url);
+            throw new HttpRuntimeException("IO error while connecting to " + url, ioe);
+        } catch (URISyntaxException use) {
+            throw new HttpRuntimeException("bad url: " + url, use);
+        } catch (ParseException pe) {
+            throw new HttpRuntimeException("error handling request data", pe);
         }
     }
 
-    public static final Response doPatchRequest(final String proto, final String host, String port, final String url, Map<String,String> headers, String contentType, byte[] data) throws Exception {
+    public static final Response doPatchRequest(final String proto, final String host, String port, final String url, Map<String,String> headers, String contentType, byte[] data) throws HttpRuntimeException {
         try (CloseableHttpClient httpclient = HttpClients.custom().disableRedirectHandling().build()) {
             final int portInt = intPortFromPortOrProtocol(port,proto);
             final HttpHost target = new HttpHost(proto, host, portInt);
@@ -283,6 +320,13 @@ public class HttpClient {
             });
 
             return response;
+        } catch (IOException ioe) {
+            log.log(ERROR, "IO error while connecting to " + url);
+            throw new HttpRuntimeException("IO error while connecting to " + url, ioe);
+        } catch (URISyntaxException use) {
+            throw new HttpRuntimeException("bad url: " + url, use);
+        } catch (ParseException pe) {
+            throw new HttpRuntimeException("error handling request data", pe);
         }
     }
 }

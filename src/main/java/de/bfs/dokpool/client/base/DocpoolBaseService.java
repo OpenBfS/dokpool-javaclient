@@ -13,15 +13,12 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.bfs.dokpool.client.base.HttpClient.Headers;
 import de.bfs.dokpool.client.content.DocumentPool;
 
 import static java.lang.System.Logger.Level.ERROR;
@@ -185,7 +182,7 @@ public class DocpoolBaseService {
         return ex.toString() + ": " + ex.getLocalizedMessage() + "\n" + stBuffer.toString();
     }
 
-    private JSON.Node addErrorInfo(JSON.Node baseNode, HttpClient.Response rsp) throws Exception {
+    private JSON.Node addErrorInfo(JSON.Node baseNode, HttpClient.Response rsp) throws DokpoolRuntimeException {
         if (baseNode == null || baseNode.type().equals("null")) {
             baseNode = new JSON.Node("null");
             baseNode.errorInfo = "REST response error: No content or null content";
@@ -220,7 +217,7 @@ public class DocpoolBaseService {
         return headers;
     }
 
-    private JSON.Node nodeFromGetRequest(String endpoint, String queryString) throws Exception {
+    private JSON.Node nodeFromGetRequest(String endpoint, String queryString) throws DokpoolRuntimeException {
         queryString = (queryString == null || queryString.equals("")) ? "" : ("?"+queryString);
         String path = urlPrefix + endpoint;
         HttpClient.Response    rsp;
@@ -241,25 +238,25 @@ public class DocpoolBaseService {
         return addErrorInfo(node,rsp);
     }
 
-    private JSON.Node nodeFromGetRequest(String endpoint) throws Exception {
+    private JSON.Node nodeFromGetRequest(String endpoint) throws DokpoolRuntimeException {
         return nodeFromGetRequest(endpoint, null);
     }
 
-    private JSON.Node patchRequestWithNode(String endpoint, JSON.Node patchNode) throws Exception {
+    private JSON.Node patchRequestWithNode(String endpoint, JSON.Node patchNode) throws DokpoolRuntimeException {
         String patchUrl = urlPrefix + endpoint;
         byte[] patchData = patchNode.toJSON().getBytes();
         HttpClient.Response rsp = HttpClient.doPatchRequest(proto,host,port,patchUrl,defaultHeaders(),HttpClient.MimeTypes.JSON,patchData);
         return addErrorInfo(new JSON.Node(rsp.content), rsp);
     }
 
-    private JSON.Node postRequestWithNode(String endpoint, JSON.Node patchNode) throws Exception {
+    private JSON.Node postRequestWithNode(String endpoint, JSON.Node patchNode) throws DokpoolRuntimeException {
         String patchUrl = urlPrefix + endpoint;
         byte[] patchData = patchNode.toJSON().getBytes();
         HttpClient.Response rsp = HttpClient.doPostRequest(proto,host,port,patchUrl,defaultHeaders(),null,HttpClient.MimeTypes.JSON,patchData);
         return addErrorInfo(new JSON.Node(rsp.content), rsp);
     }
 
-    private JSON.Node deleteRequest(String endpoint) throws Exception {
+    private JSON.Node deleteRequest(String endpoint) throws DokpoolRuntimeException {
         String path = urlPrefix + endpoint;
         HttpClient.Response rsp = HttpClient.doDeleteRequest(proto,host,port,path,defaultHeaders());
         return addErrorInfo(new JSON.Node(rsp.content), rsp);
@@ -352,19 +349,19 @@ public class DocpoolBaseService {
         public String uidToPathAfterPlonesite(String uid) {
             return service.uidToPathAfterPlonesite(uid);
         };
-        public JSON.Node nodeFromGetRequest(String endpoint, String queryString) throws Exception {
+        public JSON.Node nodeFromGetRequest(String endpoint, String queryString) throws DokpoolRuntimeException {
             return service.nodeFromGetRequest(endpoint,queryString);
         }
-        public JSON.Node nodeFromGetRequest(String endpoint) throws Exception {
+        public JSON.Node nodeFromGetRequest(String endpoint) throws DokpoolRuntimeException {
             return service.nodeFromGetRequest(endpoint);
         }
-        public JSON.Node patchRequestWithNode(String endpoint, JSON.Node patchNode) throws Exception {
+        public JSON.Node patchRequestWithNode(String endpoint, JSON.Node patchNode) throws DokpoolRuntimeException {
             return service.patchRequestWithNode(endpoint, patchNode);
         }
-        public JSON.Node postRequestWithNode(String endpoint, JSON.Node patchNode) throws Exception {
+        public JSON.Node postRequestWithNode(String endpoint, JSON.Node patchNode) throws DokpoolRuntimeException {
             return service.postRequestWithNode(endpoint, patchNode);
         }
-        public JSON.Node deleteRequest(String endpoint) throws Exception {
+        public JSON.Node deleteRequest(String endpoint) throws DokpoolRuntimeException {
             return service.deleteRequest(endpoint);
         }
     }
