@@ -10,7 +10,7 @@ package de.bfs.dokpool.client.content;
 import java.util.Map;
 
 import de.bfs.dokpool.client.base.BaseObject;
-import de.bfs.dokpool.client.base.DocpoolBaseService;
+import de.bfs.dokpool.client.base.DokpoolBaseService;
 
 /**
  * Wraps the ELANDocType
@@ -18,11 +18,11 @@ import de.bfs.dokpool.client.base.DocpoolBaseService;
  */
 public class DocType extends BaseObject {
     @Deprecated
-    public DocType(DocpoolBaseService service, String path, Object[] data) {
+    public DocType(DokpoolBaseService service, String path, Object[] data) {
         super(service, path, data);
     }
 
-    public DocType(DocpoolBaseService service, String path, Map<String,Object> data) {
+    public DocType(DokpoolBaseService service, String path, Map<String,Object> data) {
         super(service, path, data);
     }
 }

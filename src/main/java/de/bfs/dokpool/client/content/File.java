@@ -11,7 +11,7 @@ import java.util.Base64;
 import java.util.Map;
 
 import de.bfs.dokpool.client.base.BaseObject;
-import de.bfs.dokpool.client.base.DocpoolBaseService;
+import de.bfs.dokpool.client.base.DokpoolBaseService;
 import de.bfs.dokpool.client.base.DokpoolRuntimeException;
 import de.bfs.dokpool.client.base.JSON;
 
@@ -21,11 +21,11 @@ import de.bfs.dokpool.client.base.JSON;
  */
 public class File extends BaseObject {
     @Deprecated
-    public File(DocpoolBaseService service, String path, Object[] alldata) {
+    public File(DokpoolBaseService service, String path, Object[] alldata) {
         super(service, path, alldata);
     }
 
-    public File(DocpoolBaseService service, String path, Map<String,Object> data) {
+    public File(DokpoolBaseService service, String path, Map<String,Object> data) {
         super(service, path, data);
     }
 

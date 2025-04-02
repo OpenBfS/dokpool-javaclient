@@ -22,7 +22,7 @@ import java.util.Random;
 import org.junit.Test;
 import org.junit.Assert;
 
-import de.bfs.dokpool.client.base.DocpoolBaseService;
+import de.bfs.dokpool.client.base.DokpoolBaseService;
 import de.bfs.dokpool.client.base.BaseObject;
 import de.bfs.dokpool.client.base.HttpClient;
 import de.bfs.dokpool.client.base.JSON;
@@ -91,7 +91,7 @@ public class DokpoolTest {
 
     public static DocumentPool obtainDocumentPoolREST() throws Exception {
         log.log(INFO, "URL: " + PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE + " User:" + USER + " Password:" + PW);
-        DocpoolBaseService docpoolBaseService = new DocpoolBaseService(PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE, USER, PW);
+        DokpoolBaseService docpoolBaseService = new DokpoolBaseService(PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE, USER, PW);
         List<DocumentPool> myDocpools = docpoolBaseService.getDocumentPools();
         DocumentPool mainDocpool = docpoolBaseService.getPrimaryDocumentPool();
 
@@ -325,7 +325,7 @@ public class DokpoolTest {
     public void miscObjectTestREST() throws Exception {
         log.log(INFO, "=== TEST: miscObjectTest REST ======");
         log.log(INFO, "URL: " + PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE + " User:" + USER + " Password:" + PW);
-        DocpoolBaseService docpoolBaseService = new DocpoolBaseService(PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE, USER, PW);
+        DokpoolBaseService docpoolBaseService = new DokpoolBaseService(PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE, USER, PW);
 
         List<DocumentPool> documentpools = docpoolBaseService.getDocumentPools();
         if (documentpools.isEmpty()) {

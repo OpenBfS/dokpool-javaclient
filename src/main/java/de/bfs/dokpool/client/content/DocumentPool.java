@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import de.bfs.dokpool.client.base.DocpoolBaseService;
+import de.bfs.dokpool.client.base.DokpoolBaseService;
 import de.bfs.dokpool.client.base.DokpoolRuntimeException;
 import de.bfs.dokpool.client.base.JSON;
 
@@ -23,11 +23,11 @@ import de.bfs.dokpool.client.base.JSON;
 public class DocumentPool extends Folder {
 
     @Deprecated
-    public DocumentPool(DocpoolBaseService service, String path, Object[] data) {
+    public DocumentPool(DokpoolBaseService service, String path, Object[] data) {
         super(service, path, data);
     }
 
-    public DocumentPool(DocpoolBaseService service, String path, Map<String,Object> data) {
+    public DocumentPool(DokpoolBaseService service, String path, Map<String,Object> data) {
         super(service, path, data);
     }
 

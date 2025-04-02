@@ -11,7 +11,7 @@ import java.util.Base64;
 import java.util.Map;
 
 import de.bfs.dokpool.client.base.BaseObject;
-import de.bfs.dokpool.client.base.DocpoolBaseService;
+import de.bfs.dokpool.client.base.DokpoolBaseService;
 import de.bfs.dokpool.client.base.DokpoolRuntimeException;
 import de.bfs.dokpool.client.base.JSON;
 
@@ -21,11 +21,11 @@ import de.bfs.dokpool.client.base.JSON;
  */
 public class Image extends BaseObject {
     @Deprecated
-    public Image(DocpoolBaseService service, String path, Object[] alldata) {
+    public Image(DokpoolBaseService service, String path, Object[] alldata) {
         super(service, path, alldata);
     }
 
-    public Image(DocpoolBaseService service, String path, Map<String,Object> data) {
+    public Image(DokpoolBaseService service, String path, Map<String,Object> data) {
         super(service, path, data);
     }
 

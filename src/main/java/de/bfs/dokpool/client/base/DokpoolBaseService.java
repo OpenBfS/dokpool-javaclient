@@ -29,8 +29,8 @@ import static java.lang.System.Logger.Level.INFO;
  * The root class to access REST-API services for DOKPOOL.
  *
  */
-public class DocpoolBaseService {
-    private final java.lang.System.Logger log = System.getLogger(DocpoolBaseService.class.getName());
+public class DokpoolBaseService {
+    private final java.lang.System.Logger log = System.getLogger(DokpoolBaseService.class.getName());
 
     protected Object NTS(Object mayBeNull) {
         return mayBeNull != null ? mayBeNull : "null";
@@ -59,7 +59,7 @@ public class DocpoolBaseService {
      * @param password
      * @param caching (default: true) whether or not to cache metadata and folder contents
      */
-    public DocpoolBaseService(String url, String username, String password) {
+    public DokpoolBaseService(String url, String username, String password) {
         this(url, username, password, true);
     }
 
@@ -72,7 +72,7 @@ public class DocpoolBaseService {
      * @param password
      * @param caching (default: true) whether or not to cache metadata and folder contents
      */
-    public DocpoolBaseService(String url, String username, String password, boolean caching) {
+    public DokpoolBaseService(String url, String username, String password, boolean caching) {
         //new REST-Code:
         this.privateService = new PrivateDocpoolBaseService(this);
         try {
@@ -102,7 +102,7 @@ public class DocpoolBaseService {
      * @param username
      * @param password
      */
-    public DocpoolBaseService(String proto, String host, String port, String plonesite, String username, String password) {
+    public DokpoolBaseService(String proto, String host, String port, String plonesite, String username, String password) {
         this(proto, host, port, plonesite, username, password, true);
     }
 
@@ -117,7 +117,7 @@ public class DocpoolBaseService {
      * @param password
      * @param caching (default: true) whether or not to cache metadata and folder contents
      */
-    public DocpoolBaseService(String proto, String host, String port, String plonesite, String username, String password, boolean caching) {
+    public DokpoolBaseService(String proto, String host, String port, String plonesite, String username, String password, boolean caching) {
         this.privateService = new PrivateDocpoolBaseService(this);
         this.urlPrefix = HttpClient.composeUrl(proto,host,port,"/"+ plonesite);
         this.urlPrefixLength = urlPrefix.length();
@@ -175,7 +175,7 @@ public class DocpoolBaseService {
         return username;
     }
 
-    //TODO: we also log the execptions in mosy cases, so this might be no longer neeeded 
+    //TODO: we also log the execptions in mosy cases, so this might be no longer neeededs
     /*package-private*/ static String exceptionToString(Exception ex) {
         Writer stBuffer = new StringWriter();
         PrintWriter stPrintWriter = new PrintWriter(stBuffer);
@@ -342,8 +342,8 @@ public class DocpoolBaseService {
      * This class only exists as a visibility hack across (sub)packages.
      */
     public class PrivateDocpoolBaseService {
-        DocpoolBaseService service;
-        PrivateDocpoolBaseService(DocpoolBaseService service) {
+        DokpoolBaseService service;
+        PrivateDocpoolBaseService(DokpoolBaseService service) {
             this.service = service;
         }
 

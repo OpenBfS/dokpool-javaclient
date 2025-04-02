@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import de.bfs.dokpool.client.base.DocpoolBaseService;
+import de.bfs.dokpool.client.base.DokpoolBaseService;
 import de.bfs.dokpool.client.base.DokpoolRuntimeException;
 import de.bfs.dokpool.client.base.JSON;
 
@@ -24,11 +24,11 @@ import de.bfs.dokpool.client.base.JSON;
  */
 public class Document extends Folder {
     @Deprecated
-    public Document(DocpoolBaseService service, String path, Object[] alldata) {
+    public Document(DokpoolBaseService service, String path, Object[] alldata) {
         super(service, path, alldata);
     }
 
-    public Document(DocpoolBaseService service, String path, Map<String,Object> data) {
+    public Document(DokpoolBaseService service, String path, Map<String,Object> data) {
         super(service, path, data);
     }
 

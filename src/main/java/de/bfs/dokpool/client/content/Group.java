@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.Map;
 
 import de.bfs.dokpool.client.base.BaseObject;
-import de.bfs.dokpool.client.base.DocpoolBaseService;
+import de.bfs.dokpool.client.base.DokpoolBaseService;
 import de.bfs.dokpool.client.base.DokpoolRuntimeException;
 import de.bfs.dokpool.client.base.JSON;
 
@@ -26,7 +26,7 @@ public class Group extends BaseObject {
     private Set<User> members = new HashSet<User>();
     private List<String> allowedDocTypes;
 
-    protected Group(DocpoolBaseService service, String path, String groupId, String title, String description, String dp) {
+    protected Group(DokpoolBaseService service, String path, String groupId, String title, String description, String dp) {
         super(service, path, (Map<String,Object>) null);
         this.groupId = groupId;
         this.title = title;

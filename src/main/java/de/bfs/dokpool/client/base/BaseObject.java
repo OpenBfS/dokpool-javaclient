@@ -28,8 +28,8 @@ public class BaseObject {
         return mayBeNull != null ? mayBeNull : "null";
     }
 
-    protected DocpoolBaseService service = null;
-    protected DocpoolBaseService.PrivateDocpoolBaseService privateService;
+    protected DokpoolBaseService service = null;
+    protected DokpoolBaseService.PrivateDocpoolBaseService privateService;
     //
     private String pathWithPlonesite = null;
     protected String pathAfterPlonesite = null;
@@ -40,7 +40,7 @@ public class BaseObject {
 
     @Deprecated
     @SuppressWarnings("unchecked")
-    public BaseObject(DocpoolBaseService service, String path, Object[] alldata) {
+    public BaseObject(DokpoolBaseService service, String path, Object[] alldata) {
         this.service = service;
         this.privateService = service.privateService;
         this.pathAfterPlonesite = path;
@@ -51,7 +51,7 @@ public class BaseObject {
 
     protected static final Map<String,Object> noData = null;
 
-    public BaseObject(DocpoolBaseService service, String path, Map<String,Object> data) {
+    public BaseObject(DokpoolBaseService service, String path, Map<String,Object> data) {
         this.service = service;
         this.privateService = service.privateService;
         this.pathAfterPlonesite = path;
@@ -389,7 +389,7 @@ public class BaseObject {
     }
 
     protected static String exceptionToString(Exception ex) {
-        return DocpoolBaseService.exceptionToString(ex);
+        return DokpoolBaseService.exceptionToString(ex);
     }
 
     protected Map<String,Object> dataFromNode(JSON.Node node) {

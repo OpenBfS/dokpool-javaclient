@@ -8,7 +8,7 @@
 package de.bfs.dokpool.client.content;
 
 import de.bfs.dokpool.client.base.BaseObject;
-import de.bfs.dokpool.client.base.DocpoolBaseService;
+import de.bfs.dokpool.client.base.DokpoolBaseService;
 
 import java.util.Map;
 
@@ -18,11 +18,11 @@ import java.util.Map;
  */
 public class Event extends BaseObject {
     @Deprecated
-    public Event(DocpoolBaseService service, String path, Object[] data) {
+    public Event(DokpoolBaseService service, String path, Object[] data) {
         super(service, path, data);
     }
 
-    public Event(DocpoolBaseService service, String path, Map<String,Object> data) {
+    public Event(DokpoolBaseService service, String path, Map<String,Object> data) {
         super(service, path, data);
     }
 }

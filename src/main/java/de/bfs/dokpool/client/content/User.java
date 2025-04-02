@@ -11,14 +11,14 @@ package de.bfs.dokpool.client.content;
 import java.util.Map;
 
 import de.bfs.dokpool.client.base.BaseObject;
-import de.bfs.dokpool.client.base.DocpoolBaseService;
+import de.bfs.dokpool.client.base.DokpoolBaseService;
 
 public class User extends BaseObject {
     private String userId = "";
     private String fullname = "";
     private String dp = "";
 
-    protected User(DocpoolBaseService service, String path, String userId, String password, String fullname, String dp) {
+    protected User(DokpoolBaseService service, String path, String userId, String password, String fullname, String dp) {
         super(service, path, (Map<String,Object>) null);
         this.userId = userId;
         this.fullname = fullname;
