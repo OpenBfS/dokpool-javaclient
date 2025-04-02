@@ -99,9 +99,9 @@ public class DokpoolTest {
         log.log(INFO, "Main document pool: " + mainDocPool.getPathWithPlonesite());
 
         for (DocumentPool sDocPool : myDocPools) {
-            if (sDocPool.getPathWithPlonesite().matches("/" + PLONESITE + "/" + DOKPOOL)) {
+            if (sDocPool.getId().equals(DOKPOOL)) {
                 mainDocPool = sDocPool;
-                log.log(INFO, "Main Dokpool is now: " + mainDocPool.getPathWithPlonesite());
+                log.log(INFO, "Main document pool is now: " + mainDocPool.getPathWithPlonesite());
                 break;
             }
         }

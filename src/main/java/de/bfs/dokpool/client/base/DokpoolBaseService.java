@@ -296,7 +296,7 @@ public class DokpoolBaseService {
         }
         List<DocumentPool> dpList = new ArrayList<>();
         for (JSON.Node child : node) {
-            dpList.add(new DocumentPool(this, "/"+child.toString(), (Map<String,Object>) null));
+            dpList.add(new DocumentPool(this, "/"+child.toString(), Map.of("id", child.toString())));
         }
         return dpList;
     }
