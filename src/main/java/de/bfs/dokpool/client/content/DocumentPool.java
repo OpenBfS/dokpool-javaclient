@@ -32,7 +32,7 @@ public class DocumentPool extends Folder {
     }
 
     /**
-     * @return all DocTypes within this ESD
+     * @return all DocTypes within this Pool
      */
     @SuppressWarnings("unused")
     public List<DocType> getTypes() {
@@ -56,6 +56,26 @@ public class DocumentPool extends Folder {
         } else {
             return null;
         }
+    }
+
+    /**
+     * @return all supported Apps as lowercase strings.
+     */
+    public List<String> getSupportedApps() {
+        List<String> apps = new ArrayList<String>();
+
+        Object appObj = getAttribute("supportedApps");
+        if (appObj == null || !(appObj instanceof List)) {
+            log.log(ERROR, "supportedApps should be an array.");
+            return null;
+        }
+        @SuppressWarnings("unchecked")
+        List<Map<String,String>> appMapList = (List<Map<String,String>>) appObj;
+        for (Map<String,String> app : appMapList){
+            apps.add(app.get("token"));
+        }
+
+        return apps;
     }
 
     /**

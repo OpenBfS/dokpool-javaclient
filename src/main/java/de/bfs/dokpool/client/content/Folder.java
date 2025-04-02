@@ -55,8 +55,9 @@ public class Folder extends BaseObject {
                     log.log(INFO, contentsNode.errorInfo.toString());
                     return null;
                 }
-            } catch (Exception ex) {
-                log.log(ERROR, exceptionToString(ex));
+            } catch (DokpoolRuntimeException dre) {
+                log.log(ERROR, exceptionToString(dre), dre);
+                return null;
             }
         }
         return contentsNode;

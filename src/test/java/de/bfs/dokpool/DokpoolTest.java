@@ -340,6 +340,7 @@ public class DokpoolTest {
         }
         log.log(INFO, myDocumentPool.getTitle());
         log.log(INFO, myDocumentPool.getDescription());
+        log.log(INFO, myDocumentPool.getSupportedApps());
         List<DocType> types = myDocumentPool.getTypes();
         for (DocType t : types) {
             log.log(INFO, t.getId());
