@@ -533,7 +533,7 @@ public class JSON {
             HashMap<String,Object> hm = new HashMap<>();
             try {
                 ObjectNode objectNode = ((ObjectNode) jacksonNode);
-                for (Iterator<Map.Entry<String,JsonNode>> it = objectNode.fields(); it.hasNext();) {
+                for (Iterator<Map.Entry<String,JsonNode>> it = objectNode.properties().iterator(); it.hasNext();) {
                     Map.Entry<String,JsonNode> entry = it.next();
                     hm.put(entry.getKey(),new Node(entry.getValue()).toObject());
                  }
