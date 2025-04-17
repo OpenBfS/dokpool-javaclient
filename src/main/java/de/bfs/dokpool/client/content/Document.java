@@ -8,9 +8,11 @@
 package de.bfs.dokpool.client.content;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -232,6 +234,45 @@ public class Document extends Folder {
             oldImg.replace(title, description, data, filename, mimeType);
             return oldImg;
         }
+    }
+
+    /**
+     * Assigns all events from the list to the document that are currently active.
+     * @param evIdsUids: list of event ids and/or uids (can be mixed)
+     * @return the list of those entries evIdsUids which correspond to active events,
+     */
+    public List<String> assignEventIdsUids(List<String> evIdsUids) {
+        List<String> eventsUpdate = new ArrayList<String>();
+        List<String> iuSet = new ArrayList<String>();
+        DocumentPool dp = new DocumentPool(service, "/" + docPoolId(), (Map<String,Object>) null);
+        Map<String,Event> activeEvMap = dp.getActiveEventsMap();
+        for (String iu: evIdsUids) {
+            if (activeEvMap.containsKey(iu)) {
+                eventsUpdate.add(activeEvMap.get(iu).getUid());
+                iuSet.add(iu);
+            }
+        }
+
+        update(new HashMap<String,Object>() {{ put("scenarios", eventsUpdate); }});
+        return iuSet;
+    }
+
+    /**
+     * Assigns all events to the document that are currently active.
+     * @return a list of ids of active events,
+     */
+    public List<String> assignAllActiveEvents() {
+        List<String> eventsUpdate = new ArrayList<String>();
+        List<String> iuSet = new ArrayList<String>();
+        DocumentPool dp = new DocumentPool(service, "/" + docPoolId(), (Map<String,Object>) null);
+        List<Event> activeEv = dp.getActiveEvents();
+        for (Event ev: activeEv) {
+            eventsUpdate.add(ev.getUid());
+            iuSet.add(ev.getId());
+        }
+
+        update(new HashMap<String,Object>() {{ put("scenarios", eventsUpdate); }}, false);
+        return iuSet;
     }
 
     @Override

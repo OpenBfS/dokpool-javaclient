@@ -8,6 +8,7 @@
 package de.bfs.dokpool.client.content;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -79,7 +80,7 @@ public class DocumentPool extends Folder {
     }
 
     /**
-     * @return all Scenarios within this ESD
+     * @return all Scenarios within this document pool
      * @deprecated
      */
     @Deprecated public List<Scenario> getScenarios() {
@@ -108,7 +109,7 @@ public class DocumentPool extends Folder {
     }
 
     /**
-     * @return all active Scenarios within this ESD
+     * @return all active Scenarios within this document pool
      * @deprecated
      */
     @Deprecated public List<Scenario> getActiveScenarios() {
@@ -137,7 +138,7 @@ public class DocumentPool extends Folder {
     }
 
     /**
-     * @return all Events within this ESD
+     * @return all Events within this document pool
      */
     public List<Event> getEvents() {
         JSON.Node itemsNode = null;
@@ -164,7 +165,7 @@ public class DocumentPool extends Folder {
     }
 
     /**
-     * @return all Events within this ESD
+     * @return all active Events within this document pool
      */
     public List<Event> getActiveEvents() {
         JSON.Node itemsNode = null;
@@ -188,6 +189,19 @@ public class DocumentPool extends Folder {
         } else {
             return null;
         }
+    }
+
+    /**
+     * @return all ids of active events within this document pool
+     */
+    protected Map<String,Event> getActiveEventsMap() {
+        List<Event> ativeEvList = getActiveEvents();
+        Map<String,Event> res = new HashMap<String,Event>();
+        for (Event ev: ativeEvList) {
+            res.put(ev.getId(), ev);
+            res.put(ev.getUid(), ev);
+        }
+        return res;
     }
 
     /**

@@ -119,40 +119,6 @@ public class DokpoolTest {
         DocumentPool mainDocPool = obtainDocumentPoolREST();
         log.log(INFO, mainDocPool.getWorkflowStatus());
 
-        log.log(INFO, "numer of events: " + mainDocPool.getEvents().size());
-        log.log(INFO, "numer of active events: " + mainDocPool.getActiveEvents().size());
-        List<Event> events = mainDocPool.getEvents();
-        try {
-            Event ev = events.get(0);
-            log.log(INFO, "First event from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
-        } catch (NullPointerException e) {
-            log.log(INFO, "Could not find any events for " + mainDocPool.getPathWithPlonesite());
-        }
-
-        events = mainDocPool.getActiveEvents();
-        try {
-            Event ev = events.get(0);
-            log.log(INFO, "First active event from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
-        } catch (NullPointerException e) {
-            log.log(INFO, "Could not find any active events for " + mainDocPool.getPathWithPlonesite());
-        }
-
-        List<Scenario> scenarios = mainDocPool.getScenarios();
-        try {
-            Scenario ev = scenarios.get(0);
-            log.log(INFO, "First scenario from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
-        } catch (NullPointerException | IndexOutOfBoundsException e) {
-            log.log(INFO, "Could not find any scenarios for " + mainDocPool.getPathWithPlonesite());
-        }
-
-        scenarios = mainDocPool.getActiveScenarios();
-        try {
-            Scenario ev = scenarios.get(0);
-            log.log(INFO, "First active scenario from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
-        } catch (NullPointerException | IndexOutOfBoundsException e) {
-            log.log(INFO, "Could not find any active scenarios for " + mainDocPool.getPathWithPlonesite());
-        }
-
         log.log(INFO, "My very own user folder: " + mainDocPool.getUserFolder());
         log.log(INFO, "The user folder of some well known user: " + mainDocPool.getUserFolder(MEMBER));
 
@@ -215,12 +181,14 @@ public class DokpoolTest {
         creatorsList.add(USER);
         docProperties.put("creators", creatorsList);
 
-        List<String> eventList = new ArrayList<String>();
-        eventList.add("routinemode");
-        docProperties.put("scenarios", eventList);
+        // List<String> eventList = new ArrayList<String>();
+        // eventList.add("routinemode");
+        // docProperties.put("scenarios", eventList);
 
         log.log(INFO, "Creating new document at " + myGroupFolder.getPathWithPlonesite() + "/" + DOCID);
         Document d = myGroupFolder.createDPDocument(DOCID, docProperties);
+
+        d.assignEventIdsUids(List.of("routinemode"));
 
         byte[] fileData = ("Readme, I'm a string!").getBytes();
         File readme = d.uploadFile("readme", "Read me!", "A file you should read.", fileData, "README.txt");
@@ -276,6 +244,40 @@ public class DokpoolTest {
         log.log(INFO, "Event given by UID \"" + EVENTUID +
             "\" has id: \"" + evByUid.getId() + "\" and is " +
             (evByUid.isActive()? "active" : "inactive") + ".");
+
+        log.log(INFO, "numer of events: " + mainDocPool.getEvents().size());
+        log.log(INFO, "numer of active events: " + mainDocPool.getActiveEvents().size());
+        List<Event> events = mainDocPool.getEvents();
+        try {
+            Event ev = events.get(0);
+            log.log(INFO, "First event from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
+        } catch (NullPointerException e) {
+            log.log(INFO, "Could not find any events for " + mainDocPool.getPathWithPlonesite());
+        }
+
+        events = mainDocPool.getActiveEvents();
+        try {
+            Event ev = events.get(0);
+            log.log(INFO, "First active event from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
+        } catch (NullPointerException e) {
+            log.log(INFO, "Could not find any active events for " + mainDocPool.getPathWithPlonesite());
+        }
+
+        List<Scenario> scenarios = mainDocPool.getScenarios();
+        try {
+            Scenario ev = scenarios.get(0);
+            log.log(INFO, "First scenario from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
+        } catch (NullPointerException | IndexOutOfBoundsException e) {
+            log.log(INFO, "Could not find any scenarios for " + mainDocPool.getPathWithPlonesite());
+        }
+
+        scenarios = mainDocPool.getActiveScenarios();
+        try {
+            Scenario ev = scenarios.get(0);
+            log.log(INFO, "First active scenario from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
+        } catch (NullPointerException | IndexOutOfBoundsException e) {
+            log.log(INFO, "Could not find any active scenarios for " + mainDocPool.getPathWithPlonesite());
+        }
     }
 
     /**

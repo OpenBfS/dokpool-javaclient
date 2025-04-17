@@ -70,7 +70,7 @@ public class BaseObject {
      * e.g. if pathAfterPlonesite = /bund/... -&gt; bund
      * @return the part of the path that specifies the Dokpool.
      */
-    protected String dokpoolId() {
+    protected String docPoolId() {
         return pathAfterPlonesite.substring(1,pathAfterPlonesite.indexOf('/', 1));
     }
 
@@ -321,7 +321,7 @@ public class BaseObject {
     protected List<Object> eventIdsToUids(List<Object> eventIds) {
         List<Object> ret = new ArrayList<Object>();
         //we assume the event ids refer to events of the current BasePbject's Dokpool
-        String dpId = dokpoolId();
+        String dpId = docPoolId();
         for (Object evIdObj : eventIds) {
             String evId = (String) evIdObj;
             String uid = (new de.bfs.dokpool.client.content.Event(service, "/"+dpId+"/contentconfig/scen/"+evId, noData)).getStringAttribute("UID");
@@ -349,17 +349,33 @@ public class BaseObject {
      * @return true, if the update succeeded; false otherwise
      */
     public boolean update(Map<String, Object> attributes) {
+        return update(attributes, true);
+    }
+
+    /**
+     * Update the object's attributes with the given map (internal method).
+     * Any attribute that is not explicitly set will keep its value;
+     * @param attributes
+     * @param doChecks: if false, no checks are performed prior to http request;
+     *                  Only do this, if you checked the Dokpool REST spec.
+     * @return true, if the update succeeded; false otherwise
+     */
+    protected boolean update(Map<String, Object> attributes, boolean doChecks) {
         /* we reset the data, as setting some attribute to a new value
          * might trigger changes in other attributes
          */
         data = null;
         dataComplete = false;
-        //Some attributes (e.g. scenarios) need to be handled differently in Plone6
-        attributeCompatibilityAdjustment(attributes);
+        if (doChecks) {
+            //Some attributes (e.g. scenarios) need to be handled differently in Plone6
+            attributeCompatibilityAdjustment(attributes);
+        }
         try {
             JSON.Node attrNode = new JSON.Node(attributes);
             log.log(INFO, "update: " + attrNode.toJSON());
-            checkAttrNodeUpdate(attrNode);
+            if (doChecks) {
+                checkAttrNodeUpdate(attrNode);
+            }
             JSON.Node rspNode = privateService.patchRequestWithNode(pathAfterPlonesite, attrNode);
             if (rspNode.errorInfo != null) {
                 log.log(INFO, rspNode.errorInfo.toString());
