@@ -261,6 +261,21 @@ public class DokpoolTest {
     }
 
     /**
+     * Test event handling (without creating documents).
+     *
+     */
+    @Test
+    public void eventsTest() throws Exception {
+
+        DocumentPool mainDocPool = obtainDocumentPoolREST();
+
+        Event evById = mainDocPool.getEventById(EVENT);
+        log.log(INFO, "Event given by id \"" + EVENT + "\" has UID: \"" + evById.getUid() + "\"");
+        Event evByUid = mainDocPool.getEventByUid(EVENTUID);
+        log.log(INFO, "Event given by UID \"" + EVENTUID + "\" has id: \"" + evByUid.getId() + "\"");
+    }
+
+    /**
      * Test doksys document creation.
      *
      */

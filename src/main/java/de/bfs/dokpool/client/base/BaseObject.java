@@ -212,6 +212,10 @@ public class BaseObject {
         return getStringAttribute("id");
     }
 
+    public String getUid() {
+        return getStringAttribute("UID");
+    }
+
     public String getTitle() {
         return getStringAttribute("title");
     }

@@ -191,6 +191,51 @@ public class DocumentPool extends Folder {
     }
 
     /**
+     * @return the event with given eventId or null if no such event exists
+     */
+    public Event getEventById(String eventId) {
+        String evPathAfterPloneSite = pathAfterPlonesite + "/contentconfig/scen/" + eventId;
+        try {
+            JSON.Node rspNode = privateService.nodeFromGetRequest(evPathAfterPloneSite);
+            if (rspNode.errorInfo != null) {
+                log.log(INFO, rspNode.errorInfo.toString());
+                return null;
+            }
+            return new Event(service, evPathAfterPloneSite, rspNode.toMap());
+        } catch (DokpoolRuntimeException dre) {
+            log.log(ERROR, exceptionToString(dre), dre);
+            return null;
+        }
+    }
+
+    /**
+     * @return the event with given eventUid or null if no such event exists
+     */
+    public Event getEventByUid(String eventUid) {
+        String evPathAfterPloneSite = privateService.uidToPathAfterPlonesite(eventUid);
+        if (evPathAfterPloneSite == null) {
+            log.log(INFO, "UID " + eventUid + "refers to no object.");
+            return null;
+        }
+        try {
+            JSON.Node rspNode = privateService.nodeFromGetRequest(evPathAfterPloneSite);
+            if (rspNode.errorInfo != null) {
+                log.log(INFO, rspNode.errorInfo.toString());
+                return null;
+            }
+            if (NTS(rspNode.get("@type")).toString().equals("DPEvent")) {
+                return new Event(service, evPathAfterPloneSite, rspNode.toMap());
+            } else {
+                log.log(INFO, "UID " + eventUid + "refers to no object that is not an event.");
+                return null;
+            }
+        } catch (DokpoolRuntimeException dre) {
+            log.log(ERROR, exceptionToString(dre), dre);
+            return null;
+        }
+    }
+
+    /**
      * @return the user folder of the current user (via @get_user_folder)
      */
     public Folder getUserFolder() {
