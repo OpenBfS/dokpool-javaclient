@@ -153,13 +153,21 @@ public class BaseObject {
         return data;
     }
 
+    @SuppressWarnings("unchecked")
+    protected Object detokenize(Object obj) {
+        if (obj instanceof Map && ((Map<String,Object>) obj).containsKey("token")) {
+            return ((Map<String,Object>) obj).get("token");
+        }
+        return obj;
+    }
+
     /**
      * Helper to get value of a string valued attribute.
      * @param name: the name of the attribute
      * @return the String value
      */
     public String getStringAttribute(String name) {
-        return (String) getAttribute(name);
+        return (String) detokenize(getAttribute(name));
     }
 
     //TODO: Dates will be likely be Strings, so we can simplify this in a REST-only world.
@@ -183,6 +191,7 @@ public class BaseObject {
             if (resultsObj instanceof Object[]) {
                 Object[] results = (Object[]) resultsObj;
                 for (Object result: results) {
+                    result = detokenize(result);
                     if (result instanceof String) {
                         values.add((String) result);
                     } else {
@@ -194,6 +203,7 @@ public class BaseObject {
                 @SuppressWarnings("unchecked")
                 List<Object> results = (List<Object>) resultsObj;
                 for (Object result: results) {
+                    result = detokenize(result);
                     if (result instanceof String) {
                         values.add((String) result);
                     } else {
