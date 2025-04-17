@@ -25,4 +25,8 @@ public class Event extends BaseObject {
     public Event(DokpoolBaseService service, String path, Map<String,Object> data) {
         super(service, path, data);
     }
+
+    public boolean isActive() {
+        return getStringAttribute("Status").equals("active");
+    }
 }

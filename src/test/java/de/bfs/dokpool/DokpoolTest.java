@@ -266,13 +266,16 @@ public class DokpoolTest {
      */
     @Test
     public void eventsTest() throws Exception {
-
         DocumentPool mainDocPool = obtainDocumentPoolREST();
 
         Event evById = mainDocPool.getEventById(EVENT);
-        log.log(INFO, "Event given by id \"" + EVENT + "\" has UID: \"" + evById.getUid() + "\"");
+        log.log(INFO, "Event given by id \"" + EVENT +
+            "\" has UID: \"" + evById.getUid() + "\" and is " +
+            (evById.isActive()? "active" : "inactive") + ".");
         Event evByUid = mainDocPool.getEventByUid(EVENTUID);
-        log.log(INFO, "Event given by UID \"" + EVENTUID + "\" has id: \"" + evByUid.getId() + "\"");
+        log.log(INFO, "Event given by UID \"" + EVENTUID +
+            "\" has id: \"" + evByUid.getId() + "\" and is " +
+            (evByUid.isActive()? "active" : "inactive") + ".");
     }
 
     /**
