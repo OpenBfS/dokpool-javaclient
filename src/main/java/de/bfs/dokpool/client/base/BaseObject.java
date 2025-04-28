@@ -302,39 +302,23 @@ public class BaseObject {
 
     }
 
-    //TODO: merge with checkAttrNode?
-    protected void attributeCompatibilityAdjustment(Map<String,Object> attributes) {
-        if (attributes == null) {
-            return;
-        }
-        for (Map.Entry<String,Object> entry: attributes.entrySet()) {
-            switch (entry.getKey()) {
-                case "events":
-                case "scenarios":
-                    attributes.put(entry.getKey(),eventIdsToUids(ensureObjectIsList(entry.getValue())));
-                    break;
-                default:
-            }
-        }
-    }
-
-    protected List<Object> eventIdsToUids(List<Object> eventIds) {
-        List<Object> ret = new ArrayList<Object>();
-        //we assume the event ids refer to events of the current BasePbject's Dokpool
+    protected JSON.Node eventIdsToUids(JSON.Node evListNode) {
+        JSON.Node ret = new JSON.Node("[]");
+        //we assume the event ids refer to events of the current Document's DocPool
         String dpId = docPoolId();
-        for (Object evIdObj : eventIds) {
-            String evId = (String) evIdObj;
+        for (JSON.Node evIdNode : evListNode) {
+            String evId = evIdNode.toString();
             String uid = (new de.bfs.dokpool.client.content.Event(service, "/"+dpId+"/contentconfig/scen/"+evId, noData)).getStringAttribute("UID");
             if (uid == null) {
                 //Maybe the evId already was a uid? Then we will get a non-null path fot it:
                 if (privateService.uidToPathAfterPlonesite(evId) != null) {
                     uid = evId;
-                    ret.add(uid);
+                    ret.append(uid);
                 } else {
                     log.log(ERROR, "Could not get event uid for event with id: " + evId);
                 }
             } else {
-                ret.add(uid);
+                ret.append(uid);
             }
         }
         return ret;
@@ -366,10 +350,7 @@ public class BaseObject {
          */
         data = null;
         dataComplete = false;
-        if (doChecks) {
-            //Some attributes (e.g. scenarios) need to be handled differently in Plone6
-            attributeCompatibilityAdjustment(attributes);
-        }
+
         try {
             JSON.Node attrNode = new JSON.Node(attributes);
             log.log(INFO, "update: " + attrNode.toJSON());

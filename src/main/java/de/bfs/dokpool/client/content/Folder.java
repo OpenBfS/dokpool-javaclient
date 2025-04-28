@@ -212,10 +212,9 @@ public class Folder extends BaseObject {
 
     public Document createDPDocument(String id, Map<String, Object> attributes) {
         try {
-            attributeCompatibilityAdjustment(attributes);
             JSON.Node createJS = new JSON.Node(attributes);
             createJS
-                .set("@type","DPDocument")
+                .set("@type", "DPDocument")
                 .set("id", id)
             ;
             if (createJS.get("title") == null) {
@@ -224,6 +223,7 @@ public class Folder extends BaseObject {
             if (createJS.get("text") == null) {
                 createJS.set("text", "no text provided");
             }
+
             JSON.Node localBehaviors = createJS.get("local_behaviors");
             if (localBehaviors == null) {
                 localBehaviors = (new JSON.Node("[]")).append("elan");
@@ -245,9 +245,15 @@ public class Folder extends BaseObject {
                 }
             }
 
-
             if (createJS.get("docType") == null) {
                 createJS.set("docType", "other_document");
+            }
+
+            for (String evPropName : new String[] {"scenarios", "events"}) {
+                JSON.Node evListNode = createJS.get(evPropName);
+                if (evListNode != null) {
+                    createJS.set(evPropName, eventIdsToUids(evListNode));
+                }
             }
 
             invalidateContentsNode();
@@ -272,11 +278,10 @@ public class Folder extends BaseObject {
             }
             //if you ask for a DPDocument, we call the specialized method to ensure mandatory attributes are set
             if (type == "DPDocument") {
-                return createDPDocument(id,attributes);
+                return createDPDocument(id, attributes);
             }
-            attributeCompatibilityAdjustment(attributes);
             JSON.Node createJS = new JSON.Node(attributes)
-                .set("@type",type)
+                .set("@type", type)
             ;
             invalidateContentsNode();
             JSON.Node rspNode = privateService.postRequestWithNode(pathAfterPlonesite, createJS);

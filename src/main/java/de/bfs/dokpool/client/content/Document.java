@@ -305,8 +305,14 @@ public class Document extends Folder {
                 !oldLocalBehaviors.arrayHasValue("rei");
             reiCheck(attrNode, bahaviorAdded);
         }
-    }
 
+        for (String evPropName : new String[] {"scenarios", "events"}) {
+            JSON.Node evListNode = attrNode.get(evPropName);
+            if (evListNode != null) {
+                attrNode.set(evPropName, eventIdsToUids(evListNode));
+            }
+        }
+    }
 
     protected static class Attribute {
         public final String name;
