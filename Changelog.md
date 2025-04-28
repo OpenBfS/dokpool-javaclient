@@ -2,14 +2,31 @@
 
 ## Version 3.x
 
-### 3.2 *2025-03-27*
+### 3.3.0 *2025-04-28*
 
- - enrure image/ mimetype for images
+ - added Event.isActive(), Document.assignEventIdsUids and
+   Document.assignAllActiveEvents
+ - added DocumentPool.getSupportedApps
+ - logging abstraction removed (better readability)
+ - for token/value properties getStringAttribute
+   now works and only returns the token
+ - consistent code naming: Dokpool is the software and
+   Doc(ument)Pool is a single pool of documents
+   (camel case with lower c)
+ - replaced Exceptions with DokpoolRuntimeException in most cases
+   DokpoolRuntimeException will likely be thrown by some methods
+   in the following releases
+ - jars are now smaller without dependencies
+ - code style changes (tabs -> 4 spaces) and use of checkstyle
+
+### 3.2.0 *2025-03-27*
+
+ - ensure image/ mimetype for images
  - restructure RODOS checks, also check during document updates 
  - allow replacing files and images 
 
 
-### 3.1 *2025-01-27*
+### 3.1.0 *2025-01-27*
 
  - everything from 2.2.0 -> 2.3.0 (testing, REST-API,  minimum Dokpool Release is now 2.0.0)
  - use version ranges up to the next major version for non-plugin dependencies
@@ -18,7 +35,7 @@
  - added dependency-check to pom.xml
  - deployment tested with Java 11 and Java 21 (build version remains 11)
 
-### 3.0 *2023-10-24* (changes vs. 2.2.0)
+### 3.0.0 *2023-10-24* (changes vs. 2.2.0)
 
  - start of upgrade to Java 11, Java build version: 11
  - dependency upgrades SpringBoot and jackson-annotations

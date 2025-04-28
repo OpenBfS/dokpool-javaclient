@@ -7,7 +7,7 @@ further information:
 
 ## Usage
 
-Declare dependency in Maven:
+Declare dependency in Maven (e.g. for version 3.1 and above):
 
 ```xml
 <dependency>
