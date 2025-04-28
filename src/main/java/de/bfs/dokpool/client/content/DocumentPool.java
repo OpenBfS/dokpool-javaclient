@@ -170,7 +170,7 @@ public class DocumentPool extends Folder {
     public List<Event> getActiveEvents() {
         JSON.Node itemsNode = null;
         try {
-            JSON.Node rspNode = privateService.nodeFromGetRequest(pathAfterPlonesite + "/contentconfig/scen/@search", "portal_type=DPEvent&dp_type=active&metadata_fields=id");
+            JSON.Node rspNode = privateService.nodeFromGetRequest(pathAfterPlonesite + "/contentconfig/scen/@search", "portal_type=DPEvent&dp_type=active&metadata_fields=id&metadata_fields=UID");
             if (rspNode.errorInfo != null) {
                 log.log(INFO, rspNode.errorInfo.toString());
                 return null;

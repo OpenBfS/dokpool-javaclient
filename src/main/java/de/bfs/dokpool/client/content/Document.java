@@ -253,7 +253,7 @@ public class Document extends Folder {
             }
         }
 
-        update(new HashMap<String,Object>() {{ put("scenarios", eventsUpdate); }});
+        update(new HashMap<String,Object>(Map.of("scenarios", eventsUpdate)), false);
         return iuSet;
     }
 
