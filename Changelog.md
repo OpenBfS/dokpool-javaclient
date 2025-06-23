@@ -2,6 +2,11 @@
 
 ## Version 3.x
 
+### 3.3.1 *2025-06-23*
+
+ - add option to throw some runtime exceptions
+   Not throwing them remains the default.
+
 ### 3.3.0 *2025-04-28*
 
  - added Event.isActive(), Document.assignEventIdsUids and
