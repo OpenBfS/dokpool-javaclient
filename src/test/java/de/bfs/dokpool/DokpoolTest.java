@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.junit.Assert;
 
 import de.bfs.dokpool.client.base.DokpoolBaseService;
+import de.bfs.dokpool.client.base.DokpoolRuntimeException;
 import de.bfs.dokpool.client.base.BaseObject;
 import de.bfs.dokpool.client.base.HttpClient;
 import de.bfs.dokpool.client.base.JSON;
@@ -89,9 +90,18 @@ public class DokpoolTest {
         return mayBeNull != null ? mayBeNull : "null";
     }
 
-    public static DocumentPool obtainDocumentPoolREST() throws Exception {
+    public static DocumentPool obtainDocumentPool(String exceptionPolicy) throws Exception {
         log.log(INFO, "URL: " + PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE + " User:" + USER + " Password:" + PW);
-        DokpoolBaseService dokpoolBaseService = new DokpoolBaseService(PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE, USER, PW);
+        DokpoolBaseService dokpoolBaseService = new DokpoolBaseService(Map.of(
+            "proto", PROTO,
+            "host", HOST,
+            "port", PORT,
+            "plonesite", PLONESITE,
+            "username", USER,
+            "password", PW,
+            "exceptionPolicy", exceptionPolicy
+        ));
+
         List<DocumentPool> myDocPools = dokpoolBaseService.getDocumentPools();
         DocumentPool mainDocPool = dokpoolBaseService.getPrimaryDocumentPool();
 
@@ -114,9 +124,9 @@ public class DokpoolTest {
      *
      */
     @Test
-    public void documentTestREST() throws Exception {
+    public void documentTest() throws Exception {
         log.log(INFO, "=== TEST: documentTest ======");
-        DocumentPool mainDocPool = obtainDocumentPoolREST();
+        DocumentPool mainDocPool = obtainDocumentPool(DokpoolBaseService.ALLEXCEP);
         log.log(INFO, mainDocPool.getWorkflowStatus());
 
         log.log(INFO, "My very own user folder: " + mainDocPool.getUserFolder());
@@ -188,6 +198,17 @@ public class DokpoolTest {
         log.log(INFO, "Creating new document at " + myGroupFolder.getPathWithPlonesite() + "/" + DOCID);
         Document d = myGroupFolder.createDPDocument(DOCID, docProperties);
 
+        boolean gotException = false;
+        try {
+            myGroupFolder.createDPDocument(DOCID, docProperties);
+        } catch (DokpoolRuntimeException dre) {
+            gotException = true;
+        }
+
+        if (!gotException) {
+            throw new Exception("Uploading with the same id twice should produce an exception.");
+        }
+
         d.assignEventIdsUids(List.of("routinemode"));
 
         byte[] fileData = ("Readme, I'm a string!").getBytes();
@@ -234,7 +255,7 @@ public class DokpoolTest {
      */
     @Test
     public void eventsTest() throws Exception {
-        DocumentPool mainDocPool = obtainDocumentPoolREST();
+        DocumentPool mainDocPool = obtainDocumentPool(DokpoolBaseService.ALLEXCEP);
 
         Event evById = mainDocPool.getEventById(EVENT);
         log.log(INFO, "Event given by id \"" + EVENT +
@@ -288,7 +309,7 @@ public class DokpoolTest {
     public void doksysTest() throws Exception {
         String doksysDocId = DOCID+"-doksys";
 
-        DocumentPool mainDocPool = obtainDocumentPoolREST();
+        DocumentPool mainDocPool = obtainDocumentPool(DokpoolBaseService.ALLEXCEP);
 
         Folder myGroupFolder = mainDocPool.getGroupFolder(GROUPFOLDER).get();
         boolean docExists = false;
@@ -340,8 +361,8 @@ public class DokpoolTest {
      * @throws Exception
      */
     @Test
-    public void miscObjectTestREST() throws Exception {
-        log.log(INFO, "=== TEST: miscObjectTest REST ======");
+    public void miscObjectTest() throws Exception {
+        log.log(INFO, "=== TEST: miscObjectTest ======");
         log.log(INFO, "URL: " + PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE + " User:" + USER + " Password:" + PW);
         DokpoolBaseService dokpoolBaseService = new DokpoolBaseService(PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE, USER, PW);
 
@@ -453,10 +474,10 @@ public class DokpoolTest {
      *
      */
     @Test
-    public void userManagementTestREST() throws Exception {
-        log.log(INFO, "=== TEST: userManagementTest REST ======");
+    public void userManagementTest() throws Exception {
+        log.log(INFO, "=== TEST: userManagementTest ======");
         Random r = new Random();
-        DocumentPool myDocumentPool = obtainDocumentPoolREST();
+        DocumentPool myDocumentPool = obtainDocumentPool(DokpoolBaseService.ALLEXCEP);
         User user = myDocumentPool.createUser("javaTestUser"+r.nextInt(), "testuserPW", "Test User Full Name", myDocumentPool.getPathAfterPlonesite());
         if (user == null) {
             log.log(ERROR, "No User created!");
