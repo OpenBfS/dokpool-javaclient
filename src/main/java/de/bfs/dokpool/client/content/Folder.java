@@ -260,12 +260,14 @@ public class Folder extends BaseObject {
             JSON.Node rspNode = privateService.postRequestWithNode(pathAfterPlonesite, createJS);
             if (rspNode.errorInfo != null) {
                 log.log(INFO, rspNode.errorInfo.toString());
+                privateService.throwCreateDRE(rspNode.errorInfo.toString(), null);
                 return null;
             }
             String newpath = service.pathWithoutPrefix(rspNode);
             return new Document(service, newpath, (Map<String,Object>) null);
         } catch (DokpoolRuntimeException dre) {
             log.log(ERROR, exceptionToString(dre), dre);
+            privateService.throwCreateDRE(dre);
             return null;
         }
     }
@@ -287,12 +289,14 @@ public class Folder extends BaseObject {
             JSON.Node rspNode = privateService.postRequestWithNode(pathAfterPlonesite, createJS);
             if (rspNode.errorInfo != null) {
                 log.log(INFO, rspNode.errorInfo.toString());
+                privateService.throwCreateDRE(rspNode.errorInfo.toString(), null);
                 return null;
             }
             String newpath = service.pathWithoutPrefix(rspNode);
             return new BaseObject(service, newpath, (Map<String,Object>) null);
         } catch (DokpoolRuntimeException dre) {
             log.log(ERROR, exceptionToString(dre), dre);
+            privateService.throwCreateDRE(dre);
             return null;
         }
     }
