@@ -48,6 +48,17 @@ public class DokpoolBaseService {
     public final boolean allowCaching;
     public static final boolean NOCACHING = false;
 
+    public final String exceptionPolicy;
+    /** Policy: Do not throw DokpoolRuntimeExceptions. */
+    public static final String NOEXCEP = "NOEXCEP";
+    /**
+     * Policy: Do only throw DokpoolRuntimeExceptions,
+     * if object cration fails.
+     */
+    public static final String OBJCREXCEP = "OBJCREXCEP";
+    /** Policy: Throw all currently available DokpoolRuntimeExceptions. */
+    public static final String ALLEXCEP = "ALLEXCEP";
+
     /*package-private*/ PrivateDokpoolBaseService privateService;
 
     /**
@@ -61,6 +72,49 @@ public class DokpoolBaseService {
      */
     public DokpoolBaseService(String url, String username, String password) {
         this(url, username, password, true);
+    }
+
+    /**
+     * Get a service object from a config map.
+     *
+     * The arguments for the otheer constructors can be used as keys.
+     * exceptionPolicy is an additional key that controls which runtime
+     * exceptions are thrown. You can either use url or proto+host+port+plonesite.
+     * If "url" is present, the other values are ignored.
+     *
+     * @param config a map containing the config arguments.
+     */
+    public DokpoolBaseService(Map<String,Object> config) {
+        //new REST-Code:
+        this.privateService = new PrivateDokpoolBaseService(this);
+
+        String url = (String) config.get("url");
+        if (url != null) {
+            try {
+                URL urlObject = new URL(url);
+                this.proto = urlObject.getProtocol();
+                this.host = urlObject.getHost();
+                this.port = urlObject.getPort() == -1 ? "" : Integer.toString(urlObject.getPort());
+                this.plonesite = urlObject.getPath();
+                this.plonesite = this.plonesite.startsWith("/") ? this.plonesite.substring(1) : this.plonesite;
+            } catch (MalformedURLException mue) {
+                log.log(/*fatal*/ERROR, "Incorrect URL provided!", mue);
+            }
+        } else {
+            this.proto = (String) config.get("proto");
+            this.host = (String) config.get("host");
+            this.port = config.get("port") != null? (String) config.get("port") : "";
+            String ps = (String) config.get("plonesite");
+            this.plonesite = ps.startsWith("/") ? ps.substring(1) : ps;
+        }
+
+        this.urlPrefix = HttpClient.composeUrl(this.proto,this.host,this.port,"/"+ this.plonesite);
+        this.urlPrefixLength = urlPrefix.length();
+
+        this.username = (String) config.get("username");
+        this.password = (String) config.get("password");
+        this.allowCaching = config.get("caching") != null ? (Boolean) config.get("caching") : true;
+        this.exceptionPolicy = config.get("exceptionPolicy") != null ? (String) config.get("exceptionPolicy") : NOEXCEP;
     }
 
     /**
@@ -90,6 +144,7 @@ public class DokpoolBaseService {
         this.urlPrefix = HttpClient.composeUrl(this.proto,this.host,this.port,"/"+ this.plonesite);
         this.urlPrefixLength = urlPrefix.length();
         this.allowCaching = caching;
+        this.exceptionPolicy = NOEXCEP;
     }
 
     /**
@@ -128,6 +183,7 @@ public class DokpoolBaseService {
         this.username = username;
         this.password = password;
         this.allowCaching = true;
+        this.exceptionPolicy = NOEXCEP;
     }
 
     public String pathWithoutPrefix(String path) {
@@ -263,6 +319,18 @@ public class DokpoolBaseService {
         return addErrorInfo(new JSON.Node(rsp.content), rsp);
     }
 
+    private void throwCreateDRE(String message, Throwable cause) {
+        if (exceptionPolicy.equals(ALLEXCEP) || exceptionPolicy.equals(OBJCREXCEP)) {
+            throw new DokpoolRuntimeException(message, cause);
+        }
+    }
+
+    private void throwCreateDRE(DokpoolRuntimeException ex) {
+        if (exceptionPolicy.equals(ALLEXCEP) || exceptionPolicy.equals(OBJCREXCEP)) {
+            throw ex;
+        }
+    }
+
     /**
      * Get all ESDs available to the current user.
      * Calls the endpoint /@get_documentpools.
@@ -364,6 +432,12 @@ public class DokpoolBaseService {
         }
         public JSON.Node deleteRequest(String endpoint) throws DokpoolRuntimeException {
             return service.deleteRequest(endpoint);
+        }
+        public void throwCreateDRE(String message, Throwable cause) {
+            service.throwCreateDRE(message, cause);
+        }
+        public void throwCreateDRE(DokpoolRuntimeException dre) {
+            service.throwCreateDRE(dre);
         }
     }
 
