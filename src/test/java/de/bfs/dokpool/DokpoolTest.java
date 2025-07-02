@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import org.junit.Test;
 import org.junit.Assert;
@@ -90,7 +91,7 @@ public class DokpoolTest {
         return mayBeNull != null ? mayBeNull : "null";
     }
 
-    public static DocumentPool obtainDocumentPool(String exceptionPolicy) throws Exception {
+    public static DocumentPool obtainDocumentPool(Set<String> exceptionPolicy) throws Exception {
         log.log(INFO, "URL: " + PROTO + "://" + HOST + ":" + PORT + "/" + PLONESITE + " User:" + USER + " Password:" + PW);
         DokpoolBaseService dokpoolBaseService = new DokpoolBaseService(Map.of(
             "proto", PROTO,
@@ -117,6 +118,25 @@ public class DokpoolTest {
         }
 
         return mainDocPool;
+    }
+
+    /**
+     * Test if exceptions are thrown for misconfigured plone sites.
+     *
+     */
+    @Test(expected = DokpoolRuntimeException.class)
+    public void docPoolException() throws Exception {
+        DokpoolBaseService dokpoolBaseService = new DokpoolBaseService(Map.of(
+            "proto", PROTO,
+            "host", HOST,
+            "port", PORT,
+            "plonesite", "thereisnosuchplonesite",
+            "username", USER,
+            "password", PW,
+            "exceptionPolicy", DokpoolBaseService.DOCPEXCEP
+        ));
+
+        dokpoolBaseService.getDocumentPools();
     }
 
     /**

@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import de.bfs.dokpool.client.content.DocumentPool;
 
@@ -48,16 +49,15 @@ public class DokpoolBaseService {
     public final boolean allowCaching;
     public static final boolean NOCACHING = false;
 
-    public final String exceptionPolicy;
+    public final Set<String> exceptionPolicy;
     /** Policy: Do not throw DokpoolRuntimeExceptions. */
-    public static final String NOEXCEP = "NOEXCEP";
-    /**
-     * Policy: Do only throw DokpoolRuntimeExceptions,
-     * if object cration fails.
-     */
+    public static final Set<String> NOEXCEP = Set.of();
+    /** Policy: Throw DokpoolRuntimeExceptions if object creation fails. */
     public static final String OBJCREXCEP = "OBJCREXCEP";
+    /** Policy: Throw DokpoolRuntimeExceptions if document pool(s) cannot be optained. */
+    public static final String DOCPEXCEP = "DOCPEXCEP";
     /** Policy: Throw all currently available DokpoolRuntimeExceptions. */
-    public static final String ALLEXCEP = "ALLEXCEP";
+    public static final Set<String> ALLEXCEP = Set.of(OBJCREXCEP, DOCPEXCEP);
 
     /*package-private*/ PrivateDokpoolBaseService privateService;
 
@@ -114,7 +114,16 @@ public class DokpoolBaseService {
         this.username = (String) config.get("username");
         this.password = (String) config.get("password");
         this.allowCaching = config.get("caching") != null ? (Boolean) config.get("caching") : true;
-        this.exceptionPolicy = config.get("exceptionPolicy") != null ? (String) config.get("exceptionPolicy") : NOEXCEP;
+        Object exPol = config.get("exceptionPolicy");
+        if (exPol instanceof String) {
+            this.exceptionPolicy = Set.of((String) exPol);
+        } else if (exPol instanceof Set) {
+            @SuppressWarnings("unchecked")
+            Set<String> s = (Set<String>) exPol;
+            this.exceptionPolicy = s;
+        } else {
+            this.exceptionPolicy = NOEXCEP;
+        }
     }
 
     /**
@@ -319,14 +328,14 @@ public class DokpoolBaseService {
         return addErrorInfo(new JSON.Node(rsp.content), rsp);
     }
 
-    private void throwCreateDRE(String message, Throwable cause) {
-        if (exceptionPolicy.equals(ALLEXCEP) || exceptionPolicy.equals(OBJCREXCEP)) {
+    private void throwCreateDRE(String message, Throwable cause, String policy) {
+        if (exceptionPolicy.contains(policy)) {
             throw new DokpoolRuntimeException(message, cause);
         }
     }
 
-    private void throwCreateDRE(DokpoolRuntimeException ex) {
-        if (exceptionPolicy.equals(ALLEXCEP) || exceptionPolicy.equals(OBJCREXCEP)) {
+    private void throwCreateDRE(DokpoolRuntimeException ex, String policy) {
+        if (exceptionPolicy.contains(policy)) {
             throw ex;
         }
     }
@@ -351,19 +360,21 @@ public class DokpoolBaseService {
     public List<DocumentPool> getDocumentPools(String user) {
         user = (user == null || user == "") ? "" : ("/"+user);
         String ep = "/@get_documentpools" + user;
-        JSON.Node node;
+        JSON.Node rspNode = null;
         try {
-            node = nodeFromGetRequest(ep);
-            if (node.errorInfo != null) {
-                log.log(INFO, node.errorInfo.toString());
+            rspNode = nodeFromGetRequest(ep);
+            if (rspNode.errorInfo != null) {
+                log.log(INFO, rspNode.errorInfo.toString());
+                privateService.throwCreateDRE(rspNode.errorInfo.toString(), null, DOCPEXCEP);
                 return null;
             }
         } catch (DokpoolRuntimeException dre) {
             log.log(ERROR, exceptionToString(dre), dre);
+            privateService.throwCreateDRE(dre, DOCPEXCEP);
             return null;
         }
         List<DocumentPool> dpList = new ArrayList<>();
-        for (JSON.Node child : node) {
+        for (JSON.Node child : rspNode) {
             dpList.add(new DocumentPool(this, "/"+child.toString(), Map.of("id", child.toString())));
         }
         return dpList;
@@ -397,11 +408,13 @@ public class DokpoolBaseService {
             rspNode = nodeFromGetRequest(ep);
             if (rspNode.errorInfo != null) {
                 log.log(INFO, rspNode.errorInfo.toString());
+                privateService.throwCreateDRE(rspNode.errorInfo.toString(), null, DOCPEXCEP);
                 return null;
             }
             return new DocumentPool(this, pathWithoutPrefix(rspNode), rspNode.toMap());
         } catch (DokpoolRuntimeException dre) {
             log.log(ERROR, exceptionToString(dre), dre);
+            privateService.throwCreateDRE(dre, DOCPEXCEP);
             return null;
         }
     }
@@ -433,11 +446,11 @@ public class DokpoolBaseService {
         public JSON.Node deleteRequest(String endpoint) throws DokpoolRuntimeException {
             return service.deleteRequest(endpoint);
         }
-        public void throwCreateDRE(String message, Throwable cause) {
-            service.throwCreateDRE(message, cause);
+        public void throwCreateDRE(String message, Throwable cause, String policy) {
+            service.throwCreateDRE(message, cause, policy);
         }
-        public void throwCreateDRE(DokpoolRuntimeException dre) {
-            service.throwCreateDRE(dre);
+        public void throwCreateDRE(DokpoolRuntimeException dre, String policy) {
+            service.throwCreateDRE(dre, policy);
         }
     }
 
