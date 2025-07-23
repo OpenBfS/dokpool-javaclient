@@ -2,6 +2,10 @@
 
 ## Version 3.x
 
+### 3.3.2 *2025-07-23*
+
+ - more optional exceptions (when failing to get doc. pool)
+
 ### 3.3.1 *2025-06-23*
 
  - add option to throw some runtime exceptions
