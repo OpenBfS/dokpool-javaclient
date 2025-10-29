@@ -2,6 +2,10 @@
 
 ## Version 3.x
 
+### 3.3.3 *2025-10-xx*
+
+ - bump dependencies (Apache HTTPClient5, Jackson)
+
 ### 3.3.2 *2025-07-23*
 
  - more optional exceptions (when failing to get doc. pool)
