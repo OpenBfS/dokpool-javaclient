@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
@@ -86,7 +87,7 @@ public class HttpClient {
         private Response(final int status, final String content, Map<String,List<String>> headers) {
             this.status = status;
             this.content = content;
-            this.headers = new HashMap<>();
+            this.headers = new TreeMap<String,String>(String.CASE_INSENSITIVE_ORDER);
             for (Map.Entry<String,List<String>> header: headers.entrySet()) {
                 this.headers.put(header.getKey(), header.getValue().get(0));
             }

@@ -228,7 +228,7 @@ public class DocumentPool extends Folder {
     public Event getEventByUid(String eventUid) {
         String evPathAfterPloneSite = privateService.uidToPathAfterPlonesite(eventUid);
         if (evPathAfterPloneSite == null) {
-            log.log(INFO, "UID " + eventUid + "refers to no object.");
+            log.log(INFO, "UID " + eventUid + " refers to no object.");
             return null;
         }
         try {
