@@ -1,4 +1,4 @@
-/* Copyright (C) 2015-2025 by Bundesamt fuer Strahlenschutz
+/* Copyright (C) 2015-2026 by Bundesamt fuer Strahlenschutz
  *
  * This file is Free Software under the GNU GPL (v>=3)
  * and comes with ABSOLUTELY NO WARRANTY!
@@ -13,36 +13,31 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
 
-import org.apache.hc.client5.http.classic.methods.HttpDelete;
-import org.apache.hc.client5.http.classic.methods.HttpGet;
-import org.apache.hc.client5.http.classic.methods.HttpPatch;
-import org.apache.hc.client5.http.classic.methods.HttpPost;
-import org.apache.hc.client5.http.classic.methods.HttpPut;
-import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.client5.http.protocol.HttpClientContext;
-import org.apache.hc.core5.http.ContentType;
-import org.apache.hc.core5.http.Header;
-import org.apache.hc.core5.http.HttpEntity;
-import org.apache.hc.core5.http.HttpHost;
-import org.apache.hc.core5.http.HttpRequest;
-import org.apache.hc.core5.http.io.entity.EntityUtils;
-import org.apache.hc.core5.http.io.entity.ByteArrayEntity;
-import org.apache.hc.core5.http.message.BasicNameValuePair;
-import org.apache.hc.core5.http.message.StatusLine;
-import org.apache.hc.core5.http.NameValuePair;
-import org.apache.hc.core5.http.ParseException;
+import java.io.IOException;
+import java.net.http.HttpClient.Redirect;
+// import java.net.http.HttpHeaders;
+import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublisher;
+import java.net.http.HttpRequest.BodyPublishers;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
+// import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
+
+// TODO: Import to specify timeouts.
+// import java.time.Duration;
 
 import static java.lang.System.Logger.Level.ERROR;
 import static java.lang.System.Logger.Level.INFO;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
+
 
 
 /**
@@ -88,21 +83,22 @@ public class HttpClient {
         public final String content;
         public final Map<String,String> headers;
 
-        private Response(final int status, final String content, Header[] headers) {
+        private Response(final int status, final String content, Map<String,List<String>> headers) {
             this.status = status;
             this.content = content;
             this.headers = new HashMap<>();
-            for (Header header: headers) {
-                this.headers.put(header.getName(), header.getValue());
+            for (Map.Entry<String,List<String>> header: headers.entrySet()) {
+                this.headers.put(header.getKey(), header.getValue().get(0));
             }
         }
     }
 
-    private static int intPortFromPortOrProtocol(String port, final String proto) {
-        port = port != null? port : "";
-        port = port.equals("") ? (proto.equals("https")?"443":"80"): port;
-        return Integer.parseInt(port);
-    }
+    // TODO: not needed, unless we have a method where can decouple url and host/port
+    // private static int intPortFromPortOrProtocol(String port, final String proto) {
+    //     port = port != null? port : "";
+    //     port = port.equals("") ? (proto.equals("https")?"443":"80"): port;
+    //     return Integer.parseInt(port);
+    // }
 
     public static String composeUrl(final String proto, final String host, String port, final String path) {
         port = port.equals("") ? "" : (":" +  port);
@@ -121,19 +117,19 @@ public class HttpClient {
         return str.substring(0,Math.min(1000,str.length()));
     }
 
-    private static void addHeadersToRequest(HttpRequest request, Map<String,String> headers) {
+    private static void addHeadersToRequest(HttpRequest.Builder builder, Map<String,String> headers) {
         if (headers == null) {
             return;
         }
         for (Map.Entry<String, String> entry : headers.entrySet()) {
-            request.setHeader(entry.getKey(), entry.getValue());
+            builder.setHeader(entry.getKey(), entry.getValue());
         }
     }
 
     public static boolean tlsLogging = false;
-    private static void logTLS(HttpClientContext clientContext) {
-        final SSLSession sslSession = clientContext.getSSLSession();
-        if (sslSession != null) {
+    private static void logTLS(Optional<SSLSession> optSslSession) {
+        if (!optSslSession.isEmpty()) {
+            final SSLSession sslSession = optSslSession.get();
             try {
                 log.log(INFO, "Peer: " + sslSession.getPeerPrincipal());
                 log.log(INFO, "TLS protocol: " + sslSession.getProtocol());
@@ -144,30 +140,34 @@ public class HttpClient {
     }
 
     public static final Response doGetRequest(final String proto, final String host, String port, final String url, Map<String,String> headers) throws HttpRuntimeException {
-        // Use a try-with-resources, as CloseableHttpClient should be closed():
-        try (CloseableHttpClient httpclient = HttpClients.custom().disableRedirectHandling().build()) {
+        // HttpClient has no auto-close, so normal try and not try-with-resources
+        try {
+            java.net.http.HttpClient client = java.net.http.HttpClient.newBuilder().followRedirects(Redirect.NEVER).build();
 
-            final int portInt = intPortFromPortOrProtocol(port,proto);
-            final HttpHost target = new HttpHost(proto, host, portInt);
-            final HttpGet httpget = new HttpGet(url);
-            addHeadersToRequest(httpget,headers);
+            // HttpClient does not separate URL and connection, so port etc. must match or we need another api.
+            // final HttpHost target = new HttpHost(proto, host, portInt);
 
-            log.log(INFO, "Executing request " + httpget.getMethod() + " " + httpget.getUri());
+            HttpRequest.Builder httpgetb = HttpRequest.newBuilder()
+                // .timeout(Duration.ofMillis(timeout))
+                .GET()//for clarity, actually GET is the default
+                .uri(new URI(url));
 
-            final HttpClientContext clientContext = HttpClientContext.create();
-            Response response = httpclient.execute(target, httpget, clientContext, rsp -> {
-                log.log(INFO, httpget + "->" + new StatusLine(rsp));
-                if (proto.equals("https") && tlsLogging) {
-                    logTLS(clientContext);
-                }
-                HttpEntity entity = rsp.getEntity();
-                String content = entity != null ? EntityUtils.toString(entity): "";
-                EntityUtils.consume(entity);
-                return new Response(rsp.getCode(), content, rsp.getHeaders());
-            });
+            addHeadersToRequest(httpgetb, headers);
+            HttpRequest httpget = httpgetb.build();
 
-            return response;
-        } catch (IOException ioe) {
+            log.log(INFO, "Executing request " + httpget.method() + " " + httpget.uri());
+
+            HttpResponse<String> rsp = client.send(httpget, BodyHandlers.ofString());
+            Response reponse = new Response(rsp.statusCode(), rsp.body(), rsp.headers().map());
+
+            log.log(INFO, rsp.uri() + "->" + rsp.statusCode());
+            if (proto.equals("https") && tlsLogging) {
+                logTLS(rsp.sslSession());
+            }
+
+            return reponse;
+
+        } catch (InterruptedException | IOException ioe) {
             log.log(ERROR, "IO error while connecting to " + url);
             throw new HttpRuntimeException("IO error while connecting to " + url, ioe);
         } catch (URISyntaxException use) {
@@ -176,29 +176,33 @@ public class HttpClient {
     }
 
     public static final Response doDeleteRequest(final String proto, final String host, String port, final String url, Map<String,String> headers) throws HttpRuntimeException {
-        try (CloseableHttpClient httpclient = HttpClients.custom().disableRedirectHandling().build()) {
+        try {
+            java.net.http.HttpClient client = java.net.http.HttpClient.newBuilder().followRedirects(Redirect.NEVER).build();
 
-            final int portInt = intPortFromPortOrProtocol(port,proto);
-            final HttpHost target = new HttpHost(proto, host, portInt);
-            final HttpDelete httpdel = new HttpDelete(url);
-            addHeadersToRequest(httpdel,headers);
+            // HttpClient does not separate URL and connection, so port etc. must match or we need another api.
+            // final HttpHost target = new HttpHost(proto, host, portInt);
 
-            log.log(INFO, "Executing request " + httpdel.getMethod() + " " + httpdel.getUri());
+            HttpRequest.Builder httpdeleteb = HttpRequest.newBuilder()
+                // .timeout(Duration.ofMillis(timeout))
+                .DELETE()
+                .uri(new URI(url));
 
-            final HttpClientContext clientContext = HttpClientContext.create();
-            Response response = httpclient.execute(target, httpdel, clientContext, rsp -> {
-                log.log(INFO, httpdel + "->" + new StatusLine(rsp));
-                if (proto.equals("https") && tlsLogging) {
-                    logTLS(clientContext);
-                }
-                HttpEntity entity = rsp.getEntity();
-                String content = entity != null ? EntityUtils.toString(entity): "";
-                EntityUtils.consume(entity);
-                return new Response(rsp.getCode(), content, rsp.getHeaders());
-            });
+            addHeadersToRequest(httpdeleteb, headers);
+            HttpRequest httpdelete = httpdeleteb.build();
 
-            return response;
-        } catch (IOException ioe) {
+            log.log(INFO, "Executing request " + httpdelete.method() + " " + httpdelete.uri());
+
+            HttpResponse<String> rsp = client.send(httpdelete, BodyHandlers.ofString());
+            Response reponse = new Response(rsp.statusCode(), rsp.body(), rsp.headers().map());
+
+            log.log(INFO, rsp.uri() + "->" + rsp.statusCode());
+            if (proto.equals("https") && tlsLogging) {
+                logTLS(rsp.sslSession());
+            }
+
+            return reponse;
+
+        } catch (InterruptedException | IOException ioe) {
             log.log(ERROR, "IO error while connecting to " + url);
             throw new HttpRuntimeException("IO error while connecting to " + url, ioe);
         } catch (URISyntaxException use) {
@@ -207,126 +211,146 @@ public class HttpClient {
     }
 
     public static final Response doPostRequest(final String proto, final String host, String port, final String url, Map<String,String> headers, Map<String,String> parameters, String contentType, byte[] data) throws HttpRuntimeException {
-        try (CloseableHttpClient httpclient = HttpClients.custom().disableRedirectHandling().build()) {
-            final int portInt = intPortFromPortOrProtocol(port,proto);
-            final HttpHost target = new HttpHost(proto, host, portInt);
-            final HttpPost httppost = new HttpPost(url);
-            addHeadersToRequest(httppost,headers);
+        try {
+            java.net.http.HttpClient client = java.net.http.HttpClient.newBuilder().followRedirects(Redirect.NEVER).build();
 
-            log.log(INFO, "Executing request " + httppost.getMethod() + " " + httppost.getUri());
+            // HttpClient does not separate URL and connection, so port etc. must match or we need another api.
+            // final HttpHost target = new HttpHost(proto, host, portInt);
+
+            HttpRequest.Builder httppostb = HttpRequest.newBuilder().uri(new URI(url));
+
+            BodyPublisher bp = BodyPublishers.noBody();
 
             if (parameters != null) {
-                List<NameValuePair> paramList = new ArrayList<>();
-                for (Map.Entry<String, String> entry : parameters.entrySet()) {
-                    paramList.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
+                List<String> bodyList = new ArrayList<String>();
+                boolean amp = false;
+                for (Map.Entry<String,String> entry : parameters.entrySet()) {
+                    if (amp) {
+                        bodyList.add("&");
+                    }
+                    bodyList.add(URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8));
+                    bodyList.add("=");
+                    bodyList.add(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8));
+                    amp = true;
                 }
-                httppost.setEntity(new UrlEncodedFormEntity(paramList));
+
+                httppostb.setHeader("Content-type", "application/x-www-form-urlencoded");
+                String body = String.join("", bodyList);
+                bp = BodyPublishers.ofString(body);
             }
 
             if (data != null) {
-                httppost.setHeader("Content-type", contentType);
-                ByteArrayEntity dataEntity = new ByteArrayEntity(data,ContentType.create(contentType));
-                //ParseException should not happen here:
-                log.log(INFO, "Request data: " + first1000(EntityUtils.toString(dataEntity)));
-                httppost.setEntity(dataEntity);
+                httppostb.setHeader("Content-type", contentType);
+                log.log(INFO, "Request data: " + first1000(new String(data, StandardCharsets.UTF_8)));
+                bp = BodyPublishers.ofByteArray(data);
             }
 
-            final HttpClientContext clientContext = HttpClientContext.create();
-            // final BasicCookieStore cookieStore = new BasicCookieStore();
-            // clientContext.setCookieStore(cookieStore);
-            Response response = httpclient.execute(target, httppost, clientContext, rsp -> {
-                log.log(INFO, httppost + "->" + new StatusLine(rsp));
-                if (proto.equals("https") && tlsLogging) {
-                    logTLS(clientContext);
-                }
-                HttpEntity entity = rsp.getEntity();
-                String content = entity != null ? EntityUtils.toString(entity): "";
-                EntityUtils.consume(entity);
-                return new Response(rsp.getCode(), content, rsp.getHeaders());
-            });
+            httppostb.POST(bp);
 
-            return response;
-        } catch (IOException ioe) {
+            addHeadersToRequest(httppostb, headers);
+            HttpRequest httppost = httppostb.build();
+
+            log.log(INFO, "Executing request " + httppost.method() + " " + httppost.uri());
+
+            HttpResponse<String> rsp = client.send(httppost, BodyHandlers.ofString());
+            Response reponse = new Response(rsp.statusCode(), rsp.body(), rsp.headers().map());
+
+            log.log(INFO, rsp.uri() + "->" + rsp.statusCode());
+            if (proto.equals("https") && tlsLogging) {
+                logTLS(rsp.sslSession());
+            }
+
+            return reponse;
+
+        } catch (InterruptedException | IOException ioe) {
             log.log(ERROR, "IO error while connecting to " + url);
             throw new HttpRuntimeException("IO error while connecting to " + url, ioe);
         } catch (URISyntaxException use) {
             throw new HttpRuntimeException("bad url: " + url, use);
-        } catch (ParseException pe) {
-            throw new HttpRuntimeException("error handling request data", pe);
         }
     }
 
     public static final Response doPutRequest(final String proto, final String host, String port, final String url, Map<String,String> headers, String contentType, byte[] data) throws HttpRuntimeException {
-        try (CloseableHttpClient httpclient = HttpClients.custom().disableRedirectHandling().build()) {
-            final int portInt = intPortFromPortOrProtocol(port,proto);
-            final HttpHost target = new HttpHost(proto, host, portInt);
-            final HttpPut httpput = new HttpPut(url);
-            addHeadersToRequest(httpput,headers);
+        try {
+            java.net.http.HttpClient client = java.net.http.HttpClient.newBuilder().followRedirects(Redirect.NEVER).build();
 
-            httpput.setHeader("Content-type", contentType);
-            ByteArrayEntity putEntity = new ByteArrayEntity(data,ContentType.create(contentType));
-            httpput.setEntity(putEntity);
+            // HttpClient does not separate URL and connection, so port etc. must match or we need another api.
+            // final HttpHost target = new HttpHost(proto, host, portInt);
 
-            log.log(INFO, "Executing request " + httpput.getMethod() + " " + httpput.getUri());
-            log.log(INFO, "Request data: " + first1000(EntityUtils.toString(putEntity)));
+            HttpRequest.Builder httpputb = HttpRequest.newBuilder().uri(new URI(url));
 
-            final HttpClientContext clientContext = HttpClientContext.create();
-            Response response = httpclient.execute(target, httpput, clientContext, rsp -> {
-                log.log(INFO, httpput + "->" + new StatusLine(rsp));
-                if (proto.equals("https") && tlsLogging) {
-                    logTLS(clientContext);
-                }
-                HttpEntity entity = rsp.getEntity();
-                String content = entity != null ? EntityUtils.toString(entity): "";
-                EntityUtils.consume(entity);
-                return new Response(rsp.getCode(), content, rsp.getHeaders());
-            });
+            BodyPublisher bp = BodyPublishers.noBody();
 
-            return response;
-        } catch (IOException ioe) {
+            if (data != null) {
+                httpputb.setHeader("Content-type", contentType);
+                log.log(INFO, "Request data: " + first1000(new String(data, StandardCharsets.UTF_8)));
+                bp = BodyPublishers.ofByteArray(data);
+            }
+
+            httpputb.PUT(bp);
+
+            addHeadersToRequest(httpputb, headers);
+            HttpRequest httpput = httpputb.build();
+
+            log.log(INFO, "Executing request " + httpput.method() + " " + httpput.uri());
+
+            HttpResponse<String> rsp = client.send(httpput, BodyHandlers.ofString());
+            Response reponse = new Response(rsp.statusCode(), rsp.body(), rsp.headers().map());
+
+            log.log(INFO, rsp.uri() + "->" + rsp.statusCode());
+            if (proto.equals("https") && tlsLogging) {
+                logTLS(rsp.sslSession());
+            }
+
+            return reponse;
+
+        } catch (InterruptedException | IOException ioe) {
             log.log(ERROR, "IO error while connecting to " + url);
             throw new HttpRuntimeException("IO error while connecting to " + url, ioe);
         } catch (URISyntaxException use) {
             throw new HttpRuntimeException("bad url: " + url, use);
-        } catch (ParseException pe) {
-            throw new HttpRuntimeException("error handling request data", pe);
         }
     }
 
     public static final Response doPatchRequest(final String proto, final String host, String port, final String url, Map<String,String> headers, String contentType, byte[] data) throws HttpRuntimeException {
-        try (CloseableHttpClient httpclient = HttpClients.custom().disableRedirectHandling().build()) {
-            final int portInt = intPortFromPortOrProtocol(port,proto);
-            final HttpHost target = new HttpHost(proto, host, portInt);
-            final HttpPatch httppatch = new HttpPatch(url);
-            addHeadersToRequest(httppatch,headers);
+        try {
+            java.net.http.HttpClient client = java.net.http.HttpClient.newBuilder().followRedirects(Redirect.NEVER).build();
 
-            httppatch.setHeader("Content-type", contentType);
-            ByteArrayEntity patchEntity = new ByteArrayEntity(data,ContentType.create(contentType));
-            httppatch.setEntity(patchEntity);
+            // HttpClient does not separate URL and connection, so port etc. must match or we need another api.
+            // final HttpHost target = new HttpHost(proto, host, portInt);
 
-            log.log(INFO, "Executing request " + httppatch.getMethod() + " " + httppatch.getUri());
-            log.log(INFO, "Request data: " + first1000(EntityUtils.toString(patchEntity)));
+            HttpRequest.Builder httppatchb = HttpRequest.newBuilder().uri(new URI(url));
 
-            final HttpClientContext clientContext = HttpClientContext.create();
-            Response response = httpclient.execute(target, httppatch, clientContext, rsp -> {
-                log.log(INFO, httppatch + "->" + new StatusLine(rsp));
-                if (proto.equals("https") && tlsLogging) {
-                    logTLS(clientContext);
-                }
-                HttpEntity entity = rsp.getEntity();
-                String content = entity != null ? EntityUtils.toString(entity): "";
-                EntityUtils.consume(entity);
-                return new Response(rsp.getCode(), content, rsp.getHeaders());
-            });
+            BodyPublisher bp = BodyPublishers.noBody();
 
-            return response;
-        } catch (IOException ioe) {
+            if (data != null) {
+                httppatchb.setHeader("Content-type", contentType);
+                log.log(INFO, "Request data: " + first1000(new String(data, StandardCharsets.UTF_8)));
+                bp = BodyPublishers.ofByteArray(data);
+            }
+
+            httppatchb.method("PATCH", bp);
+
+            addHeadersToRequest(httppatchb, headers);
+            HttpRequest httppatch = httppatchb.build();
+
+            log.log(INFO, "Executing request " + httppatch.method() + " " + httppatch.uri());
+
+            HttpResponse<String> rsp = client.send(httppatch, BodyHandlers.ofString());
+            Response reponse = new Response(rsp.statusCode(), rsp.body(), rsp.headers().map());
+
+            log.log(INFO, rsp.uri() + "->" + rsp.statusCode());
+            if (proto.equals("https") && tlsLogging) {
+                logTLS(rsp.sslSession());
+            }
+
+            return reponse;
+
+        } catch (InterruptedException | IOException ioe) {
             log.log(ERROR, "IO error while connecting to " + url);
             throw new HttpRuntimeException("IO error while connecting to " + url, ioe);
         } catch (URISyntaxException use) {
             throw new HttpRuntimeException("bad url: " + url, use);
-        } catch (ParseException pe) {
-            throw new HttpRuntimeException("error handling request data", pe);
         }
     }
 }
