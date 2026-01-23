@@ -249,8 +249,8 @@ public class DokpoolTest {
         }
         byte[] imageData = Files.readAllBytes(Paths.get("src/test/resources/image.png"));
         //we purposely use a wrong mimetype (image/svg) here to check that Plone still does not care:
-        Image img = d.uploadOrReplaceImage("image", "Look at me!", "An image you should look at.", imageData, "image.png", "image/svg");
-        img = d.uploadOrReplaceImage("image", "Look at me!", "An image you should look at.", imageData, "image.png", "image/svg");
+        Image img = d.uploadOrReplaceImage("myimage", "Look at me!", "An image you should look at.", imageData, "image.png", "image/svg");
+        img = d.uploadOrReplaceImage("myimage", "Look at me!", "An image you should look at.", imageData, "image.png", "image/svg");
         newTitle = "look at me again";
         imageData = Files.readAllBytes(Paths.get("src/test/resources/image.jpeg"));
         img.replace(newTitle, "An image you should still look at.", imageData, "image.jpeg", "image/jpeg");
@@ -259,8 +259,8 @@ public class DokpoolTest {
         }
 
 
-        log.log(INFO, d.getContentItem("image"));
-        log.log(INFO, d.getContentItem("imaggee") != null ? d.getContentItem("imaggee"): "null");
+        log.log(INFO, d.getContentItem("myimage"));
+        log.log(INFO, d.getContentItem("myimaggee") != null ? d.getContentItem("myimaggee"): "null");
 
         log.log(INFO, d.getPathAfterPlonesite());
         log.log(INFO, "modified: " + d.getDateAttribute("modified"));
