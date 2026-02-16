@@ -2,6 +2,12 @@
 
 ## Version 3.x
 
+### 3.3.4 *2026-02-16*
+
+ - use Java's own HttpClient instead of Apache HttpClient
+ - bump some maven plugin versions
+ - fix some Javadoc errors and warnings
+
 ### 3.3.3 *2025-10-29*
 
  - bump dependencies (Apache HTTPClient5, Jackson)
