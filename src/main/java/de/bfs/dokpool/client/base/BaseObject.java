@@ -329,7 +329,7 @@ public class BaseObject {
     /**
      * Update the object's attributes with the given map.
      * Any attribute that is not explicitly set will keep its value;
-     * @param attributes
+     * @param attributes attribute map
      * @return true, if the update succeeded; false otherwise
      */
     public boolean update(Map<String, Object> attributes) {
@@ -339,7 +339,7 @@ public class BaseObject {
     /**
      * Update the object's attributes with the given map (internal method).
      * Any attribute that is not explicitly set will keep its value;
-     * @param attributes
+     * @param attributes attribute map
      * @param doChecks: if false, no checks are performed prior to http request;
      *                  Only do this, if you checked the Dokpool REST spec.
      * @return true, if the update succeeded; false otherwise
@@ -374,6 +374,7 @@ public class BaseObject {
      * To unset a value set, set it to null.
      * @param name the name of the attribute
      * @param value its designated value
+     * @return true, if the update succeeded; false otherwise
      */
     public boolean setAttribute(String name, Object value) {
         Map<String,Object> attribute = new HashMap<String,Object>();

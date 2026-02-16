@@ -64,11 +64,13 @@ public class DokpoolBaseService {
     /**
      * Get a service object.
      *
+     * Same behavior as DokpoolBaseService(url, username, password, true),
+     * i.e., cahcing is set to true.
+     *
      * @param url:
      *            the address of the ELAN instance root
      * @param username
      * @param password
-     * @param caching (default: true) whether or not to cache metadata and folder contents
      */
     public DokpoolBaseService(String url, String username, String password) {
         this(url, username, password, true);

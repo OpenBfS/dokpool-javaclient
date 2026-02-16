@@ -212,9 +212,9 @@ public class JSON {
 
         /**
          * Flattens an array of objects by a common id.
-         * @param childId
+         * @param childId the common id
          * @return an array where every element is element[childId] of the input array.
-         * @throws Exception
+         * @throws JSONRuntimeException
          */
         public JSON.Node flattenArray(String childId) {
             JSON.Node flatArray = new JSON.Node("[]");
@@ -247,6 +247,7 @@ public class JSON {
          * This creates a **deep copy** of the child.
          * @param childId the id the child shalle have afterwards.
          * @param child The node to insert.
+         * @return the node itself.
          */
         public Node set(String childId, Node child) {
             try {
@@ -299,10 +300,11 @@ public class JSON {
          * If the child is null, no actions is performed.
          * @param childId the id the child shalle have afterwards.
          * @param child The node to insert.
+         * @return the node itself.
          */
-        public Node setNonNull(String childId, Node c) {
-            if (c != null) {
-                return set(childId, c);
+        public Node setNonNull(String childId, Node child) {
+            if (child != null) {
+                return set(childId, child);
             }
             return this;
         }
@@ -310,7 +312,8 @@ public class JSON {
         /**
          * Set the attribute childId to str if and only if str != null.
          * @param childId the id the child shalle have afterwards.
-         * @param str
+         * @param str the value
+         * @return the node itself.
          */
         public Node setNonNull(String childId, String str) {
             if (str != null) {
@@ -323,7 +326,7 @@ public class JSON {
          * Remove the child at a given id (fails silently if no such child exists).
          * @param childId the id which shall be deleted
          * @return the node itself
-         * @throws Exception
+         * @throws JSONRuntimeException
          */
         public Node remove(String childId) {
             try {
@@ -335,10 +338,10 @@ public class JSON {
         }
 
         /**
-         * Remove the entry at a given inidex (fails silently if no such entry exists).
-         * @param childId the id which shall be deleted
+         * Remove the entry at a given index (fails silently if no such entry exists).
+         * @param index the index which shall be deleted
          * @return the node itself
-         * @throws Exception
+         * @throws JSONRuntimeException
          */
         public Node remove(int index) {
             try {
@@ -354,6 +357,7 @@ public class JSON {
          * This creates a **deep copy** of the child.
          * @param index Position, if negative prepends, if &gt;= size(), the node will be appended.
          * @param child The node to insert.
+         * @return the node itself.
          */
         public Node insert(int index, Node child) {
             try {
@@ -368,6 +372,7 @@ public class JSON {
          * Insert double at the specified position if node is an array.
          * @param index Position, if negative prepends, if &gt;= size(), the node will be appended.
          * @param d The double to insert.
+         * @return the node itself.
          */
         public Node insert(int index, double d) {
             try {
@@ -382,6 +387,7 @@ public class JSON {
          * Insert double at the specified position if node is an array.
          * @param index Position, if negative prepends, if &gt;= size(), the node will be appended.
          * @param i The long integer to insert.
+         * @return the node itself.
          */
         public Node insert(int index, long i) {
             try {
@@ -396,6 +402,7 @@ public class JSON {
          * Insert a string at the specified position if node is an array.
          * @param index Position, if negative prepends, if &gt;= size(), the node will be appended.
          * @param str The string to insert.
+         * @return the node itself.
          */
         public Node insert(int index, String str) {
             try {
@@ -410,6 +417,7 @@ public class JSON {
          * Appends a node if node is an array.
          * This creates a **deep copy** of the child.
          * @param child The node to insert.
+         * @return the node itself.
          */
         public Node append(Node child) {
             try {
@@ -423,6 +431,7 @@ public class JSON {
         /**
          * Appends a double if node is an array.
          * @param d The double to insert.
+         * @return the node itself.
          */
         public Node append(double d) {
             try {
@@ -436,6 +445,7 @@ public class JSON {
         /**
          * Appends a double if node is an array.
          * @param i The long integer to insert.
+         * @return the node itself.
          */
         public Node append(long i) {
             try {
@@ -449,6 +459,7 @@ public class JSON {
         /**
          * Appends a string if node is an array.
          * @param str The string to insert.
+         * @return the node itself.
          */
         public Node append(String str) {
             try {
@@ -462,6 +473,7 @@ public class JSON {
         /**
          * Appends a boolean if node is an array.
          * @param b The boolean to insert.
+         * @return the node itself.
          */
         public Node append(boolean b) {
             try {
