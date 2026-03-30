@@ -12,6 +12,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -93,13 +95,13 @@ public class DokpoolBaseService {
         String url = (String) config.get("url");
         if (url != null) {
             try {
-                URL urlObject = new URL(url);
+                URL urlObject = new URI(url).toURL();
                 this.proto = urlObject.getProtocol();
                 this.host = urlObject.getHost();
                 this.port = urlObject.getPort() == -1 ? "" : Integer.toString(urlObject.getPort());
                 this.plonesite = urlObject.getPath();
                 this.plonesite = this.plonesite.startsWith("/") ? this.plonesite.substring(1) : this.plonesite;
-            } catch (MalformedURLException mue) {
+            } catch (URISyntaxException | MalformedURLException mue) {
                 log.log(/*fatal*/ERROR, "Incorrect URL provided!", mue);
             }
         } else {
@@ -141,7 +143,7 @@ public class DokpoolBaseService {
         //new REST-Code:
         this.privateService = new PrivateDokpoolBaseService(this);
         try {
-            URL urlObject = new URL(url);
+            URL urlObject = new URI(url).toURL();
             this.proto = urlObject.getProtocol();
             this.host = urlObject.getHost();
             this.port = urlObject.getPort() == -1 ? "" : Integer.toString(urlObject.getPort());
@@ -149,7 +151,7 @@ public class DokpoolBaseService {
             this.plonesite = this.plonesite.startsWith("/") ? this.plonesite.substring(1) : this.plonesite;
             this.username = username;
             this.password = password;
-        } catch (MalformedURLException mue) {
+        } catch (URISyntaxException | MalformedURLException mue) {
             log.log(/*fatal*/ERROR, "Incorrect URL provided!", mue);
         }
         this.urlPrefix = HttpClient.composeUrl(this.proto,this.host,this.port,"/"+ this.plonesite);
