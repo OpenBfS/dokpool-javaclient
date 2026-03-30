@@ -498,7 +498,7 @@ public class DokpoolTest {
         log.log(INFO, "=== TEST: userManagementTest ======");
         Random r = new Random();
         DocumentPool myDocumentPool = obtainDocumentPool(DokpoolBaseService.ALLEXCEP);
-        User user = myDocumentPool.createUser("javaTestUser"+r.nextInt(), "testuserPW", "Test User Full Name", myDocumentPool.getPathAfterPlonesite());
+        User user = myDocumentPool.createUser("javaTestUser"+r.nextInt(), "testuserPW", "Test User Full Name", myDocumentPool.getPathAfterPlonesite(), "no@valid.email");
         if (user == null) {
             log.log(ERROR, "No User created!");
         } else {
