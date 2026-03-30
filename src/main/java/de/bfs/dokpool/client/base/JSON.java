@@ -19,11 +19,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Iterator;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.ObjectMapper;
 
 import static java.lang.System.Logger.Level.ERROR;
 import static java.lang.System.Logger.Level.WARNING;
@@ -80,7 +80,7 @@ public class JSON {
             }
             try {
                 jacksonNode = mapper.readTree(json);
-            } catch (JsonProcessingException jpe) {
+            } catch (JacksonException je) {
                 throw new JSONRuntimeException("JSON processing error.");
             }
             if (jacksonNode == null) {
@@ -489,7 +489,7 @@ public class JSON {
         }
 
         public String toString() {
-            return jacksonNode.asText();
+            return jacksonNode.asString();
         }
 
         public long toLong() {
@@ -558,7 +558,7 @@ public class JSON {
         public String toJSON() {
             try {
                 return mapper.writeValueAsString(jacksonNode);
-            } catch (JsonProcessingException jpe) {
+            } catch (JacksonException je) {
                 throw new JSONRuntimeException("JSON processing error.");
             }
         }
