@@ -1,4 +1,4 @@
-/* Copyright (C) 2015-2025 by Bundesamt fuer Strahlenschutz
+/* Copyright (C) 2015-2026 by Bundesamt fuer Strahlenschutz
  *
  * This file is Free Software under the GNU GPL (v>=3)
  * and comes with ABSOLUTELY NO WARRANTY!
@@ -21,9 +21,10 @@ import java.util.Iterator;
 
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.exc.JsonNodeException;
 import tools.jackson.databind.node.ObjectNode;
 import tools.jackson.databind.node.ArrayNode;
-import tools.jackson.databind.ObjectMapper;
 
 import static java.lang.System.Logger.Level.ERROR;
 import static java.lang.System.Logger.Level.WARNING;
@@ -488,8 +489,22 @@ public class JSON {
             return jacksonNode.getNodeType().name().toLowerCase();
         }
 
+        /**
+         * Get the content as String.
+         * This does not return a JSON representation of the
+         * content, just the pure content for value nodes and
+         * an empty string for everything else.
+         * @return the content as string for value nodes and "" else.
+         */
         public String toString() {
-            return jacksonNode.asString();
+            try {
+                return jacksonNode.asString();
+            } catch(JsonNodeException jne) {
+                //Jackson 2 did return "" for objects and arrays,
+                //Jackson 3 throws an exception.
+                //We keep the old behavior:
+                return "";
+            }
         }
 
         public long toLong() {
