@@ -80,64 +80,6 @@ public class DocumentPool extends Folder {
     }
 
     /**
-     * @return all Scenarios within this document pool
-     * @deprecated
-     */
-    @Deprecated public List<Scenario> getScenarios() {
-        JSON.Node itemsNode = null;
-        try {
-            //TODO: only search /contentconfig/scen/?
-            JSON.Node rspNode = privateService.nodeFromGetRequest(pathAfterPlonesite + "/@search", "portal_type=ELANScenario&metadata_fields=id");
-            if (rspNode.errorInfo != null) {
-                log.log(INFO, rspNode.errorInfo.toString());
-                return null;
-            }
-            itemsNode = rspNode.get("items");
-        } catch (DokpoolRuntimeException dre) {
-            log.log(ERROR, exceptionToString(dre), dre);
-            return null;
-        }
-        if (itemsNode != null) {
-            ArrayList<Scenario> res = new ArrayList<Scenario>();
-            for (JSON.Node scenarioNode : itemsNode) {
-                res.add(new Scenario(service, service.pathWithoutPrefix(scenarioNode), dataFromNode(scenarioNode)));
-            }
-            return res;
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * @return all active Scenarios within this document pool
-     * @deprecated
-     */
-    @Deprecated public List<Scenario> getActiveScenarios() {
-        JSON.Node itemsNode = null;
-        try {
-            //TODO: only search /contentconfig/scen/?
-            JSON.Node rspNode = privateService.nodeFromGetRequest(pathAfterPlonesite + "/@search", "portal_type=ELANScenario&dp_type=active&metadata_fields=id");
-            if (rspNode.errorInfo != null) {
-                log.log(INFO, rspNode.errorInfo.toString());
-                return null;
-            }
-            itemsNode = rspNode.get("items");
-        } catch (DokpoolRuntimeException dre) {
-            log.log(ERROR, exceptionToString(dre), dre);
-            return null;
-        }
-        if (itemsNode != null) {
-            ArrayList<Scenario> res = new ArrayList<Scenario>();
-            for (JSON.Node scenarioNode : itemsNode) {
-                res.add(new Scenario(service, service.pathWithoutPrefix(scenarioNode), dataFromNode(scenarioNode)));
-            }
-            return res;
-        } else {
-            return null;
-        }
-    }
-
-    /**
      * @return all Events within this document pool
      */
     public List<Event> getEvents() {

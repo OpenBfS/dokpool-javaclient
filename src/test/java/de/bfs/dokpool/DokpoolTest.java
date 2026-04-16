@@ -37,7 +37,6 @@ import de.bfs.dokpool.client.content.File;
 import de.bfs.dokpool.client.content.Folder;
 import de.bfs.dokpool.client.content.Group;
 import de.bfs.dokpool.client.content.Image;
-import de.bfs.dokpool.client.content.Scenario;
 import de.bfs.dokpool.client.content.User;
 
 import java.nio.charset.StandardCharsets;
@@ -304,21 +303,6 @@ public class DokpoolTest {
             log.log(INFO, "Could not find any active events for " + mainDocPool.getPathWithPlonesite());
         }
 
-        List<Scenario> scenarios = mainDocPool.getScenarios();
-        try {
-            Scenario ev = scenarios.get(0);
-            log.log(INFO, "First scenario from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
-        } catch (NullPointerException | IndexOutOfBoundsException e) {
-            log.log(INFO, "Could not find any scenarios for " + mainDocPool.getPathWithPlonesite());
-        }
-
-        scenarios = mainDocPool.getActiveScenarios();
-        try {
-            Scenario ev = scenarios.get(0);
-            log.log(INFO, "First active scenario from Dokpool has title: " + ev.getTitle() + " and decription: " + ev.getDescription());
-        } catch (NullPointerException | IndexOutOfBoundsException e) {
-            log.log(INFO, "Could not find any active scenarios for " + mainDocPool.getPathWithPlonesite());
-        }
     }
 
     /**
