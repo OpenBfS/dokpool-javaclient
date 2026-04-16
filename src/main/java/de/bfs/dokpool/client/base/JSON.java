@@ -499,7 +499,7 @@ public class JSON {
         public String toString() {
             try {
                 return jacksonNode.asString();
-            } catch(JsonNodeException jne) {
+            } catch (JsonNodeException jne) {
                 //Jackson 2 did return "" for objects and arrays,
                 //Jackson 3 throws an exception.
                 //We keep the old behavior:
