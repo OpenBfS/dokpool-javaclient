@@ -421,6 +421,8 @@ public class DokpoolTest {
         bo.update(properties);
         log.log(INFO, NTS(bo.getStringAttribute("created_by")));
         log.log(INFO, NTS(bo.getDateAttribute("effective")));
+        Document bocp = (Document) groupFolder.createCopyOf(bo);
+        bocp.delete();
         bo.delete();
 
         Map<String, Object> elanProperties = new HashMap<String, Object>();
@@ -431,10 +433,8 @@ public class DokpoolTest {
         //PrognosisForm is not mandatory, but if present it should be in a list of accepted values
         rodosProperties.put("PrognosisForm", "invalid value");
         randId = "fromjava" + r.nextInt();
-        Document d = (Document) groupFolder.createCopyOf(groupFolder.getContentItem(DOCID));
-        d.delete();
 
-        d = groupFolder.createAppSpecificDocument(randId, "New from Java",
+        Document d = groupFolder.createAppSpecificDocument(randId, "New from Java",
             "Description from Java", "<p>Text from Java!</p>","rodosprojection", new String[] {"elan", "rodos"},
             elanProperties,
             null,
