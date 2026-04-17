@@ -2,6 +2,11 @@
 
 ## Version 3.x
 
+### 3.4.0 *2026-04-16*
+
+ - remove deprectaed classes DocpoolBaseService (with c instead of k) and Scenario
+ - move to Java 25 and Jackson 3
+
 ### 3.3.4 *2026-02-16*
 
  - use Java's own HttpClient instead of Apache HttpClient

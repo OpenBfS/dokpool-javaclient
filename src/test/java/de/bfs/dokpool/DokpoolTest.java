@@ -570,12 +570,19 @@ public class DokpoolTest {
         if (pendingRoot != null && pendingRoot.get("items") != null && pendingRoot.get("items").get(0) != null) {
             log.log(INFO, NTS(pendingRoot.get("items").get(0).get("@id").toJSON()));
         }
+
+        String deleteUrl = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/"+DOKPOOL+"/content/Groups/"+ GROUPFOLDER + "/" + DOCID);
+        rsp = HttpClient.doDeleteRequest(PROTO,HOST,PORT,deleteUrl,headers);
+        log.log(INFO, rsp.content);
+
         String createUrl = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/"+DOKPOOL+"/content/Groups/"+ GROUPFOLDER);
         JSON.Node createJS = new JSON.Node("{}")
             .set("@type","DPDocument")
             .set("title", "JavaAPIDocumentNameCreatedByPOSTRequest")
             .set("id", DOCID)
             .set("transferred_by", USER)
+            .set("local_behaviors", new JSON.Node("[\"elan\"]"))
+            .set("docType", "gammadoserate")
             .set("description", "Created by java test.")
             .set("text", "This is just a Test and can be deleted.")
         ;
@@ -593,7 +600,7 @@ public class DokpoolTest {
         log.log(INFO, rsp.content);
         Assert.assertEquals(204, rsp.status);
 
-        String deleteUrl = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/"+DOKPOOL+"/content/Groups/"+ GROUPFOLDER+"/copy_of_"+DOCID);
+        deleteUrl = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/"+DOKPOOL+"/content/Groups/"+ GROUPFOLDER+"/copy_of_"+DOCID);
         rsp = HttpClient.doDeleteRequest(PROTO,HOST,PORT,deleteUrl,headers);
         log.log(INFO, rsp.content);
 
