@@ -68,6 +68,7 @@ public class DokpoolTest {
     private static final String DOCUMENTOWNER  = envOrEmpty("DOKPOOL_DOCUMENTOWNER");
     private static final String DOKPOOL        = envOrEmpty("DOKPOOL_DOKPOOL");
     private static final String GROUPFOLDER    = envOrEmpty("DOKPOOL_GROUPFOLDER");
+    private static final String SUBFOLDERPATH  = envOrEmpty("DOKPOOL_SUBFOLDERPATH");
     //MEMBER should have an associated user folder
     private static final String MEMBER         = envOrEmpty("DOKPOOL_MEMBER");
     private static final String EVENT          = envOrEmpty("DOKPOOL_EVENT");
@@ -102,13 +103,13 @@ public class DokpoolTest {
             "exceptionPolicy", exceptionPolicy
         ));
 
-        List<DocumentPool> myDocPools = dokpoolBaseService.getDocumentPools();
+        List<DocumentPool> userDocPools = dokpoolBaseService.getDocumentPools();
         DocumentPool mainDocPool = dokpoolBaseService.getPrimaryDocumentPool();
 
-        log.log(INFO, "Number of document pools: " + myDocPools.size());
+        log.log(INFO, "Number of document pools: " + userDocPools.size());
         log.log(INFO, "Main document pool: " + mainDocPool.getPathWithPlonesite());
 
-        for (DocumentPool sDocPool : myDocPools) {
+        for (DocumentPool sDocPool : userDocPools) {
             if (sDocPool.getId().equals(DOKPOOL)) {
                 mainDocPool = sDocPool;
                 log.log(INFO, "Main document pool is now: " + mainDocPool.getPathWithPlonesite());
@@ -152,49 +153,56 @@ public class DokpoolTest {
         log.log(INFO, "The user folder of some well known user: " + mainDocPool.getUserFolder(MEMBER));
 
 
-        Folder myGroupFolder = null;
+        Folder groupFolder = null;
         try {
-            myGroupFolder = mainDocPool.getGroupFolders().get(0);
+            groupFolder = mainDocPool.getGroupFolders().get(0);
         } catch (NullPointerException e) {
             throw new NullPointerException("Could not find any valid GroupFolder for Dokpool " + mainDocPool.getPathWithPlonesite());
         }
 
-        log.log(INFO, "Group folder path (first from Dokpool): " + myGroupFolder.getPathWithPlonesite());
+        log.log(INFO, "Group folder path (first from Dokpool): " + groupFolder.getPathWithPlonesite());
 
         try {
-            myGroupFolder = mainDocPool.getFolder("content/Groups/" + GROUPFOLDER);
-            log.log(INFO, "Group folder now set from from env: " +  myGroupFolder.getPathWithPlonesite());
-            myGroupFolder = mainDocPool.getGroupFolder(GROUPFOLDER).get();
-            log.log(INFO, "Group folder set from from env again: " +  myGroupFolder.getPathWithPlonesite());
+            groupFolder = mainDocPool.getFolder("content/Groups/" + GROUPFOLDER);
+            log.log(INFO, "Group folder now set from from env: " +  groupFolder.getPathWithPlonesite());
+            groupFolder = mainDocPool.getGroupFolder(GROUPFOLDER).get();
+            log.log(INFO, "Group folder set from from env again: " +  groupFolder.getPathWithPlonesite());
         } catch (NullPointerException e) {
             log.log(WARNING, "Could not find DOKPOOL_GROUPFOLDER: " + mainDocPool.getPathWithPlonesite() + "/content/Groups/" + GROUPFOLDER);
-            log.log(INFO, "Group folder remains: " +  myGroupFolder.getPathWithPlonesite());
+            log.log(INFO, "Group folder remains: " +  groupFolder.getPathWithPlonesite());
         }
 
-        List<Object> contentList = myGroupFolder.getContents(null);
+        List<Object> contentList = groupFolder.getContents(null);
         for (Object contentItem : contentList) {
             log.log(INFO, "group folder item id: " + ((BaseObject) contentItem).getId());
         }
 
-        Folder myTransferFolder = null;
+        Folder transferFolder = null;
         try {
             List<Folder> tfFolders = mainDocPool.getTransferFolders();
             log.log(INFO, "number of transfer folders: " + tfFolders.size());
-            myTransferFolder = tfFolders.get(0);
-            log.log(INFO, "Transfer folder path (first from Dokpool): " + myTransferFolder.getPathWithPlonesite());
+            transferFolder = tfFolders.get(0);
+            log.log(INFO, "Transfer folder path (first from Dokpool): " + transferFolder.getPathWithPlonesite());
         } catch (NullPointerException e) {
             log.log(INFO, "Could not find any valid TransferFolder for Dokpool " + mainDocPool.getPathWithPlonesite());
         }
 
+        Folder workFolder = null;
+        try {
+            workFolder = SUBFOLDERPATH.isEmpty() ? groupFolder : groupFolder.getFolder(SUBFOLDERPATH);
+            log.log(INFO, "Using work folder: " +  workFolder.getPathWithPlonesite());
+        } catch (NullPointerException e) {
+            throw new NullPointerException("Could not find work folder: " + groupFolder.getPathWithPlonesite() + SUBFOLDERPATH);
+        }
 
         boolean docExists = false;
         Document oldDoc = null;
         try {
-            oldDoc = (Document) myGroupFolder.getContentItem(DOCID);
+            oldDoc = (Document) workFolder.getContentItem(DOCID);
             log.log(INFO, "Object exists: " +  oldDoc.getPathWithPlonesite());
             docExists = true;
         } catch (NullPointerException e) {
-            log.log(INFO, "Object does not exist: " +  myGroupFolder.getPathWithPlonesite() + "/" + DOCID);
+            log.log(INFO, "Object does not exist: " +  workFolder.getPathWithPlonesite() + "/" + DOCID);
         }
         if (docExists) {
             oldDoc.delete();
@@ -214,12 +222,12 @@ public class DokpoolTest {
         // eventList.add("routinemode");
         // docProperties.put("scenarios", eventList);
 
-        log.log(INFO, "Creating new document at " + myGroupFolder.getPathWithPlonesite() + "/" + DOCID);
-        Document d = myGroupFolder.createDPDocument(DOCID, docProperties);
+        log.log(INFO, "Creating new document at " + workFolder.getPathWithPlonesite() + "/" + DOCID);
+        Document d = workFolder.createDPDocument(DOCID, docProperties);
 
         boolean gotException = false;
         try {
-            myGroupFolder.createDPDocument(DOCID, docProperties);
+            workFolder.createDPDocument(DOCID, docProperties);
         } catch (DokpoolRuntimeException dre) {
             gotException = true;
         }
@@ -315,15 +323,16 @@ public class DokpoolTest {
 
         DocumentPool mainDocPool = obtainDocumentPool(DokpoolBaseService.ALLEXCEP);
 
-        Folder myGroupFolder = mainDocPool.getGroupFolder(GROUPFOLDER).get();
+        Folder groupFolder = mainDocPool.getGroupFolder(GROUPFOLDER).get();
+        Folder workFolder = SUBFOLDERPATH.isEmpty() ? groupFolder : groupFolder.getFolder(SUBFOLDERPATH);
         boolean docExists = false;
         Document oldDoc = null;
         try {
-            oldDoc = (Document) myGroupFolder.getContentItem(doksysDocId);
+            oldDoc = (Document) workFolder.getContentItem(doksysDocId);
             log.log(INFO, "Object exists: " +  oldDoc.getPathWithPlonesite());
             docExists = true;
         } catch (NullPointerException e) {
-            log.log(INFO, "Object does not exist: " +  myGroupFolder.getPathWithPlonesite() + "/" + doksysDocId);
+            log.log(INFO, "Object does not exist: " +  workFolder.getPathWithPlonesite() + "/" + doksysDocId);
         }
         if (docExists) {
             oldDoc.delete();
@@ -354,7 +363,7 @@ public class DokpoolTest {
         docProperties.put("OperationMode", "Übung");
         docProperties.put("SampleType", new String[] {"Gamma-Ortsdosisleistung"});
 
-        Document d = myGroupFolder.createDPDocument(doksysDocId, docProperties);
+        Document d = workFolder.createDPDocument(doksysDocId, docProperties);
         log.log(INFO, d.getPathAfterPlonesite());
 
     }
@@ -375,36 +384,37 @@ public class DokpoolTest {
             log.log(WARNING, "No DocumentPools found!");
         }
 
-        DocumentPool myDocumentPool = null;
+        DocumentPool mainDocPool = null;
         for (DocumentPool sDocPool : documentpools) {
             if (sDocPool.getPathWithPlonesite().matches("/" + PLONESITE + "/" + DOKPOOL)) {
-                myDocumentPool = sDocPool;
-                log.log(INFO, "Main Dokpool is now: " + myDocumentPool.getPathWithPlonesite());
+                mainDocPool = sDocPool;
+                log.log(INFO, "Main Dokpool is now: " + mainDocPool.getPathWithPlonesite());
                 break;
             }
         }
-        log.log(INFO, myDocumentPool.getTitle());
-        log.log(INFO, myDocumentPool.getDescription());
-        log.log(INFO, myDocumentPool.getSupportedApps());
-        List<DocType> types = myDocumentPool.getTypes();
+        log.log(INFO, mainDocPool.getTitle());
+        log.log(INFO, mainDocPool.getDescription());
+        log.log(INFO, mainDocPool.getSupportedApps());
+        List<DocType> types = mainDocPool.getTypes();
         for (DocType t : types) {
             log.log(INFO, t.getId());
             log.log(INFO, t.getTitle());
         }
 
-        Folder groupFolder = myDocumentPool.getGroupFolder(GROUPFOLDER).get();
+        Folder groupFolder = mainDocPool.getGroupFolder(GROUPFOLDER).get();
+        Folder workFolder = SUBFOLDERPATH.isEmpty() ? groupFolder : groupFolder.getFolder(SUBFOLDERPATH);
         Random r = new Random();
-        log.log(INFO, groupFolder);
-        log.log(INFO, groupFolder.getTitle());
-        List<Object> documents = groupFolder.getContents(null);
+        log.log(INFO, workFolder);
+        log.log(INFO, workFolder.getTitle());
+        List<Object> documents = workFolder.getContents(null);
         log.log(INFO, documents);
-        List<Folder> tf = myDocumentPool.getTransferFolders();
+        List<Folder> tf = mainDocPool.getTransferFolders();
         log.log(INFO, tf);
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("title", "Generic Title");
         properties.put("description", "Generic Description");
         properties.put("text", "<b>Text</b>");
-        properties.put("docType", "gammadoserate");
+        properties.put("docType", "mresult_other");
         properties.put("subjects", new String[] {"Tag1", "Tag2"});
         properties.put("local_behaviors", new String[] {"elan", "doksys"});
         // These attributes are not required, we use them to test date handling:
@@ -414,14 +424,14 @@ public class DokpoolTest {
         // properties.put("OperationMode", "Routine");
         properties.put("scenarios", new String[] {"scenario1", null, EVENTUID, EVENT});
         String randId = "generic" + r.nextInt();
-        BaseObject bo = groupFolder.createObject(randId, properties, "DPDocument");
+        BaseObject bo = workFolder.createObject(randId, properties, "DPDocument");
         // BaseObject bo = groupFolder.createCopyOf(groupFolder.getContentItem(DOCID));
         properties.clear();
         properties.put("scenarios", new String[] {"routinemode", "scenario2", null});
         bo.update(properties);
         log.log(INFO, NTS(bo.getStringAttribute("created_by")));
         log.log(INFO, NTS(bo.getDateAttribute("effective")));
-        Document bocp = (Document) groupFolder.createCopyOf(bo);
+        Document bocp = (Document) workFolder.createCopyOf(bo);
         bocp.delete();
         bo.delete();
 
@@ -434,7 +444,7 @@ public class DokpoolTest {
         rodosProperties.put("PrognosisForm", "invalid value");
         randId = "fromjava" + r.nextInt();
 
-        Document d = groupFolder.createAppSpecificDocument(randId, "New from Java",
+        Document d = workFolder.createAppSpecificDocument(randId, "New from Java",
             "Description from Java", "<p>Text from Java!</p>","rodosprojection", new String[] {"elan", "rodos"},
             elanProperties,
             null,
@@ -460,7 +470,7 @@ public class DokpoolTest {
         reiProperties.put("Period","Q4");
         reiProperties.put("Origins", "Strahlenschutzverantwortlicher");
         reiProperties.put("PDFVersion", "PDF-Version thar does not exist");
-        d = groupFolder.createAppSpecificDocument(randId, "New from Java",
+        d = workFolder.createAppSpecificDocument(randId, "New from Java",
             "Description from Java", "<p>Text from Java!</p>","reireport", new String[] {"rei"},
             null,
             null,
@@ -481,20 +491,20 @@ public class DokpoolTest {
     public void userManagementTest() throws Exception {
         log.log(INFO, "=== TEST: userManagementTest ======");
         Random r = new Random();
-        DocumentPool myDocumentPool = obtainDocumentPool(DokpoolBaseService.ALLEXCEP);
-        User user = myDocumentPool.createUser("javaTestUser"+r.nextInt(), "testuserPW", "Test User Full Name", myDocumentPool.getPathAfterPlonesite(), "no@valid.email");
+        DocumentPool mainDocPool = obtainDocumentPool(DokpoolBaseService.ALLEXCEP);
+        User user = mainDocPool.createUser("javaTestUser"+r.nextInt(), "testuserPW", "Test User Full Name", mainDocPool.getPathAfterPlonesite(), "no@valid.email");
         if (user == null) {
             log.log(ERROR, "No User created!");
         } else {
             log.log(INFO, "User " + user.getUserId() + " created.");
         }
-        Group group = myDocumentPool.createGroup("javaTestGroup"+r.nextInt(), "Test Group Full Name","for java tests", myDocumentPool.getPathAfterPlonesite());
+        Group group = mainDocPool.createGroup("javaTestGroup"+r.nextInt(), "Test Group Full Name","for java tests", mainDocPool.getPathAfterPlonesite());
         if (group == null) {
             log.log(ERROR, "No group created.");
         } else {
             log.log(INFO, "Group " + group.getGroupId() + " created.");
         }
-        group.addUser(user, myDocumentPool.getPathAfterPlonesite());
+        group.addUser(user, mainDocPool.getPathAfterPlonesite());
         String[] docTypes = {"airactivity", "ifinprojection", "protectiveactions"};
         //not implemented for REST:
         group.setAllowedDocTypes(docTypes);
@@ -571,18 +581,20 @@ public class DokpoolTest {
             log.log(INFO, NTS(pendingRoot.get("items").get(0).get("@id").toJSON()));
         }
 
-        String deleteUrl = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/"+DOKPOOL+"/content/Groups/"+ GROUPFOLDER + "/" + DOCID);
+        String workFolder = GROUPFOLDER + SUBFOLDERPATH;
+
+        String deleteUrl = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/"+DOKPOOL+"/content/Groups/"+ workFolder + "/" + DOCID);
         rsp = HttpClient.doDeleteRequest(PROTO,HOST,PORT,deleteUrl,headers);
         log.log(INFO, rsp.content);
 
-        String createUrl = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/"+DOKPOOL+"/content/Groups/"+ GROUPFOLDER);
+        String createUrl = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/"+DOKPOOL+"/content/Groups/"+ workFolder);
         JSON.Node createJS = new JSON.Node("{}")
             .set("@type","DPDocument")
             .set("title", "JavaAPIDocumentNameCreatedByPOSTRequest")
             .set("id", DOCID)
             .set("transferred_by", USER)
             .set("local_behaviors", new JSON.Node("[\"elan\"]"))
-            .set("docType", "gammadoserate")
+            .set("docType", "mresult_other")
             .set("description", "Created by java test.")
             .set("text", "This is just a Test and can be deleted.")
         ;
@@ -590,7 +602,7 @@ public class DokpoolTest {
         rsp = HttpClient.doPostRequest(PROTO,HOST,PORT,createUrl,headers,null,HttpClient.MimeTypes.JSON,createData);
         log.log(INFO, rsp.content);
 
-        String patchUrl = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/"+DOKPOOL+"/content/Groups/"+ GROUPFOLDER+"/"+DOCID);
+        String patchUrl = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/"+DOKPOOL+"/content/Groups/"+ workFolder+"/"+DOCID);
         JSON.Node patchJS = new JSON.Node("{}")
             .set("title", "JavaAPIDocumentNameChangedByPATCHRequest")
             .set("description", "Changed by java test.")
@@ -600,7 +612,7 @@ public class DokpoolTest {
         log.log(INFO, rsp.content);
         Assert.assertEquals(204, rsp.status);
 
-        deleteUrl = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/"+DOKPOOL+"/content/Groups/"+ GROUPFOLDER+"/copy_of_"+DOCID);
+        deleteUrl = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/"+DOKPOOL+"/content/Groups/"+ workFolder+"/copy_of_"+DOCID);
         rsp = HttpClient.doDeleteRequest(PROTO,HOST,PORT,deleteUrl,headers);
         log.log(INFO, rsp.content);
 
@@ -615,7 +627,7 @@ public class DokpoolTest {
         log.log(INFO, rsp.content);
 
         //does not work: id cannot be changed this way, neither in Plone 5 nor 6
-        String renameUrl = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/"+DOKPOOL+"/content/Groups/"+ GROUPFOLDER+"/copy_of_"+DOCID);
+        String renameUrl = HttpClient.composeUrl(PROTO,HOST,PORT,"/"+PLONESITE+"/"+DOKPOOL+"/content/Groups/"+ workFolder+"/copy_of_"+DOCID);
         JSON.Node renameJS = new JSON.Node("{}")
             .set("id", DOCID+"-two")
         ;

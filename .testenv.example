@@ -4,7 +4,10 @@ DOKPOOL_HOST=host
 DOKPOOL_PORT=port
 DOKPOOL_PLONESITE=site
 DOKPOOL_DOKPOOL=bund
-DOKPOOL_GROUPFOLDER=grouo_folder
+DOKPOOL_GROUPFOLDER=group_folder
+#If you do want to do *most* tests in a subfolder of the group folder
+#set this to sub path starting with / ("/sub" means "group_folder/sub")
+DOKPOOL_SUBFOLDERPATH=""
 DOKPOOL_DOCUMENTOWNER=user
 #The following user should have an associated user folder in DOKPOOL_DOKPOOL
 DOKPOOL_MEMBER=nvo-loc
