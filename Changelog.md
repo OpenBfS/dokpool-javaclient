@@ -2,10 +2,12 @@
 
 ## Version 3.x
 
-### 3.4.0 *2026-04-16*
+### 3.4.0 *2026-04-17*
 
  - remove deprectaed classes DocpoolBaseService (with c instead of k) and Scenario
  - move to Java 25 and Jackson 3
+ - change default docType to "mresult_other" if behaviors include doksys
+ - tests can now be performed in a (sub...)subfolder of the group folder
 
 ### 3.3.4 *2026-02-16*
 
