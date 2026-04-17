@@ -229,9 +229,6 @@ public class Folder extends BaseObject {
                 localBehaviors = (new JSON.Node("[]")).append("elan");
                 createJS.set("local_behaviors", localBehaviors);
             }
-            if (localBehaviors.arrayHasValue("doksys")) {
-                Document.doksysCheck(createJS, true);
-            }
             if (localBehaviors.arrayHasValue("rodos")) {
                 Document.rodosCheck(createJS, true);
                 if (createJS.get("docType") == null) {
@@ -244,7 +241,16 @@ public class Folder extends BaseObject {
                     createJS.set("docType", "reireport");
                 }
             }
+            if (localBehaviors.arrayHasValue("doksys")) {
+                Document.doksysCheck(createJS, true);
+                if (createJS.get("docType") == null) {
+                    //also sensible for elan+doksys
+                    createJS.set("docType", "mresult_other");
+                }
+            }
 
+            //if docType is still null, "elan" is the only behavior
+            //thus we can use the generic docType "other_document"
             if (createJS.get("docType") == null) {
                 createJS.set("docType", "other_document");
             }
