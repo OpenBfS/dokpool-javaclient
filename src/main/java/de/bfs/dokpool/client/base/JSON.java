@@ -497,11 +497,17 @@ public class JSON {
          * @return the content as string for value nodes and "" else.
          */
         public String toString() {
+            if (jacksonNode.isNull()) {
+                //Jackson2's asText did return "null" for NullNodes,
+                //Jackson3's asString returns "".
+                //We keep the old behavior:
+                return "null";
+            }
             try {
                 return jacksonNode.asString();
             } catch (JsonNodeException jne) {
-                //Jackson 2 did return "" for objects and arrays,
-                //Jackson 3 throws an exception.
+                //Jackson2's asText did return "" for objects and arrays,
+                //Jackson3's asString throws an exception.
                 //We keep the old behavior:
                 return "";
             }
