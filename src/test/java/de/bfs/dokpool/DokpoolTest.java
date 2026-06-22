@@ -594,6 +594,7 @@ public class DokpoolTest {
             .set("id", DOCID)
             .set("transferred_by", USER)
             .set("local_behaviors", new JSON.Node("[\"elan\"]"))
+            .set("scenario", new JSON.Node("\"" + EVENTUID + "\""))
             .set("docType", "mresult_other")
             .set("description", "Created by java test.")
             .set("text", "This is just a Test and can be deleted.")

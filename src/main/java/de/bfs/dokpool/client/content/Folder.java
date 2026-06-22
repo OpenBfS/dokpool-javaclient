@@ -229,6 +229,28 @@ public class Folder extends BaseObject {
                 localBehaviors = (new JSON.Node("[]")).append("elan");
                 createJS.set("local_behaviors", localBehaviors);
             }
+            if (localBehaviors.arrayHasValue("elan")) {
+                JSON.Node scNode = createJS.get("scenario");
+                if (scNode != null) {
+                    scNode = eventIdsToUids(scNode);
+                    if (scNode != null) {
+                        createJS.set("scenario",scNode);
+                    } else {
+                        createJS.set("scenario", eventIdToUid("routinemode"));
+                    }
+                } else {
+                    JSON.Node scsNode = createJS.get("scenarios");
+                    if (scsNode != null) {
+                        scsNode = eventIdsToUids(scsNode);
+                    }
+                    if (scsNode != null && scsNode.arraySize() > 0) {
+                        createJS.set("scenario",scsNode.get(0));
+                    } else {
+                        createJS.set("scenario", eventIdToUid("routinemode"));
+                    }
+                }
+                createJS.remove("scenarios");
+            }
             if (localBehaviors.arrayHasValue("rodos")) {
                 Document.rodosCheck(createJS, true);
                 if (createJS.get("docType") == null) {
@@ -255,13 +277,6 @@ public class Folder extends BaseObject {
                 createJS.set("docType", "other_document");
             }
 
-            for (String evPropName : new String[] {"scenarios", "events"}) {
-                JSON.Node evListNode = createJS.get(evPropName);
-                if (evListNode != null) {
-                    createJS.set(evPropName, eventIdsToUids(evListNode));
-                }
-            }
-
             invalidateContentsNode();
             JSON.Node rspNode = privateService.postRequestWithNode(pathAfterPlonesite, createJS);
             if (rspNode.errorInfo != null) {
@@ -276,6 +291,38 @@ public class Folder extends BaseObject {
             privateService.throwCreateDRE(dre, DokpoolBaseService.OBJCREXCEP);
             return null;
         }
+    }
+
+        /**
+     * Create a new document family (all documents within this folder).
+     *
+     * @param ids:
+     *            the short names for the documents (must be unique within the folder)
+     * @param title
+     * @param description
+     * @param text
+     * @param docType
+     * @param behaviors
+     * @return the newly created document family
+     */
+    @SuppressWarnings("checkstyle:leftcurly")
+    public DocumentFamily createDPDocumentFamily(String[] ids, String title, String description, String text, String docType,
+            String[] behaviors) {
+        Map<String, Object> attributes = new HashMap<String, Object>();
+        if (title != null) { attributes.put("title", title); }
+        if (description != null) { attributes.put("description", description); }
+        if (text != null) { attributes.put("text", text); }
+        if (docType != null) { attributes.put("docType", docType); }
+        if (behaviors != null) { attributes.put("local_behaviors", behaviors); }
+        return createDPDocumentFamily(ids, attributes);
+    }
+
+    public DocumentFamily createDPDocumentFamily(String[] ids, Map<String, Object> attributes) {
+        List<Document> documents = new ArrayList<Document>();
+        for (String id : ids) {
+            documents.add(new Document(service, pathAfterPlonesite, attributes));
+        }
+        return new DocumentFamily(service, documents);
     }
 
     public BaseObject createObject(String id, Map<String, Object> attributes, String type) {

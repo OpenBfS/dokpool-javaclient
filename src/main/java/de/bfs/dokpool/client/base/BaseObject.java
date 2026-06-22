@@ -68,7 +68,7 @@ public class BaseObject {
 
     /**
      * e.g. if pathAfterPlonesite = /bund/... -&gt; bund
-     * @return the part of the path that specifies the Dokpool.
+     * @return the part of the path that specifies the document pool.
      */
     protected String docPoolId() {
         return pathAfterPlonesite.substring(1,pathAfterPlonesite.indexOf('/', 1));
@@ -254,8 +254,9 @@ public class BaseObject {
     /**
      * Attempts to execute a transition to set a new workflow status.
      * @param transition: the name of the transition
+     * @return true iff Dokpool returns no error.
      */
-    public void setWorkflowStatus(String transition) {
+    public boolean setWorkflowStatus(String transition) {
         try {
             String endpoint = "/@workflow";
             JSON.Node transNode = new JSON.Node("{}");
@@ -279,9 +280,12 @@ public class BaseObject {
             JSON.Node rspNode = privateService.postRequestWithNode(pathAfterPlonesite+endpoint, transNode);
             if (rspNode.errorInfo != null) {
                 log.log(INFO, rspNode.errorInfo.toString());
+                return false;
             }
+            return true;
         } catch (Exception ex) {
             log.log(ERROR, exceptionToString(ex));
+            return false;
         }
 
     }
@@ -302,26 +306,40 @@ public class BaseObject {
 
     }
 
-    protected JSON.Node eventIdsToUids(JSON.Node evListNode) {
-        JSON.Node ret = new JSON.Node("[]");
+    protected String eventIdToUid(String evId) {
         //we assume the event ids refer to events of the current Document's DocPool
         String dpId = docPoolId();
-        for (JSON.Node evIdNode : evListNode) {
-            String evId = evIdNode.toString();
-            String uid = (new de.bfs.dokpool.client.content.Event(service, "/"+dpId+"/contentconfig/scen/"+evId, noData)).getStringAttribute("UID");
-            if (uid == null) {
-                //Maybe the evId already was a uid? Then we will get a non-null path fot it:
-                if (privateService.uidToPathAfterPlonesite(evId) != null) {
-                    uid = evId;
-                    ret.append(uid);
-                } else {
-                    log.log(ERROR, "Could not get event uid for event with id: " + evId);
-                }
+        String uid = (new de.bfs.dokpool.client.content.Event(service, "/"+dpId+"/contentconfig/scen/"+evId, noData)).getStringAttribute("UID");
+        if (uid == null) {
+            //Maybe the evId already was a uid? Then we will get a non-null path fot it:
+            if (privateService.uidToPathAfterPlonesite(evId) != null) {
+                uid = evId;
+                return uid;
             } else {
-                ret.append(uid);
+                log.log(ERROR, "Could not get event uid for event with id: " + evId);
+                return null;
             }
+        } else {
+            return uid;
         }
-        return ret;
+    }
+
+    protected JSON.Node eventIdsToUids(JSON.Node evNode) {
+        if (evNode.type().equals("array")) {
+            JSON.Node ret = new JSON.Node("[]");
+            for (JSON.Node evIdNode : evNode) {
+                String evId = evIdNode.toString();
+                String uid = eventIdToUid(evId);
+                if (uid != null) {
+                    ret.append(uid);
+                }
+            }
+            return ret;
+        } else {
+            String evId = evNode.toString();
+            String uid = eventIdToUid(evId);
+            return (uid != null) ? new JSON.Node("\"" + eventIdToUid(evId) +"\"") : null;
+        }
     }
 
     protected void checkAttrNodeUpdate(JSON.Node attrNode) throws Exception {}

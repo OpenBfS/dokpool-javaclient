@@ -288,6 +288,33 @@ public class Document extends Folder {
             oldLocalBehaviors = oldLocalBehaviors.flattenArray("token");
         }
 
+        if (newLocalBehaviors.arrayHasValue("elan") || oldLocalBehaviors.arrayHasValue("elan")) {
+            boolean bahaviorAdded = newLocalBehaviors.arrayHasValue("elan") &&
+                !oldLocalBehaviors.arrayHasValue("elan");
+            if (bahaviorAdded) {
+                JSON.Node scNode = attrNode.get("scenario");
+                if (scNode != null) {
+                    scNode = eventIdsToUids(scNode);
+                    if (scNode != null) {
+                        attrNode.set("scenario",scNode);
+                    } else {
+                        attrNode.set("scenario", eventIdToUid("routinemode"));
+                    }
+                } else {
+                    JSON.Node scsNode = attrNode.get("scenarios");
+                    if (scsNode != null) {
+                        scsNode = eventIdsToUids(scsNode);
+                    }
+                    if (scsNode != null && scsNode.arraySize() > 0) {
+                        attrNode.set("scenario",scsNode.get(0));
+                    } else {
+                        attrNode.set("scenario", eventIdToUid("routinemode"));
+                    }
+                }
+                attrNode.remove("scenarios");
+            }
+        }
+
         if (newLocalBehaviors.arrayHasValue("doksys") || oldLocalBehaviors.arrayHasValue("doksys")) {
             boolean bahaviorAdded = newLocalBehaviors.arrayHasValue("doksys") &&
                 !oldLocalBehaviors.arrayHasValue("doksys");
@@ -306,12 +333,15 @@ public class Document extends Folder {
             reiCheck(attrNode, bahaviorAdded);
         }
 
-        for (String evPropName : new String[] {"scenarios", "events"}) {
-            JSON.Node evListNode = attrNode.get(evPropName);
-            if (evListNode != null) {
-                attrNode.set(evPropName, eventIdsToUids(evListNode));
+        for (String evPropName : new String[] {"scenario", "scenarios"}) {
+            JSON.Node evNode = attrNode.get(evPropName);
+            if (evNode != null) {
+                attrNode.set(evPropName, eventIdsToUids(evNode));
             }
         }
+
+
+
     }
 
     protected static class Attribute {
