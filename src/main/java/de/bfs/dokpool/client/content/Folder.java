@@ -320,7 +320,7 @@ public class Folder extends BaseObject {
     public DocumentFamily createDPDocumentFamily(String[] ids, Map<String, Object> attributes) {
         List<Document> documents = new ArrayList<Document>();
         for (String id : ids) {
-            documents.add(new Document(service, pathAfterPlonesite, attributes));
+            documents.add(createDPDocument(id, attributes));
         }
         return new DocumentFamily(service, documents);
     }

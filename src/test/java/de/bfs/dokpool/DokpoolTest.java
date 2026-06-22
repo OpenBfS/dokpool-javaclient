@@ -30,6 +30,7 @@ import de.bfs.dokpool.client.base.HttpClient;
 import de.bfs.dokpool.client.base.JSON;
 
 import de.bfs.dokpool.client.content.Document;
+import de.bfs.dokpool.client.content.DocumentFamily;
 import de.bfs.dokpool.client.content.DocumentPool;
 import de.bfs.dokpool.client.content.DocType;
 import de.bfs.dokpool.client.content.Event;
@@ -272,6 +273,83 @@ public class DokpoolTest {
         log.log(INFO, d.getPathAfterPlonesite());
         log.log(INFO, "modified: " + d.getDateAttribute("modified"));
         log.log(INFO, "mdate: " + d.getDateAttribute("mdate"));
+
+        d.setWorkflowStatus("publish");
+    }
+
+    /**
+     * Test document family creation, file upload and setting properties.
+     *
+     */
+    @Test
+    public void documentFamilyTest() throws Exception {
+        log.log(INFO, "=== TEST: documentFamilyTest ======");
+        DocumentPool mainDocPool = obtainDocumentPool(DokpoolBaseService.ALLEXCEP);
+        log.log(INFO, mainDocPool.getWorkflowStatus());
+
+        Folder groupFolder = null;
+        try {
+            groupFolder = mainDocPool.getGroupFolder(GROUPFOLDER).get();
+            log.log(INFO, "Group folder set from env: " +  groupFolder.getPathWithPlonesite());
+        } catch (NullPointerException e) {
+            log.log(WARNING, "Could not find DOKPOOL_GROUPFOLDER: " + mainDocPool.getPathWithPlonesite() + "/content/Groups/" + GROUPFOLDER);
+            log.log(INFO, "Group folder remains: " +  groupFolder.getPathWithPlonesite());
+        }
+
+        List<Object> contentList = groupFolder.getContents(null);
+        for (Object contentItem : contentList) {
+            log.log(INFO, "group folder item id: " + ((BaseObject) contentItem).getId());
+        }
+
+
+
+        Folder workFolder = null;
+        try {
+            workFolder = SUBFOLDERPATH.isEmpty() ? groupFolder : groupFolder.getFolder(SUBFOLDERPATH);
+            log.log(INFO, "Using work folder: " +  workFolder.getPathWithPlonesite());
+        } catch (NullPointerException e) {
+            throw new NullPointerException("Could not find work folder: " + groupFolder.getPathWithPlonesite() + SUBFOLDERPATH);
+        }
+
+        boolean docExists = false;
+        Document oldDoc = null;
+        for (String suffix : new String[] {"-1", "-2"}) {
+            try {
+                oldDoc = (Document) workFolder.getContentItem(DOCID+suffix);
+                log.log(INFO, "Object exists: " +  oldDoc.getPathWithPlonesite());
+                docExists = true;
+            } catch (NullPointerException e) {
+                log.log(INFO, "Object does not exist: " +  workFolder.getPathWithPlonesite() + "/" + DOCID+suffix);
+            }
+            if (docExists) {
+                oldDoc.delete();
+            }
+        }
+
+        Map<String, Object> docProperties = new HashMap<String, Object>();
+        docProperties.put("title", "JavaDocPoolTestDocumentFamily");
+        docProperties.put("description", "Created by mvn test.");
+        docProperties.put("text", "This is just a Test and can be deleted.");
+
+        List<String> creatorsList = new ArrayList<String>();
+        creatorsList.add(DOCUMENTOWNER);
+        creatorsList.add(USER);
+        docProperties.put("creators", creatorsList);
+
+        log.log(INFO, "Creating new documents at " + workFolder.getPathWithPlonesite() + "/" + DOCID+"-1|-2");
+        DocumentFamily d = workFolder.createDPDocumentFamily(new String[] {DOCID+"-1",DOCID+"-2"}, docProperties);
+
+        d.mapEventsToDocuments(List.of("routinemode", "routinemode"));
+
+        byte[] fileData = ("Readme, I'm a string!").getBytes();
+        d.uploadFile("readme", "Read me!", "A file you should read.", fileData, "README.txt");
+        fileData = Files.readAllBytes(Paths.get("README.md"));
+        d.uploadFile("readme", "Read me!", "A file you should read.", fileData, "README.txt");
+        d.uploadOrReplaceFile("readme", "Read me!", "A file you should read.", fileData, "README.txt", null);
+        byte[] imageData = Files.readAllBytes(Paths.get("src/test/resources/image.png"));
+        //we purposely use a wrong mimetype (image/svg) here to check that Plone still does not care:
+        d.uploadOrReplaceImage("myimage", "Look at me!", "An image you should look at.", imageData, "image.png", "image/svg");
+        d.uploadOrReplaceImage("myimage", "Look at me!", "An image you should look at.", imageData, "image.png", "image/svg");
 
         d.setWorkflowStatus("publish");
     }
