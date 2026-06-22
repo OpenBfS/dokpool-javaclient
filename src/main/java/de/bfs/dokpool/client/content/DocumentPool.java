@@ -147,6 +147,20 @@ public class DocumentPool extends Folder {
     }
 
     /**
+     * @return all active Events within this document pool
+     */
+    public List<String> filterInactiveEventIds(List<String> evIdList) {
+        List<String> evIdFiltred = new ArrayList<String>();
+        Map<String,Event> activeEvMap = getActiveEventsMap();
+        for (String iu : evIdList) {
+            if (activeEvMap.containsKey(iu)) {
+                evIdFiltred.add(iu);
+            }
+        }
+        return evIdFiltred;
+    }
+
+    /**
      * @return the event with given eventId or null if no such event exists
      */
     public Event getEventById(String eventId) {
