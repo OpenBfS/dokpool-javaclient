@@ -191,6 +191,15 @@ public class JSON {
             return gotNode != null ? new Node(gotNode) : null;
         }
 
+        public long arraySize() {
+            try {
+                ArrayNode arrayNode = ((ArrayNode) jacksonNode);
+                return arrayNode.size();
+            } catch (ClassCastException cce) {
+                throw new JSONRuntimeException("JSON node is not an array.");
+            }
+        }
+
         public boolean arrayHasValue(Object val) {
             try {
                 ArrayNode arrayNode = ((ArrayNode) jacksonNode);
