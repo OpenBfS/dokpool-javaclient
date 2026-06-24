@@ -2,6 +2,13 @@
 
 ## Version 3.x
 
+### 3.5.0 *2026-06-24*
+
+ - minimal Dokpool version is now 2.6
+   - javaclient still accepts multiple scenarios, but only one is assigned
+   - If you need the same document content for multiple events, use DocumentFamily.
+  - deprecate methods `Dcoument.assignAllActiveEvents()` and `Dcoument.assignEventIdsUids(List<String> evIdsUids)`
+
 ### 3.4.0 *2026-04-17*
 
  - remove deprectaed classes DocpoolBaseService (with c instead of k) and Scenario

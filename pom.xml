@@ -6,7 +6,7 @@
     <groupId>de.bfs</groupId>
     <artifactId>dokpool-client</artifactId>
     <packaging>jar</packaging>
-    <version>3.5-SNAPSHOT</version>
+    <version>3.5.0</version>
     <name>Dokpool REST API Client</name>
     <organization>
         <name>German Federal Office for Radiation Protection</name>
@@ -30,12 +30,12 @@
         <dependency>
             <groupId>tools.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>[3.1.1,3.99.0]</version>
+            <version>[3.1.4,3.99.0]</version>
         </dependency>
         <dependency>
             <groupId>tools.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>[3.1.1,3.99.0]</version>
+            <version>[3.1.4,3.99.0]</version>
         </dependency>
     </dependencies>
     <build>
