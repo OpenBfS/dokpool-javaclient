@@ -219,10 +219,6 @@ public class DokpoolTest {
         creatorsList.add(USER);
         docProperties.put("creators", creatorsList);
 
-        // List<String> eventList = new ArrayList<String>();
-        // eventList.add("routinemode");
-        // docProperties.put("scenarios", eventList);
-
         log.log(INFO, "Creating new document at " + workFolder.getPathWithPlonesite() + "/" + DOCID);
         Document d = workFolder.createDPDocument(DOCID, docProperties);
 
@@ -237,7 +233,7 @@ public class DokpoolTest {
             throw new Exception("Uploading with the same id twice should produce an exception.");
         }
 
-        d.assignEventIdsUids(List.of("routinemode"));
+        d.assignEventIdUid(EVENTUID);
 
         byte[] fileData = ("Readme, I'm a string!").getBytes();
         File readme = d.uploadFile("readme", "Read me!", "A file you should read.", fileData, "README.txt");

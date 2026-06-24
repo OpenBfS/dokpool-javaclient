@@ -236,12 +236,28 @@ public class Document extends Folder {
         }
     }
 
-    /**
-     * Assigns all events from the list to the document that are currently active.
-     * @param evIdsUids: list of event ids and/or uids (can be mixed)
-     * @return the list of those entries evIdsUids which correspond to active events,
-     */
-    public List<String> assignEventIdsUids(List<String> evIdsUids) {
+    /// Assigns the given event to the current document if it is active.
+    /// @return true iff the event is active.
+    /// @param evIdUid: event id or uid
+    public boolean assignEventIdUid(String evIdUid) {
+        DocumentPool dp = new DocumentPool(service, "/" + docPoolId(), (Map<String,Object>) null);
+        Map<String,Event> activeEvMap = dp.getActiveEventsMap();
+        boolean active = activeEvMap.containsKey(evIdUid);
+        if (active) {
+            update(new HashMap<String,Object>(Map.of("scenario", activeEvMap.get(evIdUid).getUid())), false);
+            return true;
+        }
+        return active;
+    }
+
+
+    /// Assigns **the first active event** from the list to the curent document.
+    /// @deprecated A single document can only have one event starting from Dokpool 2.6.
+    ///             This method acts somewhat arbitrarily and should no longer be used.
+    ///             Consider using DocumentFamilies.
+    /// @param evIdsUids: list of event ids and/or uids (can be mixed)
+    /// @return the list of those entries evIdsUids which correspond to active events,
+    @Deprecated public List<String> assignEventIdsUids(List<String> evIdsUids) {
         List<String> eventsUpdate = new ArrayList<String>();
         List<String> iuSet = new ArrayList<String>();
         DocumentPool dp = new DocumentPool(service, "/" + docPoolId(), (Map<String,Object>) null);
@@ -253,15 +269,18 @@ public class Document extends Folder {
             }
         }
 
-        update(new HashMap<String,Object>(Map.of("scenarios", eventsUpdate)), false);
+        // since we have to remove superfluous events, we need the checks now
+        update(new HashMap<String,Object>(Map.of("scenarios", eventsUpdate)), true);
         return iuSet;
     }
 
-    /**
-     * Assigns all events to the document that are currently active.
-     * @return a list of ids of active events,
-     */
-    public List<String> assignAllActiveEvents() {
+    /// Assigns **one** active event to the curent document.
+    /// @return a list of ids of active events,
+    /// @deprecated A single document can only have one event starting from Dokpool 2.6.
+    ///             This method acts somewhat arbitrarily and should no longer be used.
+    ///             Consider using DocumentFamilies.
+    ///
+    @Deprecated public List<String> assignAllActiveEvents() {
         List<String> eventsUpdate = new ArrayList<String>();
         List<String> iuSet = new ArrayList<String>();
         DocumentPool dp = new DocumentPool(service, "/" + docPoolId(), (Map<String,Object>) null);
@@ -271,7 +290,8 @@ public class Document extends Folder {
             iuSet.add(ev.getId());
         }
 
-        update(new HashMap<String,Object>() {{ put("scenarios", eventsUpdate); }}, false);
+        // since we have to remove superfluous events, we need the checks now
+        update(new HashMap<String,Object>() {{ put("scenarios", eventsUpdate); }}, true);
         return iuSet;
     }
 

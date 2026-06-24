@@ -191,7 +191,7 @@ public class DocumentFamily {
         boolean allOk = true;
         for (int i = 0; i < documents.size(); i++) {
             Document d = documents.get(i);
-            allOk = allOk && d.setAttribute("scenario", evIdsUids.get(i));
+            allOk = allOk && d.assignEventIdUid(evIdsUids.get(i));
         }
         return allOk;
     }
